@@ -35,7 +35,6 @@ public class User {
     private String avatar;
     @Enumerated(EnumType.STRING) 
     @Column(nullable = false)
-    private Role role;
-    private boolean enabled;
-    
+    private Role role = Role.N_USER;
+    private boolean enabled = true;
 }
