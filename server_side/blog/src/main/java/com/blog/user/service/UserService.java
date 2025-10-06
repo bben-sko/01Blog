@@ -1,6 +1,10 @@
 package com.blog.user.service;
 
+
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.blog.auth.dto.RegisterRequest;
@@ -12,6 +16,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User registUser(RegisterRequest r) {
         if(userRepository.existsByUsername(r.getUsername())) {
@@ -25,8 +31,12 @@ public class UserService {
         user.setEmail(r.getEmail());
         user.setName(r.getName());
         user.setBio(r.getBio());
-        user.setPassword(r.getPassword());
+        String encodedPassword =  passwordEncoder.encode(r.getPassword());
+        user.setPassword(encodedPassword);
         return userRepository.save(user);
     }
+
+  
+    
     
 }
