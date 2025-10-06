@@ -1,9 +1,9 @@
 package com.blog.auth.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
+@Data
 @AllArgsConstructor
 public class AuthResponse {
     private String token;
