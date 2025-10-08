@@ -1,13 +1,17 @@
 package com.blog.config;
 
-import java.security.Key;
 import java.util.Date;
+import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetails;
 
 
 @Configuration
@@ -18,12 +22,26 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private Long jwtexpiration;
 
-    private Key GenerateSigningKey(){
+    private SecretKey GenerateSigningKey(){
         return Keys.hmacShaKeyFor(secretKey.getBytes());
+    }
+
+    public <T> T getData(String token, Function<Claims, T> claimsResolve) {
+        final Claims claims = Jwts.parser().verifyWith(GenerateSigningKey()).build().parseSignedClaims(token).getPayload();
+        return claimsResolve.apply(claims);
     }
     
     public String generateToken(String username) { 
          return Jwts.builder().subject(username).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + jwtexpiration)).signWith(GenerateSigningKey()).compact();
+    }
+
+    public Boolean IsExpared(String token){
+        return getData(token, Claims::getExpiration).before(new Date());
+    };
+
+    public boolean validatetoken(String token, UserDetails userDetails){
+        final String user = getData(token, Claims::getSubject);
+        return (user.equals(userDetails.getUsername())) && !IsExpared(token);
     }
     
 }
