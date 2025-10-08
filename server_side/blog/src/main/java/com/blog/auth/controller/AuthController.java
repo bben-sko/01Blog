@@ -45,38 +45,39 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> Register(@Valid @RequestBody RegisterRequest user) {
+        System.out.println("gg");
         try {
             UserService.registUser(user);
             return ResponseEntity.status(HttpStatus.OK).body("success");
         } catch (Exception e) {
-              return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
         }
     }
-
+    
     @PostMapping("/login")
-    public ResponseEntity<?> Login(@Valid @RequestBody LoginRequest user) {
+    public ResponseEntity<?> Login( @RequestBody LoginRequest user) {
           
-      try {
-        if(!userRepository.existsByEmail(user.getUserEmail()) && !userRepository.existsByUsername(user.getUserEmail())){
-            return ResponseEntity.status(404).body("Email not exists");
-        }
-        Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
-        if (!Username.isPresent()) {
-            Username = userRepository.findByUsername(user.getUserEmail());
-        }
-        // if (!Username.get().get) {
-        //     throw new RuntimeException("Account not activated");
-        // }
-        String token = jwtService.generateToken(Username.get().getUsername());
-        if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
-            return ResponseEntity.status(404).body("password incurrect");
-        }
-        AuthResponse response = new AuthResponse(token);
-        return  ResponseEntity.status(HttpStatus.OK).body(response);
-      }  catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
-      }
-      
+    //   try {
+    //     if(!userRepository.existsByEmail(user.getUserEmail()) && !userRepository.existsByUsername(user.getUserEmail())){
+    //         return ResponseEntity.status(HttpStatus.OK).body("Email not exists");
+    //     }
+    //     Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
+    //     if (!Username.isPresent()) {
+    //         Username = userRepository.findByUsername(user.getUserEmail());
+    //     }
+    //     // if (!Username.get().get) {
+    //     //     throw new RuntimeException("Account not activated");
+    //     // }
+    //     // String token = jwtService.generateToken(Username.get().getUsername());
+    //     // if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
+    //     //     return ResponseEntity.status(HttpStatus.OK).body("password incurrect");
+    //     // }
+    //     // AuthResponse response = new AuthResponse(token);
+    //     return  ResponseEntity.status(HttpStatus.OK).body("response");
+    //   }  catch (Exception e){
+    //         return ResponseEntity.status(HttpStatus.OK).body("error message: "+e.getMessage());  
+    //   }
+      return ResponseEntity.status(HttpStatus.OK).body("error message: ");
     }
 
 

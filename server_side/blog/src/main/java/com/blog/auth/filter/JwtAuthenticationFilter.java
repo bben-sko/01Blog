@@ -24,6 +24,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Component
 public class JwtAuthenticationFilter  extends OncePerRequestFilter {
 
     @Autowired
@@ -31,14 +32,18 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-   @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filter) throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(
+            @NonNull HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
         final String auString = request.getHeader("Autorization");
         final String jwt;
         final String userName;
 
         if (auString == null || !auString.startsWith("Bearer ")) {
-            filter.doFilter(request, response);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -74,7 +79,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         }
         
         // Continue with the filter chain
-        filter.doFilter(request,response);
+        filterChain.doFilter(request,response);
 
     }
 }
