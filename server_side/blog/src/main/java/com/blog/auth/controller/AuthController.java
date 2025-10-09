@@ -40,55 +40,30 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
 
-    // AuthController(UserService UserService){
-    //     this.UserService = UserService;
-    // }
+    AuthController(UserService UserService){
+        this.UserService = UserService;
+    }
 
 
-    // @PostMapping(value = "/register")
-    // public ResponseEntity<?> Register( @RequestBody RegisterRequest user) {
-    //     System.out.println("gg");
-    //     try {
-    //         UserService.registUser(user);
-    //         return ResponseEntity.status(HttpStatus.OK).body("success");
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
-    //     }
-    // }
-   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> register(@RequestBody RegisterRequest user) {
-        return ResponseEntity.ok("success");
-        // try {
-        //     // your registration logic
-        //     return ResponseEntity.ok("success");
-        // } catch (Exception e) {
-        //     return ResponseEntity.badRequest().body("error message: " + e.getMessage());
-        // }
+    @PostMapping("/register")
+    public ResponseEntity<?> Register(@Valid @RequestBody RegisterRequest user) {
+        try {
+            UserService.registUser(user);
+            return ResponseEntity.status(HttpStatus.OK).body("success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
+        }
     }
 
     
     @PostMapping("/login")
-    public ResponseEntity<?> Login( @RequestBody LoginRequest user) {
+    public ResponseEntity<?> Login(@Valid @RequestBody LoginRequest user) {
           
       try {
-        if(!userRepository.existsByEmail(user.getUserEmail()) && !userRepository.existsByUsername(user.getUserEmail())){
-            return ResponseEntity.status(HttpStatus.OK).body("Email not exists");
-        }
-        Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
-        if (!Username.isPresent()) {
-            Username = userRepository.findByUsername(user.getUserEmail());
-        }
-        // if (!Username.get()) {
-        //     throw new RuntimeException("Account not activated");
-        // }
-        String token = jwtService.generateToken(Username.get().getUsername());
-        if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
-            return ResponseEntity.status(HttpStatus.OK).body("password incurrect");
-        }
-        AuthResponse response = new AuthResponse(token);
+        AuthResponse response = UserService.LoginUser(user);
         return  ResponseEntity.status(HttpStatus.OK).body(response);
       }  catch (Exception e){
-            return ResponseEntity.status(HttpStatus.OK).body("error message: "+e.getMessage());  
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
       }
     }
 
