@@ -20,7 +20,7 @@ import com.blog.auth.filter.JwtAuthenticationFilter;
 import java.util.Arrays;
 
 @Configuration
-@EnableWebSecurity
+//
 public class SecurityConfig {
 
     // private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -45,8 +45,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             // .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                // .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .anyRequest().authenticated()
             );
             // .sessionManagement(session -> session
             //     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

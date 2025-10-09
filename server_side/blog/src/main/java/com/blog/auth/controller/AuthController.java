@@ -2,7 +2,9 @@ package com.blog.auth.controller;
 
 import java.lang.StackWalker.Option;
 import java.util.Optional;
+import org.springframework.http.MediaType;
 
+// import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,46 +40,56 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
 
-    AuthController(UserService UserService){
-        this.UserService = UserService;
-    }
+    // AuthController(UserService UserService){
+    //     this.UserService = UserService;
+    // }
 
 
-    @PostMapping("/register")
-    public ResponseEntity<?> Register(@Valid @RequestBody RegisterRequest user) {
-        System.out.println("gg");
-        try {
-            UserService.registUser(user);
-            return ResponseEntity.status(HttpStatus.OK).body("success");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
-        }
+    // @PostMapping(value = "/register")
+    // public ResponseEntity<?> Register( @RequestBody RegisterRequest user) {
+    //     System.out.println("gg");
+    //     try {
+    //         UserService.registUser(user);
+    //         return ResponseEntity.status(HttpStatus.OK).body("success");
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
+    //     }
+    // }
+   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> register(@RequestBody RegisterRequest user) {
+        return ResponseEntity.ok("success");
+        // try {
+        //     // your registration logic
+        //     return ResponseEntity.ok("success");
+        // } catch (Exception e) {
+        //     return ResponseEntity.badRequest().body("error message: " + e.getMessage());
+        // }
     }
+
     
     @PostMapping("/login")
     public ResponseEntity<?> Login( @RequestBody LoginRequest user) {
           
-    //   try {
-    //     if(!userRepository.existsByEmail(user.getUserEmail()) && !userRepository.existsByUsername(user.getUserEmail())){
-    //         return ResponseEntity.status(HttpStatus.OK).body("Email not exists");
-    //     }
-    //     Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
-    //     if (!Username.isPresent()) {
-    //         Username = userRepository.findByUsername(user.getUserEmail());
-    //     }
-    //     // if (!Username.get().get) {
-    //     //     throw new RuntimeException("Account not activated");
-    //     // }
-    //     // String token = jwtService.generateToken(Username.get().getUsername());
-    //     // if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
-    //     //     return ResponseEntity.status(HttpStatus.OK).body("password incurrect");
-    //     // }
-    //     // AuthResponse response = new AuthResponse(token);
-    //     return  ResponseEntity.status(HttpStatus.OK).body("response");
-    //   }  catch (Exception e){
-    //         return ResponseEntity.status(HttpStatus.OK).body("error message: "+e.getMessage());  
-    //   }
-      return ResponseEntity.status(HttpStatus.OK).body("error message: ");
+      try {
+        if(!userRepository.existsByEmail(user.getUserEmail()) && !userRepository.existsByUsername(user.getUserEmail())){
+            return ResponseEntity.status(HttpStatus.OK).body("Email not exists");
+        }
+        Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
+        if (!Username.isPresent()) {
+            Username = userRepository.findByUsername(user.getUserEmail());
+        }
+        // if (!Username.get()) {
+        //     throw new RuntimeException("Account not activated");
+        // }
+        String token = jwtService.generateToken(Username.get().getUsername());
+        if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
+            return ResponseEntity.status(HttpStatus.OK).body("password incurrect");
+        }
+        AuthResponse response = new AuthResponse(token);
+        return  ResponseEntity.status(HttpStatus.OK).body(response);
+      }  catch (Exception e){
+            return ResponseEntity.status(HttpStatus.OK).body("error message: "+e.getMessage());  
+      }
     }
 
 
