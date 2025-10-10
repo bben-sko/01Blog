@@ -1,0 +1,52 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">Login</h3>
+
+                   
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                [(ngModel)]="dataLogin.userEmail"  required email
+                                [ngClass]="{ 'is-invalid': submitted  }"
+                                placeholder="Enter email">
+                            <!-- <div class="invalid-feedback" *ngIf="submitted ">
+                                <div *ngIf="email.errors?.['required']">Email is required</div>
+                                <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
+                            </div> -->
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                [(ngModel)]="dataLogin.password" required minlength="6"
+                                [ngClass]="{ 'is-invalid': submitted  }"
+                                placeholder="Password">
+                            <!-- <div class="invalid-feedback" *ngIf="submitted ">
+                                <div *ngIf="password.errors?.['required']">Password is required</div>
+                                <div *ngIf="password.errors?.['minlength']">Password must be at least 6 characters</div>
+                            </div> -->
+                        </div>
+
+                        <!-- Remember Me & Forgot Password -->
+                      
+
+                        <!-- Submit Button -->
+                        <button type="submit" (click)="d()" class="btn btn-primary w-100">
+                            Sign In
+                        </button>
+                        <p>{{ error }}</p>
+                        <!-- Register Link -->
+                        <div class="text-center mt-3">
+                            <p class="mb-0">Don't have an account? <a href="#" class="text-decoration-none">Register</a>
+                            </p>
+                        </div>
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

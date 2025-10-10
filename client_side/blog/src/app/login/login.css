@@ -1,0 +1,23 @@
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+.card-title {
+  color: #333;
+  font-weight: 600;
+}
+
+.btn-primary {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555;
+}
+
+a {
+  font-size: 14px;
+}
