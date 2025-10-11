@@ -1,8 +1,9 @@
+
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivationStart, RouterModule } from '@angular/router';
 
 interface loginResponse{
   token: string;
@@ -10,14 +11,20 @@ interface loginResponse{
 }
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
+  selector: 'app-register',
   imports: [CommonModule, FormsModule,RouterModule],
-  templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  templateUrl: './register.html',
+  styleUrl: './register.css'
 })
-export class Login {
-  dataLogin = { userEmail: "", password: "" };
+export class Register {
+  registerData = { 
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+    bio: "",
+    avatar: "",    
+  };
   submitted = false;
   private http = inject(HttpClient);
   error = "";
@@ -25,11 +32,10 @@ export class Login {
   d() {
     this.submitted = true;
     
-    this.http.post<loginResponse>("http://localhost:8080/api/auth/login", this.dataLogin)
+    this.http.post("http://localhost:8080/api/auth/register", this.registerData)
       .subscribe({
         next: (response) => {
-          console.log("Login successful:", response);
-          localStorage.setItem("jwt", response.token )
+          console.log("register successful");
         },
         error: (error) => {
           console.error("Login failed:", error);
