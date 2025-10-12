@@ -1,3 +1,8 @@
 <app-nav-bar />
-<h1>Hello in home </h1>
-<!-- <Nav></Nav> -->
+<div class="posts-container">
+  @for (post of posts; track post.id) {
+    <app-post [post]="post"></app-post>
+  } @empty {
+  <p>No items found</p>
+}
+</div>

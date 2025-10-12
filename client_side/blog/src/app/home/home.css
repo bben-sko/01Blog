@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: #f0f2f5;
+}
+
+.posts-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px 0;
+}

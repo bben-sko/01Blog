@@ -1,0 +1,98 @@
+<div class="post-card">
+  <!-- Post Header -->
+  <div class="post-header">
+    <div class="user-info">
+      <img  src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
+           alt="User avatar" 
+           class="avatar">
+      <div class="user-details">
+        <h3 class="username">{{ post.username }}</h3>
+        <span class="timestamp">{{ post.timestamp | date:'short' }}</span>
+      </div>
+    </div>
+    
+    <!-- Three-dot Menu -->
+    <div class="menu-container">
+      <button class="menu-button" (click)="toggleMenu()">
+        <span class="three-dots">⋮</span>
+      </button>
+      
+      <div class="menu-dropdown" *ngIf="showMenu" (clickOutside)="closeMenu()">
+        <button (click)="reportPost('spam')">
+          <span class="icon">🚫</span> Report as Spam
+        </button>
+        <button (click)="reportPost('inappropriate')">
+          <span class="icon">⚠️</span> Report as Inappropriate
+        </button>
+        <button (click)="reportPost('harassment')">
+          <span class="icon">🛑</span> Report Harassment
+        </button>
+        <button (click)="reportPost('other')">
+          <span class="icon">📝</span> Other
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Content -->
+  <div class="post-content">
+    <p *ngIf="post.content">{{ post.content }}</p>
+    
+    <!-- Image -->
+    <img *ngIf="post.imageUrl" 
+           src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
+         alt="Post image" 
+         class="post-media">
+    
+    <!-- Video -->
+    <video *ngIf="post.videoUrl" 
+           [src]="post.videoUrl" 
+           controls 
+           class="post-media">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Post Actions -->
+  <div class="post-actions">   
+    <div class="action-buttons">
+      <button class="action-btn" 
+              [class.liked]="post.isLiked" 
+              (click)="toggleLike()">
+        <span class="icon">{{ post.isLiked ? '❤️' : '🤍' }}</span>
+        Like
+      </button>
+      
+      <button class="action-btn" (click)="toggleComments()">
+        <span class="icon">💬</span>
+        Comment
+      </button>
+      
+      <button class="action-btn">
+        <span class="icon">📤</span>
+        Share
+      </button>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="comments-section" *ngIf="showComments">
+    <div class="comment" *ngFor="let comment of post.comments">
+      <div class="comment-header">
+        <strong>{{ comment.username }}</strong>
+        <span class="comment-time">{{ comment.timestamp | date:'short' }}</span>
+      </div>
+      <p>{{ comment.content }}</p>
+    </div>
+    
+    <!-- Add Comment -->
+    <div class="add-comment">
+      <input 
+        type="text" 
+        [(ngModel)]="newComment" 
+        placeholder="Write a comment..."
+        (keyup.enter)="addComment()">
+      <button (click)="addComment()">Post</button>
+    </div>
+  </div>
+</div>

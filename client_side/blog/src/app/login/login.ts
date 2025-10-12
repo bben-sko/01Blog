@@ -17,6 +17,7 @@ interface loginResponse{
   styleUrls: ['./login.css']
 })
 export class Login {
+  title = 'Login Page';
   dataLogin = { userEmail: "", password: "" };
   submitted = false;
   private http = inject(HttpClient);

@@ -1,0 +1,178 @@
+<app-nav-bar />
+
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="header-content">
+      <!-- Avatar -->
+      <div class="avatar-section">
+        <img 
+          src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
+          [alt]="user.username"
+          class="profile-avatar">
+      </div>
+
+      <!-- User Info -->
+      <div class="info-section">
+        <div class="username-row">
+          <h1 class="username">{{ user.username }}</h1>
+          <button class="edit-btn" (click)="editProfile()">
+            <span class="icon">✏️</span> Edit Profile
+          </button>
+          <button 
+            class="follow-btn" 
+            [class.following]="user.isFollowing"
+            (click)="toggleFollow()">
+            @if (!user.isFollowing) {
+              <span>➕ Follow</span>
+            } @else {
+              <span>✓ Following</span>
+            }
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat">
+            <span class="stat-number">{{ user.postsCount }}</span>
+            <span class="stat-label">posts</span>
+          </div>
+          <div class="stat" (click)="setActiveTab('followers')">
+            <span class="stat-number">{{ user.followersCount }}</span>
+            <span class="stat-label">followers</span>
+          </div>
+          <div class="stat" (click)="setActiveTab('following')">
+            <span class="stat-number">{{ user.followingCount }}</span>
+            <span class="stat-label">following</span>
+          </div>
+        </div>
+
+        <!-- Name and Bio -->
+        <div class="bio-section">
+          <h2 class="full-name">{{ user.firstName }} {{ user.lastName }}</h2>
+          @if (user.bio) {
+            <p class="bio">{{ user.bio }}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-container">
+    <div class="tabs-nav">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'posts'"
+        (click)="setActiveTab('posts')">
+        <span class="icon">📝</span>
+        POSTS
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'followers'"
+        (click)="setActiveTab('followers')">
+        <span class="icon">👥</span>
+        FOLLOWERS
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'following'"
+        (click)="setActiveTab('following')">
+        <span class="icon">➕</span>
+        FOLLOWING
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Posts Tab -->
+      @if (activeTab === 'posts') {
+        <div class="posts-tab">
+          <div class="posts-grid">
+            <!-- @for (post of userPosts; track post.id) {
+              <app-posts [post]="post"></app-posts>
+            } @empty {
+              <p>No posts to display</p>
+            } -->
+          </div>
+          @if (userPosts.length === 0) {
+            <div class="empty-state">
+              <span class="icon">📝</span>
+              <p>No posts yet</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Followers Tab -->
+      @if (activeTab === 'followers') {
+        <div class="followers-tab">
+          <div class="users-list">
+            @for (follower of followers; track follower.id) {
+              <div class="user-item">
+                <img 
+                  src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
+                  [alt]="follower.username"
+                  class="user-avatar">
+                <div class="user-details">
+                  <h3 class="user-name">{{ follower.firstName }} {{ follower.lastName }}</h3>
+                  <p class="user-username">@{{ follower.username }}</p>
+                  @if (follower.bio) {
+                    <p class="user-bio">{{ follower.bio }}</p>
+                  }
+                </div>
+                <button 
+                  class="follow-btn-small"
+                  [class.following]="follower.isFollowing"
+                  (click)="toggleFollowUser(follower)">
+                  {{ follower.isFollowing ? 'Following' : 'Follow' }}
+                </button>
+              </div>
+            }
+          </div>
+          @if (followers.length === 0) {
+            <div class="empty-state">
+              <span class="icon">👥</span>
+              <p>No followers yet</p>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Following Tab -->
+      @if (activeTab === 'following') {
+        <div class="following-tab">
+          <div class="users-list">
+            @for (followedUser of following; track followedUser.id) {
+              <div class="user-item">
+                <img 
+                  src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
+                  [alt]="followedUser.username"
+                  class="user-avatar">
+                <div class="user-details">
+                  <h3 class="user-name">{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
+                  <p class="user-username">@{{ followedUser.username }}</p>
+                  @if (followedUser.bio) {
+                    <p class="user-bio">{{ followedUser.bio }}</p>
+                  }
+                </div>
+                <button 
+                  class="follow-btn-small following"
+                  (click)="toggleFollowUser(followedUser)">
+                  Following
+                </button>
+              </div>
+            }
+          </div>
+          @if (following.length === 0) {
+            <div class="empty-state">
+              <span class="icon">➕</span>
+              <p>Not following anyone yet</p>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
