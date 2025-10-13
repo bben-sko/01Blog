@@ -49,7 +49,8 @@ public class AuthController {
     public ResponseEntity<?> Register(@Valid @RequestBody RegisterRequest user) {
         try {
             UserService.registUser(user);
-            return ResponseEntity.status(HttpStatus.OK).body("success");
+            AuthResponse r = new AuthResponse(null, "success");
+            return ResponseEntity.status(HttpStatus.OK).body(r);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
         }

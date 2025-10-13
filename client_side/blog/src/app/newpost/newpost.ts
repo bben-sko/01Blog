@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { Post } from '../home/posts/posts';
-import { NavBar } from '../home/nav-bar/nav-bar';
+import { NavBar } from '../shered/nav-bar/nav-bar';
+import { Post } from '../shered/posts/posts';
 
 
 @Component({

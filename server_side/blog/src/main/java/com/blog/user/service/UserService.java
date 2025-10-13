@@ -57,7 +57,7 @@ public class UserService {
             throw new Exception("password incurrect");
         }
         String token = jwtService.generateToken(Username.get().getUsername());
-        AuthResponse response = new AuthResponse(token);
+        AuthResponse response = new AuthResponse(token, null);
         return response;
     }
 

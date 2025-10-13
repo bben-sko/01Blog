@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Post, Posts } from '../home/posts/posts';
-import { NavBar } from '../home/nav-bar/nav-bar';
+import { Post, Posts } from '../shered/posts/posts';
+import { NavBar } from '../shered/nav-bar/nav-bar';
+
 
 
 export interface User {

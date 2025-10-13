@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { NavBar } from './nav-bar/nav-bar';
-import { Posts, Post } from './posts/posts';
+import { NavBar } from '../shered/nav-bar/nav-bar';
+import { Post, Posts } from '../shered/posts/posts';
+
 
 @Component({
   selector: 'app-home',

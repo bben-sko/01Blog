@@ -2,9 +2,9 @@ import { Routes } from '@angular/router';
 import { Login } from './login/login';
 import { Register } from './register/register';
 import { Home } from './home/home';
-import { UsersList } from './add-user/add-user';
 import { NewPost } from './newpost/newpost';
 import { Profile } from './profile/profile';
+import { UsersList } from './shered/add-user/users-list';
 
 export const routes: Routes = [
 
