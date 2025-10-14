@@ -2,10 +2,7 @@ package com.blog.post.model;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.OnDelete;
 
 import com.blog.user.model.User;
 
@@ -42,8 +39,8 @@ public class Post {
 
     private boolean enabled = true;
 
-    @Column(name = "created_at", updatable = false,columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdat ;
+    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt;
 
    
 }

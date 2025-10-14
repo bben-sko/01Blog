@@ -16,15 +16,14 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
-    @Autowired
-    private UserService userService;
+   
 
      @Autowired
     private PostService PostService;
 
     
-    PostController(UserService userService) {
-        this.userService = userService;
+    PostController(PostService PostService) {
+        this.PostService = PostService;
     }
 
     @PostMapping("/create-post")
