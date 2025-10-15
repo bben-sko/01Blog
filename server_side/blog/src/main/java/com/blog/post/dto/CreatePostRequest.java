@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreatePostRequest {
-    @Size(max = 10000, message = "max 10.000 caracter")
+    @Size(min = 1 ,max = 10000, message = "max 10.000 caracter")
     @NotBlank(message = "required content")
     private String content;
 

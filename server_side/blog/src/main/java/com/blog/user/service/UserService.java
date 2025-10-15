@@ -3,10 +3,6 @@ package com.blog.user.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +10,7 @@ import com.blog.auth.dto.AuthResponse;
 import com.blog.auth.dto.LoginRequest;
 import com.blog.auth.dto.RegisterRequest;
 import com.blog.config.JwtService;
+import com.blog.user.model.Role;
 import com.blog.user.model.User;
 import com.blog.user.repository.UserRepository;
 
@@ -56,7 +53,7 @@ public class UserService {
         if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
             throw new Exception("password incurrect");
         }
-        String token = jwtService.generateToken(Username.get().getUsername());
+        String token = jwtService.generateToken(Username.get().getUsername(), Username.get().getRole().toString(),Username.get().getId());
         AuthResponse response = new AuthResponse(token, null);
         return response;
     }

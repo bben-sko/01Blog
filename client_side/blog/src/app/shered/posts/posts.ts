@@ -14,6 +14,10 @@ export interface Post {
   comments: Comment[];
   isLiked: boolean;
 }
+export interface CreatePost {
+  content: string;
+  media: String[];
+}
 
 export interface Comment {
   id: number;

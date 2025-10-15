@@ -3,6 +3,7 @@ package com.blog.post.model;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 
 import com.blog.user.model.User;
 
@@ -38,9 +39,10 @@ public class Post {
     private String content;
 
     private boolean enabled = true;
-
-    @Column(name = "created_at", updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime createdAt;
+    
+    @CreationTimestamp 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt ;
 
    
-}
+}   

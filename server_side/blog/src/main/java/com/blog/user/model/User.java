@@ -11,10 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 
 
-enum Role {
-    ADMIN_USER,
-    N_USER,
-}
+
 
 @Entity
 @Data

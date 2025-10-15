@@ -1,6 +1,7 @@
 package com.blog.config;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -10,9 +11,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication; 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 @Configuration
 public class JwtService {
@@ -31,8 +33,16 @@ public class JwtService {
         return claimsResolve.apply(claims);
     }
     
-    public String generateToken(String username) { 
-         return Jwts.builder().subject(username).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + jwtexpiration)).signWith(GenerateSigningKey()).compact();
+    public String generateToken(String username,String role, Long id) { 
+         return Jwts.builder().subject(username).claim("role", role).claim("id", id).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + jwtexpiration)).signWith(GenerateSigningKey()).compact();
+    }
+    
+    public String extractUserId(String token) {
+        return getData(token, claims -> claims.get("id", String.class));
+    }
+
+    public String extractRole(String token) {
+        return getData(token, claims -> claims.get("role", String.class));
     }
 
     public Boolean IsExpared(String token){
@@ -43,5 +53,6 @@ public class JwtService {
         final String user = getData(token, Claims::getSubject);
         return (user.equals(userDetails.getUsername())) && !IsExpared(token);
     }
+    
     
 }

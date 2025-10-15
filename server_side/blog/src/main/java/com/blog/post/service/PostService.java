@@ -20,12 +20,14 @@ public class PostService {
     
     public Post createPost(String content, String[] media, Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
-        
+
         Post post = new Post();
         post.setContent(content);      
         post.setMedia(media);          
         post.setUser(user);            
         
+        System.out.println(post);
+     
         return postRepository.save(post);
     }
     

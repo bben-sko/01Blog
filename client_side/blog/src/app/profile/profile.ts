@@ -32,7 +32,7 @@ export interface FollowUser {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [Posts, NavBar],
+  imports: [NavBar],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })

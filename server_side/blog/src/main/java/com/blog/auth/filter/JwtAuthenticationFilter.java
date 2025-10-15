@@ -1,6 +1,8 @@
 package com.blog.auth.filter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tomcat.util.net.openssl.ciphers.Protocol;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+
 @Component
+
 public class JwtAuthenticationFilter  extends OncePerRequestFilter {
 
     @Autowired
@@ -32,16 +36,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+  
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain) throws ServletException, IOException {
         final String auString = request.getHeader("Autorization");
-        final String jwt;
         final String userName;
-
+        final String jwt;
+         
         if (auString == null || !auString.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -50,7 +51,8 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         jwt = auString.substring(7);
 
         try {
-
+             String userId = jwtUtil.extractUserId(jwt);
+             String role = jwtUtil.extractRole(jwt);
             userName = jwtUtil.getData(jwt, Claims::getSubject);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
@@ -64,12 +66,14 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                         );
                     
-                    // Set additional details
-                    authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-                    
-                    // Set authentication in security context
+                    // ✅ Set custom details with userId and role
+                    Map<String, Object> details = new HashMap<>();
+                    details.put("userId", userId);
+                    details.put("role", role);
+                    authToken.setDetails(details);
+
+                    // ✅ Don't call WebAuthenticationDetailsSource - it overwrites the Map
+
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
