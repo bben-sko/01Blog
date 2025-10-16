@@ -59,9 +59,13 @@ public class UserService {
     }
 
 
-    public User GetUserInfo(Long userid) throws Exception {
+    public User GetUserInfoByid(Long userid) throws Exception {
         User user = userRepository.findById(userid).orElseThrow(() -> new Exception("User not found"));
         return user;
     }
-
+    
+    public User GetUserInfoByUsername(String username) throws Exception {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
+        return user;
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.auth.service.AuthenticationService;
@@ -54,16 +55,15 @@ public class PostController {
     }
 
 
-    @GetMapping("/getProfilePosts")
-    public ResponseEntity<?> createPost(Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
+    @GetMapping("/user/${username}")
+    public ResponseEntity<?> createPost(@RequestParam String username ,Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
-            List<Post> posts = PostService.GetPostsProfile(userId);
-            User user = UserService.GetUserInfo(userId);
-            return ResponseEntity.ok().body(new ProfileReponse(user, posts,null));
+            List<Post> posts = PostService.GetPostsProfile(username);
+            return ResponseEntity.ok().body(new ProfileReponse(posts,null));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ProfileReponse(null, null, e.getMessage()));
+            return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
         }
     }
 

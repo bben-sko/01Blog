@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
 
@@ -13,9 +13,6 @@ export interface User {
   lastName: string;
   avatar?: string;
   bio?: string;
-  followersCount: number;
-  followingCount: number;
-  postsCount: number;
   isFollowing?: boolean;
 }
 
@@ -50,6 +47,7 @@ export class Profile implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient
   ) {}
+  
 
   ngOnInit() {
     this.loadUserProfile();
@@ -57,61 +55,46 @@ export class Profile implements OnInit {
   }
 
   loadUserProfile() {
-    // Replace with actual API call
-    const username = this.route.snapshot.paramMap.get('username');
-    this.http.get<User>(`http://localhost:8080/api/users/${username}`)
-      .subscribe(data => this.user = data);
+    this.loading = true;
+    const token = localStorage.getItem('token');
 
-    // Mock data
-    this.user = {
-      id: 1,
-      username: 'benso',
-      firstName: 'Benso',
-      lastName: 'Developer',
-      avatar: 'assets/profile-avatar.jpg',
-      bio: 'Full-stack developer 💻 | Java Spring Boot & Angular enthusiast 🚀 | Building cool stuff in Morocco 🇲🇦',
-      followersCount: 1523,
-      followingCount: 342,
-      postsCount: 87,
-      isFollowing: false
-    };
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });    
+    // const username = this.route.snapshot.paramMap.get('username') || "amazighi";
+    const username = "amazighi";
+    console.log(username);
+    this.http.get<User>(`http://localhost:8080/api/users/${username}`, { headers })
+      .subscribe(
+        (data) => {
+          console.log(data);
+          this.user = data;
+        },
+        (error) => {
+          console.error('Error fetching user profile', error);
+        }
+      );
   }
 
   loadUserPosts() {
-    this.userPosts = [
-      {
-        id: 1,
-        username: 'benso',
-        userAvatar: 'assets/profile-avatar.jpg',
-        timestamp: new Date('2025-10-12T14:30:00'),
-        content: 'Just deployed my Spring Boot authentication system! 🔐',
-        imageUrl: 'assets/post1.jpg',
-        likes: 156,
-        comments: [],
-        isLiked: false
-      },
-      {
-        id: 2,
-        username: 'benso',
-        userAvatar: 'assets/profile-avatar.jpg',
-        timestamp: new Date('2025-10-11T10:15:00'),
-        content: 'Learning Angular 20 is amazing! The new control flow syntax is so clean.',
-        likes: 89,
-        comments: [],
-        isLiked: false
-      },
-      {
-        id: 3,
-        username: 'benso',
-        userAvatar: 'assets/profile-avatar.jpg',
-        timestamp: new Date('2025-10-10T16:45:00'),
-        content: 'Working with PostgreSQL and Docker Compose today 🐳',
-        videoUrl: 'assets/demo.mp4',
-        likes: 234,
-        comments: [],
-        isLiked: false
-      }
-    ];
+    // if (this.userPosts.length > 0) return;
+    // const username = this.route.snapshot.paramMap.get('username');
+    // const token = localStorage.getItem('token'); 
+
+    // const headers = new HttpHeaders({
+    //   'Authorization': `Bearer ${token}`
+    // });
+    // this.http.get<Post[]>(`http://localhost:8080/api/post/user/${username}`, { headers })
+    //   .subscribe(
+    //     (data) => {
+    //       console.log(data);
+    //       this.userPosts = data;
+    //     },
+    //     (error) => {
+    //       console.error('Error fetching user posts', error);
+    //     }
+    //   );
+    
   }
 
   loadFollowers() {
@@ -185,7 +168,6 @@ export class Profile implements OnInit {
 
   toggleFollow() {
     this.user.isFollowing = !this.user.isFollowing;
-    this.user.followersCount += this.user.isFollowing ? 1 : -1;
     
     // Send to backend
     // const endpoint = this.user.isFollowing ? 'follow' : 'unfollow';

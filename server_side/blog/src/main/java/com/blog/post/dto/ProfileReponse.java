@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProfileReponse {
-    User user;
     List<Post> posts;
     String error;
 }
