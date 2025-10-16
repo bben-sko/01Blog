@@ -37,8 +37,9 @@ public class JwtService {
          return Jwts.builder().subject(username).claim("role", role).claim("id", id).issuedAt(new Date(System.currentTimeMillis())).expiration(new Date(System.currentTimeMillis() + jwtexpiration)).signWith(GenerateSigningKey()).compact();
     }
     
-    public String extractUserId(String token) {
-        return getData(token, claims -> claims.get("id", String.class));
+    public Long extractUserId(String token) {
+        System.out.println("Extracting user ID from token: ");
+        return getData(token, claims -> claims.get("id", Long.class));
     }
 
     public String extractRole(String token) {

@@ -58,9 +58,9 @@ export class Profile implements OnInit {
 
   loadUserProfile() {
     // Replace with actual API call
-    // const username = this.route.snapshot.paramMap.get('username');
-    // this.http.get<User>(`http://localhost:8080/api/users/${username}`)
-    //   .subscribe(data => this.user = data);
+    const username = this.route.snapshot.paramMap.get('username');
+    this.http.get<User>(`http://localhost:8080/api/users/${username}`)
+      .subscribe(data => this.user = data);
 
     // Mock data
     this.user = {

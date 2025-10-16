@@ -1,8 +1,11 @@
 package com.blog.post.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,7 +16,11 @@ import com.blog.auth.service.AuthenticationService;
 import com.blog.config.JwtService;
 import com.blog.post.dto.CreatePostRequest;
 import com.blog.post.dto.CreatePostResponse;
+import com.blog.post.dto.ProfileReponse;
+import com.blog.post.model.Post;
 import com.blog.post.service.PostService;
+import com.blog.user.model.User;
+import com.blog.user.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -25,7 +32,7 @@ public class PostController {
      @Autowired
     private PostService PostService;
     @Autowired
-    private AuthenticationService authService;
+    private UserService UserService;
     @Autowired
     private JwtService JwtService;
 
@@ -38,15 +45,25 @@ public class PostController {
     public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostRequest post, Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
-            Long userId = Long.parseLong(JwtService.extractUserId(jwt));
-            System.out.println(userId);
-            // String role = authService.getCurrentUserRole();
+            Long userId = JwtService.extractUserId(jwt);
             PostService.createPost(post.getContent(), post.getMedia(), userId);
-           
-
                return ResponseEntity.ok().body(new CreatePostResponse("success", null));
         }catch (Exception e){
              return ResponseEntity.badRequest().body(new CreatePostResponse(null, e.getMessage()));
+        }
+    }
+
+
+    @GetMapping("/getProfilePosts")
+    public ResponseEntity<?> createPost(Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            Long userId = JwtService.extractUserId(jwt);
+            List<Post> posts = PostService.GetPostsProfile(userId);
+            User user = UserService.GetUserInfo(userId);
+            return ResponseEntity.ok().body(new ProfileReponse(user, posts,null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ProfileReponse(null, null, e.getMessage()));
         }
     }
 

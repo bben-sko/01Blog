@@ -1,6 +1,8 @@
 
 package com.blog.post.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,11 @@ public class PostService {
         System.out.println(post);
      
         return postRepository.save(post);
+    }
+
+    public List<Post> GetPostsProfile(Long userId) {
+
+        return postRepository.findByUserId(userId);
     }
     
     public Post updatePost(Long postId, String newContent, String newMedia[]) {
