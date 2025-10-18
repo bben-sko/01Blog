@@ -13,6 +13,6 @@ export const routes: Routes = [
     {path : "register" , component: Register},
     { path: 'newpost', component: NewPost },  
     {path: 'adduser', component: UsersList},
-    {path: 'profile', component: Profile},
+    {path: 'profile/:username', component: Profile},
     {path : "**" , redirectTo : ""},
 ];

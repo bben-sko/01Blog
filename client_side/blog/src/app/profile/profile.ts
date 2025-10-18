@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
+import { isPlatformBrowser } from '@angular/common';
 
 
 
 export interface User {
-  id: number;
+  id: number ;
   username: string;
   firstName: string;
   lastName: string;
@@ -36,156 +37,182 @@ export interface FollowUser {
 export class Profile implements OnInit {
   user!: User;
   activeTab: 'posts' | 'followers' | 'following' = 'posts';
-  
+  username: string | null = null;
   userPosts: Post[] = [];
   followers: FollowUser[] = [];
   following: FollowUser[] = [];
   
-  loading = false;
+  // loading = false;
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient
-  ) {}
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    if(typeof window !== 'undefined'){
+      console.log('Window is defined');
+    }
+    this.user = {
+      id: 1,
+      username: 'john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      avatar: 'assets/default-avatar.png',
+      bio: 'Just another tech enthusiast.',
+      isFollowing: false
+    };
+  }
+  
   
 
   ngOnInit() {
-    this.loadUserProfile();
-    this.loadUserPosts();
-  }
+    this.route.paramMap.subscribe(params => {
+      const username = params.get('username');
 
-  loadUserProfile() {
-    this.loading = true;
-    const token = localStorage.getItem('token');
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });    
-    // const username = this.route.snapshot.paramMap.get('username') || "amazighi";
-    const username = "amazighi";
-    console.log(username);
-    this.http.get<User>(`http://localhost:8080/api/users/${username}`, { headers })
-      .subscribe(
-        (data) => {
-          console.log(data);
-          this.user = data;
-        },
-        (error) => {
-          console.error('Error fetching user profile', error);
+      if (username && !username.includes('.')) {
+        console.log('Profile username from route:', username);
+        console.log('Platform ID:', this.platformId);
+        console.log('isPlatformBrowser:', isPlatformBrowser(this.platformId));
+        if (isPlatformBrowser(this.platformId)) {
+          console.log('Running in browser');
+          this.loadUserProfile(username);
         }
-      );
-  }
-
-  loadUserPosts() {
-    // if (this.userPosts.length > 0) return;
-    // const username = this.route.snapshot.paramMap.get('username');
-    // const token = localStorage.getItem('token'); 
-
-    // const headers = new HttpHeaders({
-    //   'Authorization': `Bearer ${token}`
-    // });
-    // this.http.get<Post[]>(`http://localhost:8080/api/post/user/${username}`, { headers })
-    //   .subscribe(
-    //     (data) => {
-    //       console.log(data);
-    //       this.userPosts = data;
-    //     },
-    //     (error) => {
-    //       console.error('Error fetching user posts', error);
-    //     }
-    //   );
-    
-  }
-
-  loadFollowers() {
-    if (this.followers.length > 0) return;
-    
-    this.followers = [
-      {
-        id: 2,
-        username: 'sarah_dev',
-        firstName: 'Sarah',
-        lastName: 'Johnson',
-        avatar: 'assets/user1.jpg',
-        bio: 'Full-stack developer',
-        isFollowing: true
-      },
-      {
-        id: 3,
-        username: 'mike_codes',
-        firstName: 'Mike',
-        lastName: 'Chen',
-        avatar: 'assets/user2.jpg',
-        bio: 'Angular developer',
-        isFollowing: false
-      },
-      {
-        id: 4,
-        username: 'emma_tech',
-        firstName: 'Emma',
-        lastName: 'Williams',
-        avatar: 'assets/user3.jpg',
-        bio: 'UI/UX Designer',
-        isFollowing: true
       }
-    ];
+    });
   }
 
-  loadFollowing() {
-    if (this.following.length > 0) return;
-    
-    this.following = [
-      {
-        id: 5,
-        username: 'alex_dev',
-        firstName: 'Alex',
-        lastName: 'Martinez',
-        avatar: 'assets/user4.jpg',
-        bio: 'Software Engineer',
-        isFollowing: true
-      },
-      {
-        id: 6,
-        username: 'lisa_codes',
-        firstName: 'Lisa',
-        lastName: 'Anderson',
-        avatar: 'assets/user5.jpg',
-        bio: 'JavaScript enthusiast',
-        isFollowing: true
-      }
-    ];
-  }
+  loadUserProfile(username: string) {
+    const token = localStorage.getItem('jwt');
+    console.log('Loading profile for:', username);
 
-  setActiveTab(tab: 'posts' | 'followers' | 'following') {
-    this.activeTab = tab;
-    
-    if (tab === 'followers') {
-      this.loadFollowers();
-    } else if (tab === 'following') {
-      this.loadFollowing();
+    if (!token) {
+      console.error('No JWT token found');
+      return;
     }
-  }
-
-  toggleFollow() {
-    this.user.isFollowing = !this.user.isFollowing;
+      // Make your API call
+      // this.http.get(`http://localhost:8080/api/users/${username}`, {
+      //   headers: { 'Authorization': `Bearer ${token}` }
+      // }).subscribe({
+      //   next: (data) => {
+      //    console.log(data);
+      //   },
+      //   error: (error) => {
+      //     console.error('Error loading profile:', error);
+      //   }
+      // });
     
-    // Send to backend
-    // const endpoint = this.user.isFollowing ? 'follow' : 'unfollow';
-    // this.http.post(`http://localhost:8080/api/users/${this.user.id}/${endpoint}`, {})
-    //   .subscribe();
   }
 
-  toggleFollowUser(user: FollowUser) {
-    user.isFollowing = !user.isFollowing;
+  loadUserPosts() {}
+  //   // if (this.userPosts.length > 0) return;
+  //   // const username = this.route.snapshot.paramMap.get('username');
+  //   // const token = localStorage.getItem('token'); 
+
+  //   // const headers = new HttpHeaders({
+  //   //   'Authorization': `Bearer ${token}`
+  //   // });
+  //   // this.http.get<Post[]>(`http://localhost:8080/api/post/user/${username}`, { headers })
+  //   //   .subscribe(
+  //   //     (data) => {
+  //   //       console.log(data);
+  //   //       this.userPosts = data;
+  //   //     },
+  //   //     (error) => {
+  //   //       console.error('Error fetching user posts', error);
+  //   //     }
+  //   //   );
     
-    // Send to backend
-    // const endpoint = user.isFollowing ? 'follow' : 'unfollow';
-    // this.http.post(`http://localhost:8080/api/users/${user.id}/${endpoint}`, {})
-    //   .subscribe();
-  }
+  // }
 
-  editProfile() {
-    console.log('Edit profile');
-    // Navigate to edit profile page
-  }
+  loadFollowers() {}
+  //   if (this.followers.length > 0) return;
+    
+  //   this.followers = [
+  //     {
+  //       id: 2,
+  //       username: 'sarah_dev',
+  //       firstName: 'Sarah',
+  //       lastName: 'Johnson',
+  //       avatar: 'assets/user1.jpg',
+  //       bio: 'Full-stack developer',
+  //       isFollowing: true
+  //     },
+  //     {
+  //       id: 3,
+  //       username: 'mike_codes',
+  //       firstName: 'Mike',
+  //       lastName: 'Chen',
+  //       avatar: 'assets/user2.jpg',
+  //       bio: 'Angular developer',
+  //       isFollowing: false
+  //     },
+  //     {
+  //       id: 4,
+  //       username: 'emma_tech',
+  //       firstName: 'Emma',
+  //       lastName: 'Williams',
+  //       avatar: 'assets/user3.jpg',
+  //       bio: 'UI/UX Designer',
+  //       isFollowing: true
+  //     }
+  //   ];
+  // }
+
+  loadFollowing() {}
+  //   if (this.following.length > 0) return;
+    
+  //   this.following = [
+  //     {
+  //       id: 5,
+  //       username: 'alex_dev',
+  //       firstName: 'Alex',
+  //       lastName: 'Martinez',
+  //       avatar: 'assets/user4.jpg',
+  //       bio: 'Software Engineer',
+  //       isFollowing: true
+  //     },
+  //     {
+  //       id: 6,
+  //       username: 'lisa_codes',
+  //       firstName: 'Lisa',
+  //       lastName: 'Anderson',
+  //       avatar: 'assets/user5.jpg',
+  //       bio: 'JavaScript enthusiast',
+  //       isFollowing: true
+  //     }
+  //   ];
+  // }
+
+  setActiveTab(tab: 'posts' | 'followers' | 'following') {}
+  //   this.activeTab = tab;
+    
+  //   if (tab === 'followers') {
+  //     this.loadFollowers();
+  //   } else if (tab === 'following') {
+  //     this.loadFollowing();
+  //   }
+  // }
+
+  toggleFollow() {}
+  //   this.user.isFollowing = !this.user.isFollowing;
+    
+  //   // Send to backend
+  //   // const endpoint = this.user.isFollowing ? 'follow' : 'unfollow';
+  //   // this.http.post(`http://localhost:8080/api/users/${this.user.id}/${endpoint}`, {})
+  //   //   .subscribe();
+  // }
+
+  toggleFollowUser(user: FollowUser) {}
+  //   user.isFollowing = !user.isFollowing;
+    
+  //   // Send to backend
+  //   // const endpoint = user.isFollowing ? 'follow' : 'unfollow';
+  //   // this.http.post(`http://localhost:8080/api/users/${user.id}/${endpoint}`, {})
+  //   //   .subscribe();
+  // }
+
+  editProfile() {}
+  //   console.log('Edit profile');
+  //   // Navigate to edit profile page
+  // }
 }
