@@ -16,7 +16,7 @@
     <!-- Users List -->
     <div class="users-grid" *ngIf="!loading">
       <div class="user-item" *ngFor="let user of users">
-        <div class="user-content" (click)="viewProfile(user.username)">
+        <div class="user-content" >
           <!-- Avatar -->
           <div class="avatar-container">
             <img
@@ -29,9 +29,13 @@
               <p class="user-username">@{{ user.username }}</p>
             
             </div>
-            <button class="follow-btn-small" >
-              <!-- (click)="toggleFollowUser(follower)"> -->
+            <button class="follow-btn-small" 
+              (click)="toggleFollow(user)">
               Follow 
+            </button>
+            <button class="follow-btn-small" 
+              (click)="viewProfile(user.username)">
+              go to profile 
             </button>
           </div>
   

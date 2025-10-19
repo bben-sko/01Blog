@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, NgModule, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NavBar } from '../nav-bar/nav-bar';
 import { Router } from '@angular/router';
 
@@ -52,16 +52,27 @@ export class UsersList implements OnInit {
 
   toggleFollow(user: User) {
     
-    // if (user.isFollowing) {
-    //   user.followers++;
-    //   console.log(`Following ${user.username}`);
-      
-    //   // Send to backend
-    //   // this.http.post(`http://localhost:8080/api/users/${user.id}/follow`, {})
-    //   //   .subscribe({
-    //   //     next: () => console.log('Followed successfully'),
-    //   //     error: (error) => console.error('Error following user:', error)
-    //   //   });
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+      if (!localStorage.getItem('jwt')) {
+        this.router.navigate(['/login']);
+        return;
+      }
+    this.http.post(`http://localhost:8080/api/follow/${user.username}`, {}, { headers })
+        .subscribe({
+          next: () => console.log('Followed successfully'),
+          error: (error) => console.error('Error following user:', error)
+        });
     // } else {
     //   user.followers--;
     //   console.log(`Unfollowed ${user.username}`);

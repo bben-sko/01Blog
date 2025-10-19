@@ -1,22 +1,17 @@
 package com.blog.auth.controller;
 
-import java.lang.StackWalker.Option;
-import java.util.Optional;
-import org.springframework.http.MediaType;
 
 // import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.config.JwtService;
-import com.blog.user.model.User;
 import com.blog.user.repository.UserRepository;
 import com.blog.user.service.UserService;
 
@@ -32,12 +27,7 @@ public class AuthController {
 
     @Autowired
     private UserService UserService;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private UserRepository userRepository;
-     @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
 
     AuthController(UserService UserService){
