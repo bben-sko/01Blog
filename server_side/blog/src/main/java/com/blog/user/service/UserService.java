@@ -1,5 +1,7 @@
 package com.blog.user.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,24 @@ public class UserService {
     public User GetUserInfoByid(Long userid) throws Exception {
         User user = userRepository.findById(userid).orElseThrow(() -> new Exception("User not found"));
         return user;
+    }
+
+    public List<User> GetAllUsers(Long userID) {
+        List<User> users = userRepository.findAll();
+        List<User> userList = new ArrayList<User>();
+        for (User us : users) {
+            if (us.getId().equals(userID) || us.getRole() == Role.ADMIN_USER || us.isEnabled() == false) {
+                continue;
+            }
+            User user = new User();
+            user.setId(us.getId());
+            user.setUsername(us.getUsername());
+            user.setName(us.getName());
+            
+           userList.add(user);
+        }
+
+        return userList;
     }
     
     public User GetUserInfoByUsername(String username) throws Exception {

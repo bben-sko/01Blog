@@ -1,6 +1,7 @@
 package com.blog.user.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +31,31 @@ public class UserController {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
+            Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("id", user.getId());
+                userInfo.put("username", user.getUsername());
+                userInfo.put("email", user.getEmail());
+                userInfo.put("bio", user.getBio());
+                userInfo.put("image", user.getAvatar());
             Map<String, Object> response = new HashMap<>();
-            response.put("userInfo", user);
+            response.put("userInfo", userInfo);
             response.put("isMe", user.getId().equals(userId));
             return ResponseEntity.ok().body(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProfiles(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            Long userId = JwtService.extractUserId(jwt);
+            List<User> user = UserService.GetAllUsers(userId);
+            // Map<String, Object> response = new HashMap<>();
+            // response.put("users", user);
+            return ResponseEntity.ok().body(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

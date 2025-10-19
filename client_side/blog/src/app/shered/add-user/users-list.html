@@ -16,7 +16,7 @@
     <!-- Users List -->
     <div class="users-grid" *ngIf="!loading">
       <div class="user-item" *ngFor="let user of users">
-        <div class="user-content" (click)="viewProfile(user)">
+        <div class="user-content" (click)="viewProfile(user.username)">
           <!-- Avatar -->
           <div class="avatar-container">
             <img
@@ -24,37 +24,17 @@
               [alt]="user.username" class="avatar">
           </div>
           <div class="user-item">
-            <!-- <img
-              src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
-              [alt]="user.username" class="user-avatar"> -->
+           
             <div class="user-details">
-              <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
               <p class="user-username">@{{ user.username }}</p>
-              <!-- @if (user.bio) {
-              <p class="user-bio">{{ user.bio }}</p>
-              } -->
+            
             </div>
-            <button class="follow-btn-small" [class.following]="user.isFollowing">
+            <button class="follow-btn-small" >
               <!-- (click)="toggleFollowUser(follower)"> -->
-              {{ user.isFollowing ? 'Following' : 'Follow' }}
+              Follow 
             </button>
           </div>
-          <!-- User Info -->
-          <!-- <div class="user-info">
-            <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
-            <p class="username">@{{ user.username }}</p>
-            <p class="bio" *ngIf="user.bio">{{ user.bio }}</p>
-          </div>
-        </div> -->
-
-          <!-- Follow Button -->
-          <!-- <button 
-          class="follow-btn"
-          [class.following]="user.isFollowing"
-          (click)="toggleFollow(user)">
-          <span *ngIf="!user.isFollowing">➕ Follow</span>
-          <span *ngIf="user.isFollowing">✓ Following</span>
-        </button> -->
+  
         </div>
 
         <!-- Empty State -->

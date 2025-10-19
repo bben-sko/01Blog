@@ -1,24 +1,17 @@
-import { Component, Inject, NgModule, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ChangeDetectorRef, Component, Inject, NgModule, OnInit, PLATFORM_ID } from '@angular/core';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
-import { isPlatformBrowser } from '@angular/common';
-import { routes } from '../app.routes';
 
-NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: false })],
-  exports: [RouterModule]
-})
+
 
 export interface User {
   id: number ;
   username: string;
-  firstName: string;
-  lastName: string;
   avatar?: string;
   bio?: string;
-  isFollowing?: boolean;
+  isme: boolean;
 }
 
 export interface FollowUser {
@@ -34,7 +27,7 @@ export interface FollowUser {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NavBar],
+  imports: [NavBar, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -50,21 +43,14 @@ export class Profile implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private routenav: Router,
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    private cdr: ChangeDetectorRef
   ) {
     if(typeof window !== 'undefined'){
       console.log('Window is defined');
     }
-    this.user = {
-      id: 1,
-      username: 'john_doe',
-      firstName: 'John',
-      lastName: 'Doe',
-      avatar: 'assets/default-avatar.png',
-      bio: 'Just another tech enthusiast.',
-      isFollowing: false
-    };
+   
   }
   
   
@@ -75,19 +61,16 @@ export class Profile implements OnInit {
 
     if (username && !username.includes('.')) {
       console.log('Profile username from route:', username);
-      console.log('Platform ID:', this.platformId);
-      console.log('isPlatformBrowser:', isPlatformBrowser(this.platformId));
       
-      if (isPlatformBrowser(this.platformId)) {
         console.log('Running in browser');
         this.loadUserProfile(username);
-      }
+      
     }
   });
   }
 
   loadUserProfile(username: string) {
-      if (typeof localStorage === 'undefined') {
+    if (typeof localStorage === 'undefined') {
     console.log('localStorage not available');
     return;
   }
@@ -99,17 +82,29 @@ export class Profile implements OnInit {
     console.error('No JWT token found');
     return;
   }
-      // Make your API call
-      // this.http.get(`http://localhost:8080/api/users/${username}`, {
-      //   headers: { 'Authorization': `Bearer ${token}` }
-      // }).subscribe({
-      //   next: (data) => {
-      //    console.log(data);
-      //   },
-      //   error: (error) => {
-      //     console.error('Error loading profile:', error);
-      //   }
-      // });
+      this.http.get(`http://localhost:8080/api/users/${username}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).subscribe({
+        next: (data) => {
+          this.user = {
+            id: (data as any).userInfo.id,
+            username: (data as any).userInfo.username,
+            avatar: (data as any).userInfo.image,
+            bio: (data as any).userInfo.bio,
+            isme: (data as any).isMe,
+          }
+          this.cdr.detectChanges();
+          console.log('Loaded profile:', this.user);
+        },
+        error: (error) => {
+          console.error('Error loading profile:', error.error);
+          if (error.error === 'User not found') {
+            this.routenav.navigate(['/']);
+          }else {
+            this.routenav.navigate(['/login']);
+          }
+        }
+      });
     
   }
 
