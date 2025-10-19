@@ -1,6 +1,7 @@
 package com.blog.user.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import com.blog.auth.dto.AuthResponse;
 import com.blog.auth.dto.LoginRequest;
 import com.blog.auth.dto.RegisterRequest;
 import com.blog.config.JwtService;
+import com.blog.subscription.repository.SubscriptionRepository;
 import com.blog.user.model.Role;
 import com.blog.user.model.User;
 import com.blog.user.repository.UserRepository;
@@ -25,6 +27,8 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtService jwtService;
+    @Autowired
+    private SubscriptionRepository SubscriptionRepository;
 
     public User registUser(RegisterRequest r) {
         if (userRepository.existsByUsername(r.getUsername())) {
@@ -66,9 +70,9 @@ public class UserService {
         return user;
     }
 
-    public List<User> GetAllUsers(Long userID) {
+    public List<HashMap<String, Object>> GetAllUsers(Long userID) {
         List<User> users = userRepository.findAll();
-        List<User> userList = new ArrayList<User>();
+        List< HashMap<String, Object>> userList = new ArrayList<>();
         for (User us : users) {
             if (us.getId().equals(userID) || us.getRole() == Role.ADMIN_USER || us.isEnabled() == false) {
                 continue;
@@ -77,8 +81,11 @@ public class UserService {
             user.setId(us.getId());
             user.setUsername(us.getUsername());
             user.setName(us.getName());
-            
-           userList.add(user);
+            // user.set
+            HashMap<String, Object> Users = new HashMap<>();
+            Users.put("user", user);
+            Users.put("isfollow", SubscriptionRepository.existsByFollowerIdAndFollowingId(userID, us.getId()));
+           userList.add(Users);
         }
 
         return userList;

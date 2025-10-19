@@ -21,20 +21,20 @@
           <div class="avatar-container">
             <img
               src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
-              [alt]="user.username" class="avatar">
+              [alt]="user.user.username" class="avatar">
           </div>
           <div class="user-item">
            
             <div class="user-details">
-              <p class="user-username">@{{ user.username }}</p>
+              <p class="user-username">@{{ user.user.username }}</p>
             
             </div>
-            <button class="follow-btn-small" 
-              (click)="toggleFollow(user)">
+            <button *ngIf="!user.isfollow" class="follow-btn-small" 
+              (click)="toggleFollow(user.user)">
               Follow 
             </button>
             <button class="follow-btn-small" 
-              (click)="viewProfile(user.username)">
+              (click)="viewProfile(user.user.username)">
               go to profile 
             </button>
           </div>

@@ -36,7 +36,6 @@ public class SubscriptionController {
             @PathVariable String username,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            System.out.println("ssssssssssssssssssssssssssss");
             String jwt = authorizationHeader.substring(7);
             Long currentUserId = JwtService.extractUserId(jwt);
             
@@ -57,9 +56,7 @@ public class SubscriptionController {
             }
             
            
-            System.out.println("Following user: " + userToFollow.getUsername()
-                + " by user: " + currentUser.getUsername());
-            SubscriptionService.createSubscription(currentUser, userToFollow);
+         
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Successfully followed " + username);

@@ -9,6 +9,12 @@ export interface User {
   username: string;
   name: string;
   avatar?: string;
+  isfollowed?: boolean;
+}
+
+export interface Users {
+  user: User;
+  isfollow: boolean;
 }
 
 @Component({
@@ -19,7 +25,7 @@ export interface User {
   styleUrl: './users-list.css'
 })
 export class UsersList implements OnInit {
-  users: User[] = [];
+  users: Users[] = [];
   loading = false;
 
   constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
@@ -34,13 +40,15 @@ export class UsersList implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    this.http.get<User[]>('http://localhost:8080/api/users/all', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
+    this.http.get<Users[]>('http://localhost:8080/api/users/all', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
       .subscribe({
-        next: (data: User[]) => {
+        next: (data: Users[]) => {
           this.loading = false;
           this.users = data;
-          console.log('Loaded users:', this.users);
-          console.log('Number of users loaded:', data);
+          
+          for (const userData of data) {
+            console.log('User:', userData.user.username , 'Is Followed:', userData.isfollow);
+          }
           this.cdr.detectChanges();
         },
         error: (error) => {

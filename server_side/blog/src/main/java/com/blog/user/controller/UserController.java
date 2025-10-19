@@ -52,7 +52,7 @@ public class UserController {
         try {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
-            List<User> user = UserService.GetAllUsers(userId);
+            List<HashMap<String, Object>> user = UserService.GetAllUsers(userId);
             // Map<String, Object> response = new HashMap<>();
             // response.put("users", user);
             return ResponseEntity.ok().body(user);
