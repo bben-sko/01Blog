@@ -1,11 +1,15 @@
-import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, Inject, NgModule, OnInit, PLATFORM_ID } from '@angular/core';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
 import { isPlatformBrowser } from '@angular/common';
+import { routes } from '../app.routes';
 
-
+NgModule({
+  imports: [RouterModule.forRoot(routes, { useHash: false })],
+  exports: [RouterModule]
+})
 
 export interface User {
   id: number ;
@@ -67,28 +71,34 @@ export class Profile implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-      const username = params.get('username');
+    const username = params.get('username');
 
-      if (username && !username.includes('.')) {
-        console.log('Profile username from route:', username);
-        console.log('Platform ID:', this.platformId);
-        console.log('isPlatformBrowser:', isPlatformBrowser(this.platformId));
-        if (isPlatformBrowser(this.platformId)) {
-          console.log('Running in browser');
-          this.loadUserProfile(username);
-        }
+    if (username && !username.includes('.')) {
+      console.log('Profile username from route:', username);
+      console.log('Platform ID:', this.platformId);
+      console.log('isPlatformBrowser:', isPlatformBrowser(this.platformId));
+      
+      if (isPlatformBrowser(this.platformId)) {
+        console.log('Running in browser');
+        this.loadUserProfile(username);
       }
-    });
+    }
+  });
   }
 
   loadUserProfile(username: string) {
-    const token = localStorage.getItem('jwt');
-    console.log('Loading profile for:', username);
+      if (typeof localStorage === 'undefined') {
+    console.log('localStorage not available');
+    return;
+  }
+  
+  const token = localStorage.getItem('jwt');
+  console.log('Loading profile for:', token);
 
-    if (!token) {
-      console.error('No JWT token found');
-      return;
-    }
+  if (!token) {
+    console.error('No JWT token found');
+    return;
+  }
       // Make your API call
       // this.http.get(`http://localhost:8080/api/users/${username}`, {
       //   headers: { 'Authorization': `Bearer ${token}` }

@@ -7,12 +7,14 @@ import { Profile } from './profile/profile';
 import { UsersList } from './shered/add-user/users-list';
 
 export const routes: Routes = [
-
-    {path : "login" , component: Login},
-    {path : "" , component: Home},
-    {path : "register" , component: Register},
-    { path: 'newpost', component: NewPost },  
-    {path: 'adduser', component: UsersList},
-    {path: 'profile/:username', component: Profile},
-    {path : "**" , redirectTo : ""},
+  { path: 'login', component: Login },
+  { path: '', component: Home },
+  { path: 'register', component: Register },
+  { path: 'newpost', component: NewPost },
+  { path: 'adduser', component: UsersList },
+  {
+    path: 'profile/:username',
+    component: Profile, 
+  },
+  { path: '**', redirectTo: '' },
 ];
