@@ -53,9 +53,22 @@ public class UserController {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
             List<HashMap<String, Object>> user = UserService.GetAllUsers(userId);
-            // Map<String, Object> response = new HashMap<>();
-            // response.put("users", user);
             return ResponseEntity.ok().body(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> WhoAmI(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            Long userId = JwtService.extractUserId(jwt);
+            System.out.println("userId: " + userId);
+            User user = UserService.GetUserInfoByid(userId);
+            Map<String, String> response = new HashMap<>();
+            response.put("username", user.getUsername());
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

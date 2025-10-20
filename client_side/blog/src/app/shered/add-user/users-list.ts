@@ -20,7 +20,7 @@ export interface Users {
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [CommonModule,NavBar,],
+  imports: [CommonModule,NavBar],
   templateUrl: './users-list.html',
   styleUrl: './users-list.css'
 })
@@ -47,7 +47,7 @@ export class UsersList implements OnInit {
           this.users = data;
           
           for (const userData of data) {
-            console.log('User:', userData.user.username , 'Is Followed:', userData.isfollow);
+            console.log('User:', userData.user.username, 'Is Followed:', userData.isfollow);
           }
           this.cdr.detectChanges();
         },
@@ -58,7 +58,7 @@ export class UsersList implements OnInit {
       });
   }
 
-  toggleFollow(user: User) {
+  toggleFollow(user: Users) {
     
     const token = localStorage.getItem('jwt');
 
@@ -67,7 +67,7 @@ export class UsersList implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
+    console.log('Toggling follow for user:', user.user.username, 'Currently followed:', user.isfollow);
     // Create headers with Authorization
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
@@ -76,22 +76,29 @@ export class UsersList implements OnInit {
         this.router.navigate(['/login']);
         return;
       }
-    this.http.post(`http://localhost:8080/api/follow/${user.username}`, {}, { headers })
+    if (!user.isfollow) {
+      this.http.post(`http://localhost:8080/api/follow/${user.user.username}`, {}, { headers })
         .subscribe({
-          next: () => console.log('Followed successfully'),
+          next: (a) => { user.isfollow = true;
+            console.log(a)
+          },
           error: (error) => console.error('Error following user:', error)
         });
-    // } else {
-    //   user.followers--;
-    //   console.log(`Unfollowed ${user.username}`);
+    } else {
+      console.log(`Unfollowed ${user.user.username}`);
       
-    //   // Send to backend
-    //   // this.http.delete(`http://localhost:8080/api/users/${user.id}/follow`)
-    //   //   .subscribe({
-    //   //     next: () => console.log('Unfollowed successfully'),
-    //   //     error: (error) => console.error('Error unfollowing user:', error)
-    //   //   });
-    // }
+      // Send to backend
+      this.http.delete(`http://localhost:8080/api/follow/${user.user.username}`, { headers })
+        .subscribe({
+          next: (a) => {
+            user.isfollow = false;
+            console.log(a)
+          },
+          error: (error) => console.error('Error unfollowing user:', error)
+        });
+    }
+    this.cdr.detectChanges();
+
   }
 
   viewProfile(User: string) {

@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
+import { Users, UsersList } from '../shered/add-user/users-list';
 
 
 
@@ -198,7 +199,9 @@ export class Profile implements OnInit {
   //   }
   // }
 
-  toggleFollow() {}
+  toggleFollow() {
+    
+  }
   //   this.user.isFollowing = !this.user.isFollowing;
     
   //   // Send to backend
@@ -208,6 +211,46 @@ export class Profile implements OnInit {
   // }
 
   toggleFollowUser(user: FollowUser) {}
+  //   const token = localStorage.getItem('jwt');
+
+  //   if (!token) {
+  //     console.error('No JWT token found');
+  //     this.route.navigate(['/login']);
+  //     return;
+  //   }
+  //   console.log('Toggling follow for user:', user.user.username, 'Currently followed:', user.isfollow);
+  //   // Create headers with Authorization
+  //   const headers = new HttpHeaders({
+  //     'Authorization': `Bearer ${token}`
+  //   });
+  //   if (!localStorage.getItem('jwt')) {
+  //     this.router.navigate(['/login']);
+  //     return;
+  //   }
+  //   if (!user.isfollow) {
+  //     this.http.post(`http://localhost:8080/api/follow/${user.user.username}`, {}, { headers })
+  //       .subscribe({
+  //         next: (a) => {
+  //           user.isfollow = true;
+  //           console.log(a)
+  //         },
+  //         error: (error) => console.error('Error following user:', error)
+  //       });
+  //   } else {
+  //     console.log(`Unfollowed ${user.user.username}`);
+
+  //     // Send to backend
+  //     this.http.delete(`http://localhost:8080/api/follow/${user.user.username}`, { headers })
+  //       .subscribe({
+  //         next: (a) => {
+  //           user.isfollow = false;
+  //           console.log(a)
+  //         },
+  //         error: (error) => console.error('Error unfollowing user:', error)
+  //       });
+  //   }
+  //   this.cdr.detectChanges();
+  // }
   //   user.isFollowing = !user.isFollowing;
     
   //   // Send to backend

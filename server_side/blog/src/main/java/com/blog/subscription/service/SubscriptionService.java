@@ -20,4 +20,9 @@ public class SubscriptionService {
         subscription.setFollowing(following);
         return subscriptionRepository.save(subscription);
     }
+
+
+    public void DeletSubscription(User follower, User following) {
+            subscriptionRepository.deleteByFollowerIdAndFollowingId(follower.getId(), following.getId());
+    }
 }

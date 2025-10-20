@@ -81,7 +81,6 @@ public class UserService {
             user.setId(us.getId());
             user.setUsername(us.getUsername());
             user.setName(us.getName());
-            // user.set
             HashMap<String, Object> Users = new HashMap<>();
             Users.put("user", user);
             Users.put("isfollow", SubscriptionRepository.existsByFollowerIdAndFollowingId(userID, us.getId()));

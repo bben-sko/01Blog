@@ -16,7 +16,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/follow")
-@CrossOrigin(origins = "http://localhost:4200")
 public class SubscriptionController {
     
     @Autowired
@@ -56,11 +55,11 @@ public class SubscriptionController {
             }
             
            
-         
+            SubscriptionService.createSubscription(currentUser, userToFollow);
             
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Successfully followed " + username);
-            response.put("following", true);
+            response.put("following", true);    
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -68,38 +67,39 @@ public class SubscriptionController {
         }
     }
     
-    // Unfollow a user
-    // @DeleteMapping("/{username}")
-    // public ResponseEntity<?> unfollowUser(
-    //         @PathVariable String username,
-    //         @RequestHeader("Authorization") String authorizationHeader) {
-    //     try {
-    //         String jwt = authorizationHeader.substring(7);
-    //         Long currentUserId = JwtService.extractUserId(jwt);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> unfollowUser(
+            @PathVariable String username,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            Long currentUserId = JwtService.extractUserId(jwt);
             
-    //         User currentUser = userService.findById(currentUserId)
-    //             .orElseThrow(() -> new RuntimeException("Current user not found"));
+            User currentUser = userRepository.findById(currentUserId)
+                    .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+            User userToFollow = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User to follow not found"));
             
-    //         User userToUnfollow = userService.findByUsername(username)
-    //             .orElseThrow(() -> new RuntimeException("User not found"));
+            // Check if currently following
+            if (!SubscriptionRepository.existsByFollowerIdAndFollowingId(currentUser.getId(), userToFollow.getId())) {
+                return ResponseEntity.badRequest().body("Not following this user");
+            }
+
+            if (currentUser.getId().equals(userToFollow.getId())) {
+                return ResponseEntity.badRequest().body("Cannot follow yourself");
+            }
+            SubscriptionService.DeletSubscription(currentUser, userToFollow);
             
-    //         // Check if currently following
-    //         if (!currentUser.getFollowing().contains(userToUnfollow)) {
-    //             return ResponseEntity.badRequest().body("Not following this user");
-    //         }
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Successfully unfollowed " + username);
+            response.put("following", false);
             
-    //         currentUser.unfollow(userToUnfollow);
-    //         userService.save(currentUser);
-            
-    //         Map<String, Object> response = new HashMap<>();
-    //         response.put("message", "Successfully unfollowed " + username);
-    //         response.put("following", false);
-            
-    //         return ResponseEntity.ok(response);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     
     // Get followers of a user
     // @GetMapping("/{username}/followers")

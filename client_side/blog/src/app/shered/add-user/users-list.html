@@ -30,8 +30,12 @@
             
             </div>
             <button *ngIf="!user.isfollow" class="follow-btn-small" 
-              (click)="toggleFollow(user.user)">
-              Follow 
+              (click)="toggleFollow(user)">
+              + Follow 
+            </button>
+            <button *ngIf="user.isfollow" class="follow-btn-small" 
+              (click)="toggleFollow(user)">
+               UnFollow
             </button>
             <button class="follow-btn-small" 
               (click)="viewProfile(user.user.username)">
