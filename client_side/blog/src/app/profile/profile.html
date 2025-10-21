@@ -89,11 +89,11 @@
       @if (activeTab === 'posts') {
         <div class="posts-tab">
           <div class="posts-grid">
-            <!-- @for (post of userPosts; track post.id) {
-              <app-posts [post]="post"></app-posts>
+            @for (post of userPosts; track post.id) {
+              <app-post [post]="post"></app-post>
             } @empty {
               <p>No posts to display</p>
-            } -->
+            }
           </div>
           @if (userPosts.length === 0) {
             <div class="empty-state">

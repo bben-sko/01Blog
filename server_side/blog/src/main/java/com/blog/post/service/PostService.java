@@ -33,9 +33,8 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public List<Post> GetPostsProfile(String userId) {
-        User user = userRepository.findByUsername(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return postRepository.findByUserId(user.getId());
+    public List<Post> GetPostsProfile(Long userId) {
+        return postRepository.findByUserId(userId);
     }
     
     public Post updatePost(Long postId, String newContent, String newMedia[]) {

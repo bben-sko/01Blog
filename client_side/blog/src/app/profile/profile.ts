@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Inject, NgModule, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Post, Posts } from '../shered/posts/posts';
+import { Post, Posts, } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
 import { Users, UsersList } from '../shered/add-user/users-list';
 
@@ -25,10 +25,11 @@ export interface FollowUser {
   isFollowing: boolean;
 }
 
+
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NavBar, RouterModule],
+  imports: [NavBar, RouterModule,Posts],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -94,8 +95,8 @@ export class Profile implements OnInit {
             bio: (data as any).userInfo.bio,
             isme: (data as any).isMe,
           }
+          this.loadUserPosts();
           this.cdr.detectChanges();
-          console.log('Loaded profile:', this.user);
         },
         error: (error) => {
           console.error('Error loading profile:', error.error);
@@ -109,26 +110,25 @@ export class Profile implements OnInit {
     
   }
 
-  loadUserPosts() {}
-  //   // if (this.userPosts.length > 0) return;
-  //   // const username = this.route.snapshot.paramMap.get('username');
-  //   // const token = localStorage.getItem('token'); 
+  loadUserPosts() {
+    if (this.userPosts.length > 0) return;
+    const token = localStorage.getItem('jwt'); 
 
-  //   // const headers = new HttpHeaders({
-  //   //   'Authorization': `Bearer ${token}`
-  //   // });
-  //   // this.http.get<Post[]>(`http://localhost:8080/api/post/user/${username}`, { headers })
-  //   //   .subscribe(
-  //   //     (data) => {
-  //   //       console.log(data);
-  //   //       this.userPosts = data;
-  //   //     },
-  //   //     (error) => {
-  //   //       console.error('Error fetching user posts', error);
-  //   //     }
-  //   //   );
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.get<Post[]>(`http://localhost:8080/api/post/profile`, { headers })
+      .subscribe(
+        (data) => {
+          this.userPosts = data;
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          console.error('Error fetching user posts', error);
+        }
+      );
     
-  // }
+  }
 
   loadFollowers() {}
   //   if (this.followers.length > 0) return;
@@ -189,15 +189,15 @@ export class Profile implements OnInit {
   //   ];
   // }
 
-  setActiveTab(tab: 'posts' | 'followers' | 'following') {}
-  //   this.activeTab = tab;
+  setActiveTab(tab: 'posts' | 'followers' | 'following') {
+    this.activeTab = tab;
     
-  //   if (tab === 'followers') {
-  //     this.loadFollowers();
-  //   } else if (tab === 'following') {
-  //     this.loadFollowing();
-  //   }
-  // }
+    if (tab === 'followers') {
+      this.loadFollowers();
+    } else if (tab === 'following') {
+      this.loadFollowing();
+    }
+  }
 
   toggleFollow() {
     

@@ -55,9 +55,9 @@ export class NavBar implements OnInit {
         },
         error: (error) => {
           console.error('Error fetching current user', error);
-          if (error.status === 401) {
+          
             this.router.navigate(['/login']);
-          }
+          
         }
       });
   }
