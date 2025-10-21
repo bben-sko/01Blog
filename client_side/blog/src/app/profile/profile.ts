@@ -122,6 +122,7 @@ export class Profile implements OnInit {
         (data) => {
           this.userPosts = data;
           this.cdr.detectChanges();
+          this.loadFollowers(username);
         },
         (error) => {
           console.error('Error fetching user posts', error);
@@ -130,39 +131,25 @@ export class Profile implements OnInit {
     
   }
 
-  loadFollowers() {}
-  //   if (this.followers.length > 0) return;
+  loadFollowers(username: string) {  
+    if (this.followers.length > 0) return;
+    const token = localStorage.getItem('jwt');
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
     
-  //   this.followers = [
-  //     {
-  //       id: 2,
-  //       username: 'sarah_dev',
-  //       firstName: 'Sarah',
-  //       lastName: 'Johnson',
-  //       avatar: 'assets/user1.jpg',
-  //       bio: 'Full-stack developer',
-  //       isFollowing: true
-  //     },
-  //     {
-  //       id: 3,
-  //       username: 'mike_codes',
-  //       firstName: 'Mike',
-  //       lastName: 'Chen',
-  //       avatar: 'assets/user2.jpg',
-  //       bio: 'Angular developer',
-  //       isFollowing: false
-  //     },
-  //     {
-  //       id: 4,
-  //       username: 'emma_tech',
-  //       firstName: 'Emma',
-  //       lastName: 'Williams',
-  //       avatar: 'assets/user3.jpg',
-  //       bio: 'UI/UX Designer',
-  //       isFollowing: true
-  //     }
-  //   ];
-  // }
+    this.http.get<FollowUser[]>(`http://localhost:8080/api/follow/${username}/followers`, 
+      { headers } ).subscribe({
+      next: (data) => {
+        this.followers = data;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading followers:', error);
+      }
+    });
+  }
 
   loadFollowing() {}
   //   if (this.following.length > 0) return;
@@ -193,7 +180,7 @@ export class Profile implements OnInit {
     this.activeTab = tab;
     
     if (tab === 'followers') {
-      this.loadFollowers();
+      // this.loadFollowers();
     } else if (tab === 'following') {
       this.loadFollowing();
     }
