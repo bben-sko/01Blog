@@ -91,8 +91,6 @@
           <div class="posts-grid">
             @for (post of userPosts; track post.id) {
               <app-post [post]="post"></app-post>
-            } @empty {
-              <p>No posts to display</p>
             }
           </div>
           @if (userPosts.length === 0) {

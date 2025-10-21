@@ -21,9 +21,10 @@ public class PostResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean likedByUser;
+    private boolean ismy;
 
 
-      public static PostResponseDto fromEntity(Post post, boolean likedByUser) {
+      public static PostResponseDto fromEntity(Post post, boolean likedByUser, boolean ismy) {
         PostResponseDto dto = new PostResponseDto();
         dto.setPostId(post.getId());
         dto.setContent(post.getContent());
@@ -31,6 +32,7 @@ public class PostResponseDto {
         dto.setUsername(post.getUser().getUsername());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setLikedByUser(likedByUser);
+        dto.setIsmy(ismy);
         return dto;
     }
 }

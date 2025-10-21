@@ -95,7 +95,7 @@ export class Profile implements OnInit {
             bio: (data as any).userInfo.bio,
             isme: (data as any).isMe,
           }
-          this.loadUserPosts();
+          this.loadUserPosts(username);
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -110,14 +110,14 @@ export class Profile implements OnInit {
     
   }
 
-  loadUserPosts() {
+  loadUserPosts(username: string) {
     if (this.userPosts.length > 0) return;
     const token = localStorage.getItem('jwt'); 
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.get<Post[]>(`http://localhost:8080/api/post/profile`, { headers })
+    this.http.get<Post[]>(`http://localhost:8080/api/post/profile/${username}`, { headers })
       .subscribe(
         (data) => {
           this.userPosts = data;
