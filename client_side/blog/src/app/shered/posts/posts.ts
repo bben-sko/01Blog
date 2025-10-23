@@ -2,18 +2,21 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+// post.interface.ts
 export interface Post {
   id: number;
+  content: string;
+  media: string[];  // Array of media URLs (images/videos)
+  comments: Comment[];
   username: string;
   timestamp: Date;
-  content: string;
-  userAvatar: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  likes: number;
-  comments: Comment[];
-  isLiked: boolean;
+  videoUrl: string;
+  imageUrl: string;
+  updatedAt: Date;
+  isLiked: boolean;  // Changed from isLiked
+  ismy: boolean;  // New field - indicates if post belongs to current user
 }
+
 export interface CreatePost {
   content: string;
   media: String[];
@@ -35,17 +38,17 @@ export interface Comment {
 })
 export class Posts {
   @Input() post!: Post;
-  
   showComments = false;
   showMenu = false;
   newComment = '';
   
-
+constructor() {
+  console.log(this.post);
+}
  
 
   toggleLike() {
     this.post.isLiked = !this.post.isLiked;
-    this.post.likes += this.post.isLiked ? 1 : -1;
   }
 
   toggleComments() {
@@ -56,18 +59,18 @@ export class Posts {
     this.showMenu = !this.showMenu;
   }
 
-  addComment() {
-    if (this.newComment.trim()) {
-      const comment: Comment = {
-        id: this.post.comments.length + 1,
-        username: 'Current User',
-        content: this.newComment,
-        timestamp: new Date()
-      };
-      this.post.comments.push(comment);
-      this.newComment = '';
-    }
-  }
+  addComment() {}
+  //   if (this.newComment.trim()) {
+  //     const comment: Comment = {
+  //       id: this.post.comments.length + 1,
+  //       username: 'Current User',
+  //       content: this.newComment,
+  //       timestamp: new Date()
+  //     };
+  //     this.post.comments.push(comment);
+  //     this.newComment = '';
+  //   }
+  // }
 
   reportPost(reason: string) {
     console.log(`Post reported for: ${reason}`);

@@ -36,6 +36,10 @@ public class PostService {
     public List<Post> GetPostsProfile(Long userId) {
         return postRepository.findByUserId(userId);
     }
+
+    public List<Post> GetPostsHome(Long userId) {
+        return postRepository.Homepage(userId);
+    }
     
     public Post updatePost(Long postId, String newContent, String newMedia[]) {
         Post post = postRepository.findById(postId).orElseThrow();

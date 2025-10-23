@@ -20,9 +20,9 @@ export class Login {
   title = 'Login Page';
   dataLogin = { userEmail: "", password: "" };
   submitted = false;
-  private http = inject(HttpClient);
+  // private http = inject(HttpClient);
   error = "";
-   constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
   d() {
     this.submitted = true;
     

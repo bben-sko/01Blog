@@ -80,5 +80,27 @@ public class PostController {
             return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
         }
     }
+    
+    @GetMapping("/home")
+    public ResponseEntity<?> GetPostshome(Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                throw new Exception("Invalid JWT token.");
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            List<Post> posts = PostService.GetPostsHome(userId);
+
+            List<PostResponseDto> postDtos = posts.stream()
+                    .map(post -> PostResponseDto.fromEntity(post, false, post.getUser().getId().equals(userId)))
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(postDtos);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
+        }
+    }
 
 }
