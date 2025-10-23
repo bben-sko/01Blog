@@ -16,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUserId(Long Id);
 
-    @Query("SELECT p FROM Post p WHERE p.user.id = :userId ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Post p WHERE p.user.id = :userId OR p.user.id IN (SELECT s.following.id FROM Subscription s WHERE s.follower.id = :userId) ORDER BY p.createdAt DESC")
         List<Post> Homepage(@Param("userId") Long username);
 
     List<Post> findByUserIdOrderByCreatedAtDesc(Long Id);
