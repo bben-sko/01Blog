@@ -120,7 +120,7 @@
                 <button 
                   class="follow-btn-small"
                   [class.following]="follower.isFollowing"
-                  (click)="toggleFollowUser(follower)">
+                  (click)="UnFollow(follower)">
                   {{ follower.isFollowing ? 'Following' : 'Follow' }}
                 </button>
               </div>
@@ -140,7 +140,7 @@
         <div class="following-tab">
           <div class="users-list">
             @for (followedUser of following; track followedUser.id) {
-              <div class="user-item">
+                <div class="user-item">
                 <img 
                   src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
                   [alt]="followedUser.username"
@@ -148,14 +148,14 @@
                 <div class="user-details">
                   <h3 class="user-name">{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
                   <p class="user-username">@{{ followedUser.username }}</p>
-                  @if (followedUser.bio) {
-                    <p class="user-bio">{{ followedUser.bio }}</p>
-                  }
+                  
                 </div>
                 <button 
-                  class="follow-btn-small following"
-                  (click)="toggleFollowUser(followedUser)">
-                  Following
+                  class="follow-btn-small"
+                  [class.following]="true"
+                  (click)="UnFollow(followedUser)"
+                  >
+                  {{ followedUser.isFollowing ? 'Following' : 'Follow' }}
                 </button>
               </div>
             }

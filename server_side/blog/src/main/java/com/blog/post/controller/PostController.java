@@ -68,9 +68,7 @@ public class PostController {
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
             List<Post> posts = PostService.GetPostsProfile(user.getId());
-            if (posts.isEmpty()) {
-                throw new Exception("No posts found for this user.");
-            }
+         
             List<PostResponseDto> postDtos = posts.stream()
                     .map(post -> PostResponseDto.fromEntity(post, false, post.getUser().getId().equals(userId)))
                     .collect(Collectors.toList());

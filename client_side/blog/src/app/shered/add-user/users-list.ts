@@ -67,7 +67,6 @@ export class UsersList implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    console.log('Toggling follow for user:', user.user.username, 'Currently followed:', user.isfollow);
     // Create headers with Authorization
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`

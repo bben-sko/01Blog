@@ -66,6 +66,8 @@ export class Profile implements OnInit {
       
         console.log('Running in browser');
         this.loadUserProfile(username);
+      this.loadFollowers(username);
+      this.toggleFollowUser(username)
       
     }
   });
@@ -122,12 +124,13 @@ export class Profile implements OnInit {
         (data) => {
           this.userPosts = data;
           this.cdr.detectChanges();
-          this.loadFollowers(username);
+          
         },
         (error) => {
           console.error('Error fetching user posts', error);
         }
       );
+   
     
   }
 
@@ -143,6 +146,7 @@ export class Profile implements OnInit {
       { headers } ).subscribe({
       next: (data) => {
         this.followers = data;
+          this.toggleFollowUser(username)
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -151,39 +155,10 @@ export class Profile implements OnInit {
     });
   }
 
-  loadFollowing() {}
-  //   if (this.following.length > 0) return;
-    
-  //   this.following = [
-  //     {
-  //       id: 5,
-  //       username: 'alex_dev',
-  //       firstName: 'Alex',
-  //       lastName: 'Martinez',
-  //       avatar: 'assets/user4.jpg',
-  //       bio: 'Software Engineer',
-  //       isFollowing: true
-  //     },
-  //     {
-  //       id: 6,
-  //       username: 'lisa_codes',
-  //       firstName: 'Lisa',
-  //       lastName: 'Anderson',
-  //       avatar: 'assets/user5.jpg',
-  //       bio: 'JavaScript enthusiast',
-  //       isFollowing: true
-  //     }
-  //   ];
-  // }
+  
 
   setActiveTab(tab: 'posts' | 'followers' | 'following') {
     this.activeTab = tab;
-    
-    if (tab === 'followers') {
-      // this.loadFollowers();
-    } else if (tab === 'following') {
-      this.loadFollowing();
-    }
   }
 
   toggleFollow() {
@@ -197,57 +172,79 @@ export class Profile implements OnInit {
   //   //   .subscribe();
   // }
 
-  toggleFollowUser(user: FollowUser) {}
-  //   const token = localStorage.getItem('jwt');
+  toggleFollowUser(username: string) {
+    if (this.followers.length > 0) return;
+    const token = localStorage.getItem('jwt');
 
-  //   if (!token) {
-  //     console.error('No JWT token found');
-  //     this.route.navigate(['/login']);
-  //     return;
-  //   }
-  //   console.log('Toggling follow for user:', user.user.username, 'Currently followed:', user.isfollow);
-  //   // Create headers with Authorization
-  //   const headers = new HttpHeaders({
-  //     'Authorization': `Bearer ${token}`
-  //   });
-  //   if (!localStorage.getItem('jwt')) {
-  //     this.router.navigate(['/login']);
-  //     return;
-  //   }
-  //   if (!user.isfollow) {
-  //     this.http.post(`http://localhost:8080/api/follow/${user.user.username}`, {}, { headers })
-  //       .subscribe({
-  //         next: (a) => {
-  //           user.isfollow = true;
-  //           console.log(a)
-  //         },
-  //         error: (error) => console.error('Error following user:', error)
-  //       });
-  //   } else {
-  //     console.log(`Unfollowed ${user.user.username}`);
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
 
-  //     // Send to backend
-  //     this.http.delete(`http://localhost:8080/api/follow/${user.user.username}`, { headers })
-  //       .subscribe({
-  //         next: (a) => {
-  //           user.isfollow = false;
-  //           console.log(a)
-  //         },
-  //         error: (error) => console.error('Error unfollowing user:', error)
-  //       });
-  //   }
-  //   this.cdr.detectChanges();
-  // }
+    this.http.get<FollowUser[]>(`http://localhost:8080/api/follow/${username}/following`,
+      { headers }).subscribe({
+        next: (data) => {
+          this.following = data;
+          console.log(this.following)
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error loading followers:', error);
+        }
+      });
+    this.cdr.detectChanges();
+  }
   //   user.isFollowing = !user.isFollowing;
     
-  //   // Send to backend
-  //   // const endpoint = user.isFollowing ? 'follow' : 'unfollow';
-  //   // this.http.post(`http://localhost:8080/api/users/${user.id}/${endpoint}`, {})
-  //   //   .subscribe();
+  //   Send to backend
+  //   const endpoint = user.isFollowing ? 'follow' : 'unfollow';
+  //   this.http.post(`http://localhost:8080/api/users/${user.id}/${endpoint}`, {})
+  //     .subscribe();
   // }
 
   editProfile() {}
   //   console.log('Edit profile');
   //   // Navigate to edit profile page
   // }
+  UnFollow(FollowUser: FollowUser) {
+
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      this.routenav.navigate(['/login']);
+      return;
+    }
+    // Create headers with Authorization
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    if (!localStorage.getItem('jwt')) {
+      this.routenav.navigate(['/login']);
+      return;
+    }
+    if (!FollowUser.isFollowing) {
+      this.http.post(`http://localhost:8080/api/follow/${FollowUser.username}`, {}, { headers })
+        .subscribe({
+          next: (a) => {
+            FollowUser.isFollowing = true;
+            console.log(a)
+          },
+          error: (error) => console.error('Error following user:', error)
+        });
+    } else {
+      console.log(`Unfollowed ${FollowUser.username}`);
+
+      // Send to backend
+      this.http.delete(`http://localhost:8080/api/follow/${FollowUser.username}`, { headers })
+        .subscribe({
+          next: (a) => {
+            FollowUser.isFollowing = false;
+            console.log(a)
+          },
+          error: (error) => console.error('Error unfollowing user:', error)
+        });
+    }
+    this.cdr.detectChanges();
+
+  }
 }
