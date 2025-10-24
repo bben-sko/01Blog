@@ -1,0 +1,130 @@
+<!-- post-detail.component.html -->
+<div class="post-detail-container">
+  <div class="post-card" *ngIf="post">
+    <!-- Post Header -->
+    <div class="post-header">
+      <div class="user-info">
+        <img src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg"
+             alt="User avatar" 
+             class="avatar">
+        <div class="user-details">
+          <h3 class="username">{{ post.username }}</h3>
+          <span class="timestamp">{{ post.createdAt | date:'short' }}</span>
+        </div>
+      </div>
+      
+      <!-- Three-dot Menu -->
+      <div class="menu-container">
+        <button class="menu-button" (click)="toggleMenu()">
+          <span class="three-dots">⋮</span>
+        </button>
+        
+        <div class="menu-dropdown" *ngIf="showMenu">
+          <button (click)="reportPost('spam')">
+            <span class="icon">🚫</span> Report as Spam
+          </button>
+          <button (click)="reportPost('inappropriate')">
+            <span class="icon">⚠️</span> Report as Inappropriate
+          </button>
+          <button (click)="reportPost('harassment')">
+            <span class="icon">🛑</span> Report Harassment
+          </button>
+          <button (click)="reportPost('other')">
+            <span class="icon">📝</span> Other
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post Content -->
+    <div class="post-content">
+      <p *ngIf="post.content">{{ post.content }}</p>
+      
+      <!-- Media Display -->
+      <div *ngIf="post.media && post.media.length > 0" class="media-container">
+        <ng-container *ngFor="let mediaUrl of post.media">
+          <!-- Image -->
+          <img *ngIf="isImage(mediaUrl)" 
+               [src]="mediaUrl"
+               alt="Post image" 
+               class="post-media">
+          
+          <!-- Video -->
+          <video *ngIf="isVideo(mediaUrl)" 
+                 [src]="mediaUrl" 
+                 controls 
+                 class="post-media">
+            Your browser does not support the video tag.
+          </video>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Post Actions -->
+    <div class="post-actions">   
+      <div class="action-buttons">
+        <button class="action-btn" 
+                [class.liked]="post.likedByUser" 
+                (click)="toggleLike()">
+          <span class="icon">{{ post.likedByUser ? '❤️' : '🤍' }}</span>
+          Like
+        </button>
+        
+        <button class="action-btn" (click)="toggleComments()">
+          <span class="icon">💬</span>
+          Comment ({{ post.commentCount }})
+        </button>
+        
+        <button class="action-btn">
+          <span class="icon">📤</span>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div class="comments-section" *ngIf="showComments">
+      <h4>Comments</h4>
+      
+      <!-- Comment List -->
+      <div class="comment" *ngFor="let comment of post.comments">
+        <div class="comment-header">
+          <strong>{{ comment.username }}</strong>
+          <span class="comment-time">{{ comment.createdAt | date:'short' }}</span>
+        </div>
+        <p>{{ comment.content }}</p>
+        
+        <!-- Nested Replies -->
+        <div class="replies" *ngIf="comment.replies && comment.replies.length > 0">
+          <div class="reply" *ngFor="let reply of comment.replies">
+            <div class="reply-header">
+              <strong>{{ reply.username }}</strong>
+              <span class="reply-time">{{ reply.createdAt | date:'short' }}</span>
+            </div>
+            <p>{{ reply.content }}</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add Comment -->
+      <div class="add-comment">
+        <input 
+          type="text" 
+          [(ngModel)]="newComment" 
+          placeholder="Write a comment..."
+          (keyup.enter)="addComment()"
+          [disabled]="isSubmitting">
+        <button 
+          (click)="addComment()"
+          [disabled]="!newComment.trim() || isSubmitting">
+          {{ isSubmitting ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="!post">
+    Loading post...
+  </div>
+</div>

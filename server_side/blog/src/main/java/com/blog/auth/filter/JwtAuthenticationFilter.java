@@ -58,7 +58,6 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
             
             if (jwtUtil.validatetoken(userName, userDetails)){
-                // Create authentication token
                     UsernamePasswordAuthenticationToken authToken = 
                         new UsernamePasswordAuthenticationToken(
                             userDetails,
@@ -66,13 +65,11 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                         );
                     
-                    // ✅ Set custom details with userId and role
                     Map<String, Object> details = new HashMap<>();
                     details.put("userId", userId);
                     details.put("role", role);
                     authToken.setDetails(details);
 
-                    // ✅ Don't call WebAuthenticationDetailsSource - it overwrites the Map
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }

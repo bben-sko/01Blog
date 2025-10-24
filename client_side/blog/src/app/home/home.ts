@@ -18,12 +18,10 @@ export class Home implements OnInit {
 ngOnInit(): void {
     this.loadPosts();
 }
-  constructor(private route: ActivatedRoute,
-    private routenav: Router,
+  constructor(
     private http: HttpClient, private cdr: ChangeDetectorRef){}
 loadPosts() {
   const token = localStorage.getItem('jwt');
-  console.log('Loading profile for:', token);
 
   if (!token) {
     console.error('No JWT token found');

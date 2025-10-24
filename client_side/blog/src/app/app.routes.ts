@@ -5,6 +5,7 @@ import { Home } from './home/home';
 import { NewPost } from './newpost/newpost';
 import { Profile } from './profile/profile';
 import { UsersList } from './shered/add-user/users-list';
+import { Singlepost } from './singlepost/singlepost';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'newpost', component: NewPost },
   { path: 'adduser', component: UsersList },
+  { path: 'post/:id', component: Singlepost },
   {
     path: 'profile/:username',
     component: Profile, 

@@ -22,6 +22,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUserIdOrderByCreatedAtDesc(Long Id);
 
     Optional<Post> findByIdAndUserId(Long id, Long Id);
+    
+    @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.id = :postId")
+    Optional<Post> findPostById(@Param("postId") Long postId);
 
     boolean existsByIdAndUserId(Long id, Long Id);
 

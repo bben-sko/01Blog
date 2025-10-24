@@ -37,6 +37,10 @@ public class PostService {
         return postRepository.findByUserId(userId);
     }
 
+    public Post GetSinglePosts(Long userId) {
+        return postRepository.findById(userId).get();
+    }
+
     public List<Post> GetPostsHome(Long userId) {
         return postRepository.Homepage(userId);
     }

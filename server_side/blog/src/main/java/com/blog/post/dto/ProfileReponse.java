@@ -3,7 +3,6 @@ package com.blog.post.dto;
 import java.util.List;
 
 import com.blog.post.model.Post;
-import com.blog.user.model.User;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

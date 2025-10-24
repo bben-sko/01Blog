@@ -31,35 +31,34 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
-   
 
-     @Autowired
+    @Autowired
     private PostService PostService;
     @Autowired
     private UserService UserService;
     @Autowired
     private JwtService JwtService;
 
-    
     PostController(PostService PostService) {
         this.PostService = PostService;
     }
 
     @PostMapping("/createpost")
-    public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostRequest post, Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostRequest post, Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
             PostService.createPost(post.getContent(), post.getMedia(), userId);
-               return ResponseEntity.ok().body(new CreatePostResponse("success", null));
-        }catch (Exception e){
-             return ResponseEntity.badRequest().body(new CreatePostResponse(null, e.getMessage()));
+            return ResponseEntity.ok().body(new CreatePostResponse("success", null));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new CreatePostResponse(null, e.getMessage()));
         }
     }
 
-
     @GetMapping("/profile/{username}")
-    public ResponseEntity<?> GetPosts(@PathVariable String username,Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> GetPosts(@PathVariable String username, Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
@@ -68,11 +67,10 @@ public class PostController {
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
             List<Post> posts = PostService.GetPostsProfile(user.getId());
-         
+
             List<PostResponseDto> postDtos = posts.stream()
                     .map(post -> PostResponseDto.fromEntity(post, false, post.getUser().getId().equals(userId)))
                     .collect(Collectors.toList());
-    
 
             return ResponseEntity.ok(postDtos);
 
@@ -80,7 +78,7 @@ public class PostController {
             return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
         }
     }
-    
+
     @GetMapping("/home")
     public ResponseEntity<?> GetPostshome(Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
@@ -103,4 +101,16 @@ public class PostController {
         }
     }
 
+    @GetMapping("/{Postid}")
+    public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid,Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            // String currentUsername = authentication != null ? authentication.getName() : null;
+            Post post = PostService.GetSinglePosts(Postid);
+            return ResponseEntity.ok(post);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
 }
