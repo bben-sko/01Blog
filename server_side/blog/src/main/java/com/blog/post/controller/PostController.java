@@ -105,11 +105,11 @@ public class PostController {
     public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid,Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // String currentUsername = authentication != null ? authentication.getName() : null;
-            Post post = PostService.GetSinglePosts(Postid);
+            // String currentUsername = authentication != null ? authentication.get() : null;
+            PostResponseDto post = PostService.GetSinglePosts(Postid);
             return ResponseEntity.ok(post);
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(e);
         }
 
     }

@@ -1,4 +1,4 @@
-<!-- post-detail.component.html -->
+<app-nav-bar />
 <div class="post-detail-container">
   <div class="post-card" *ngIf="post">
     <!-- Post Header -->
@@ -7,8 +7,8 @@
         <img src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg"
           alt="User avatar" class="avatar">
         <div class="user-details">
-          <!-- <h3 class="username">{{ post.username }}</h3> -->
-          <h3 class="username">asd</h3>
+          <h3 class="username">{{ post.username }}</h3>
+          <!-- <h3 class="username">asd</h3> -->
 
           <!-- <span class="timestamp">{{ post.createdAt  }}</span> -->
         </div>
@@ -49,19 +49,19 @@
 
     <!-- Post Content -->
     <div class="post-content">
-      <p *ngIf="post.content">ssss</p>
+      <p *ngIf="post.content">{{post.content }}</p>
 
       <!-- Media Display -->
       <div *ngIf="post.media && post.media.length > 0" class="media-container">
-        <ng-container *ngFor="let mediaUrl of post.media">
-          <!-- Image -->
+        <!-- <ng-container *ngFor="let mediaUrl of post.media">
+         
           <img *ngIf="isImage(mediaUrl)" [src]="mediaUrl" alt="Post image" class="post-media">
 
-          <!-- Video -->
+         
           <video *ngIf="isVideo(mediaUrl)" [src]="mediaUrl" controls class="post-media">
             Your browser does not support the video tag.
           </video>
-        </ng-container>
+        </ng-container> -->
       </div>
     </div>
 
@@ -76,11 +76,6 @@
         <button class="action-btn" (click)="toggleComments()">
           <span class="icon">💬</span>
           Comment
-        </button>
-
-        <button class="action-btn">
-          <span class="icon">📤</span>
-          Share
         </button>
       </div>
     </div>
@@ -98,7 +93,7 @@
       <div class="comment" *ngFor="let comment of post.comments">
         <div class="comment-header">
           <strong>{{ comment.username }}</strong>
-          <span class="comment-time">{{ comment.createdAt}}</span>
+          <span class="comment-time">{{ comment}}</span>
         </div>
         <p>{{ comment.content }}</p>
 
@@ -106,21 +101,7 @@
 
 
         <!-- Nested Replies -->
-        <div class="replies" *ngIf="comment.replies && comment.replies.length > 0">
-          <div class="reply" *ngFor="let reply of comment.replies">
-            <div class="reply-header">
-              <strong>{{ reply.username }}</strong>
-              <span class="reply-time">{{ reply.createdAt }}</span>
-            </div>
-            <p>{{ reply.content }}</p>
-
-            <!-- Reply Actions for own replies -->
-            <div class="reply-actions" *ngIf="reply.ismy">
-              <button class="reply-edit-btn" (click)="editComment(reply)">Edit</button>
-              <!-- <button class="reply-delete-btn" (click)="deleteComment(reply)">Delete</button> -->
-            </div>
-          </div>
-        </div>
+       
 
         <!-- Reply Button -->
 
@@ -144,8 +125,8 @@
   </div>
 
   <!-- Error State -->
-  <div class="error" *ngIf="error">
+  <!-- <div class="error" *ngIf="error"> -->
     <!-- <p>{{ error }}</p> -->
     <button (click)="goBack()">Go Back</button>
-  </div>
+  <!-- </div> -->
 </div>

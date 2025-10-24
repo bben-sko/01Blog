@@ -6,6 +6,7 @@ import org.aspectj.apache.bcel.generic.LOOKUPSWITCH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.blog.comment.dto.CommentDto;
 import com.blog.comment.dto.CreateCommentRequest;
 import com.blog.comment.model.Comment;
 import com.blog.comment.repository.CommentRepository;

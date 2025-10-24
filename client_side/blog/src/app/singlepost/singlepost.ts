@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Post } from '../shered/posts/posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../sevice/post.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { NavBar } from '../shered/nav-bar/nav-bar';
 
 interface CreateCommentRequest {
   content: string,
@@ -11,7 +13,7 @@ interface CreateCommentRequest {
 }
 @Component({
   selector: 'app-singlepost',
-  imports: [FormsModule],
+  imports: [CommonModule, FormsModule, NavBar],
   templateUrl: './singlepost.html',
   styleUrl: './singlepost.css'
 })
@@ -29,8 +31,8 @@ export class Singlepost implements OnInit {
     private router: Router,
     private postService: PostService,
     private http: HttpClient,
-    // private commentService: CommentService
-  ) { }
+    private cdr: ChangeDetectorRef
+    ) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -51,12 +53,16 @@ export class Singlepost implements OnInit {
   loadPost(postId: number) {
     this.postService.getPostById(postId).subscribe({
       next: (post) => {
+        console.log(post);
         this.post = post;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading post:', error);
       }
     });
+   
+
   }
 
   toggleMenu() {

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import com.blog.comment.model.Comment;
 import com.blog.post.model.Post;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class PostResponseDto {
     private String username;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<Comment> comments ;
     private boolean likedByUser;
     private boolean ismy;
 

@@ -1,15 +1,22 @@
 
 package com.blog.post.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.blog.comment.dto.CommentDto;
+import com.blog.comment.model.Comment;
+import com.blog.comment.service.CommentService;
+import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
 import com.blog.user.model.User;
 import com.blog.user.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class PostService {
@@ -19,6 +26,8 @@ public class PostService {
     
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentService CommentService;
     
     public Post createPost(String content, String[] media, Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
@@ -37,11 +46,32 @@ public class PostService {
         return postRepository.findByUserId(userId);
     }
 
-    public Post GetSinglePosts(Long userId) {
-        return postRepository.findById(userId).get();
+   @Transactional
+    public PostResponseDto GetSinglePosts(Long postId) {
+        // Use JOIN FETCH to eagerly load user
+        Post post = postRepository.findById(postId)
+            .orElseThrow(() -> new RuntimeException("Post not found"));
+        
+        // Check if user liked the post
+        // boolean likedByUser = false;
+        // if (currentUsername != null) {
+        //     likedByUser = isLikedByUser(postId, currentUsername);
+        // }
+        
+        // Convert to DTO
+        PostResponseDto dto = PostResponseDto.fromEntity(post, true, true);
+        
+        // Add comments
+        List<Comment> comments = CommentService.getCommentPost(postId);
+
+        dto.setComments(comments);
+       
+        
+        return dto;
     }
 
     public List<Post> GetPostsHome(Long userId) {
+        
         return postRepository.Homepage(userId);
     }
     
