@@ -4,20 +4,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Protocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.blog.config.JwtService;
-import com.blog.user.model.User;
 import com.blog.user.service.CustomUserDetailsService;
-import com.blog.user.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.micrometer.common.lang.NonNull;

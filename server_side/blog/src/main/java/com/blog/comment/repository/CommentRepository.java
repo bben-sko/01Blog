@@ -11,6 +11,6 @@ import com.blog.comment.model.Comment;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long>{
-    @Query("SELECT * FROM comments c WHERE c.post_id = :postId")
+    @Query("SELECT c FROM Comment c WHERE c.post.id = :postId ORDER BY c.createdAt DESC")
     List<Comment> findAllByPostId(@Param("postId") Long postId);
 }

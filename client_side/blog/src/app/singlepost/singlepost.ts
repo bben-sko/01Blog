@@ -3,18 +3,19 @@ import { Post } from '../shered/posts/posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../sevice/post.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
-@Component({
-  selector: 'app-singlepost',
-  imports: [],
-  templateUrl: './singlepost.html',
-  styleUrl: './singlepost.css'
-})
+import { FormsModule, NgModel } from '@angular/forms';
 
 interface CreateCommentRequest {
   content: string,
   postId: number
 }
+@Component({
+  selector: 'app-singlepost',
+  imports: [FormsModule],
+  templateUrl: './singlepost.html',
+  styleUrl: './singlepost.css'
+})
+
 
 export class Singlepost implements OnInit {
   post: Post | null = null;
@@ -38,6 +39,15 @@ export class Singlepost implements OnInit {
     });
   }
 
+  deletePost() {
+    if (!this.post) return;
+ 
+  }
+  editPost() {
+    if (!this.post) return;
+    // this.router.navigate(['/edit-post', this.post.postId]);
+  }
+
   loadPost(postId: number) {
     this.postService.getPostById(postId).subscribe({
       next: (post) => {
@@ -45,7 +55,6 @@ export class Singlepost implements OnInit {
       },
       error: (error) => {
         console.error('Error loading post:', error);
-        this.router.navigate(['/home']);
       }
     });
   }
@@ -63,7 +72,13 @@ export class Singlepost implements OnInit {
     // Implement report functionality
     this.closeMenu();
   }
-
+  goBack() {
+    this.router.navigate(['/home']);
+  }
+  editComment(comment: any) {
+    console.log('Editing comment:', comment);
+    // Implement edit comment logic
+  }
   toggleLike() {
     if (!this.post) return;
 
@@ -96,7 +111,7 @@ export class Singlepost implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.post("http://localhost:8080/api/post/home", { headers }, { request } ).subscribe({
+    this.http.post("http://localhost:8080/api/post/home", request,{ headers },  ).subscribe({
       next: (comment) => {
         console.log('Comment added:', comment);
         this.newComment = '';

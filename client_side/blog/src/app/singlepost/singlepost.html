@@ -5,20 +5,21 @@
     <div class="post-header">
       <div class="user-info">
         <img src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg"
-             alt="User avatar" 
-             class="avatar">
+          alt="User avatar" class="avatar">
         <div class="user-details">
-          <h3 class="username">{{ post.username }}</h3>
-          <span class="timestamp">{{ post.createdAt | date:'short' }}</span>
+          <!-- <h3 class="username">{{ post.username }}</h3> -->
+          <h3 class="username">asd</h3>
+
+          <!-- <span class="timestamp">{{ post.createdAt  }}</span> -->
         </div>
       </div>
-      
-      <!-- Three-dot Menu -->
-      <div class="menu-container">
+
+      <!-- Three-dot Menu - only show if it's not user's own post -->
+      <div class="menu-container" *ngIf="!post.ismy">
         <button class="menu-button" (click)="toggleMenu()">
           <span class="three-dots">⋮</span>
         </button>
-        
+
         <div class="menu-dropdown" *ngIf="showMenu">
           <button (click)="reportPost('spam')">
             <span class="icon">🚫</span> Report as Spam
@@ -34,26 +35,30 @@
           </button>
         </div>
       </div>
+
+      <!-- Edit/Delete buttons for own posts -->
+      <div class="post-owner-actions" *ngIf="post.ismy">
+        <button class="edit-btn" (click)="editPost()">
+          <span class="icon">✏️</span> Edit
+        </button>
+        <button class="delete-btn" (click)="deletePost()">
+          <span class="icon">🗑️</span> Delete
+        </button>
+      </div>
     </div>
 
     <!-- Post Content -->
     <div class="post-content">
-      <p *ngIf="post.content">{{ post.content }}</p>
-      
+      <p *ngIf="post.content">ssss</p>
+
       <!-- Media Display -->
       <div *ngIf="post.media && post.media.length > 0" class="media-container">
         <ng-container *ngFor="let mediaUrl of post.media">
           <!-- Image -->
-          <img *ngIf="isImage(mediaUrl)" 
-               [src]="mediaUrl"
-               alt="Post image" 
-               class="post-media">
-          
+          <img *ngIf="isImage(mediaUrl)" [src]="mediaUrl" alt="Post image" class="post-media">
+
           <!-- Video -->
-          <video *ngIf="isVideo(mediaUrl)" 
-                 [src]="mediaUrl" 
-                 controls 
-                 class="post-media">
+          <video *ngIf="isVideo(mediaUrl)" [src]="mediaUrl" controls class="post-media">
             Your browser does not support the video tag.
           </video>
         </ng-container>
@@ -61,20 +66,18 @@
     </div>
 
     <!-- Post Actions -->
-    <div class="post-actions">   
+    <div class="post-actions">
       <div class="action-buttons">
-        <button class="action-btn" 
-                [class.liked]="post.likedByUser" 
-                (click)="toggleLike()">
-          <span class="icon">{{ post.likedByUser ? '❤️' : '🤍' }}</span>
+        <button class="action-btn" [class.liked]="true" (click)="toggleLike()">
+          <span class="icon">{{ true ? '❤️' : '🤍' }}</span>
           Like
         </button>
-        
+
         <button class="action-btn" (click)="toggleComments()">
           <span class="icon">💬</span>
-          Comment ({{ post.commentCount }})
+          Comment
         </button>
-        
+
         <button class="action-btn">
           <span class="icon">📤</span>
           Share
@@ -85,38 +88,49 @@
     <!-- Comments Section -->
     <div class="comments-section" *ngIf="showComments">
       <h4>Comments</h4>
-      
+
+      <!-- No Comments Message -->
+      <div *ngIf="!post.comments || post.comments.length === 0" class="no-comments">
+        <p>No comments yet. Be the first to comment!</p>
+      </div>
+
       <!-- Comment List -->
       <div class="comment" *ngFor="let comment of post.comments">
         <div class="comment-header">
           <strong>{{ comment.username }}</strong>
-          <span class="comment-time">{{ comment.createdAt | date:'short' }}</span>
+          <span class="comment-time">{{ comment.createdAt}}</span>
         </div>
         <p>{{ comment.content }}</p>
-        
+
+        <!-- Comment Actions for own comments -->
+
+
         <!-- Nested Replies -->
         <div class="replies" *ngIf="comment.replies && comment.replies.length > 0">
           <div class="reply" *ngFor="let reply of comment.replies">
             <div class="reply-header">
               <strong>{{ reply.username }}</strong>
-              <span class="reply-time">{{ reply.createdAt | date:'short' }}</span>
+              <span class="reply-time">{{ reply.createdAt }}</span>
             </div>
             <p>{{ reply.content }}</p>
+
+            <!-- Reply Actions for own replies -->
+            <div class="reply-actions" *ngIf="reply.ismy">
+              <button class="reply-edit-btn" (click)="editComment(reply)">Edit</button>
+              <!-- <button class="reply-delete-btn" (click)="deleteComment(reply)">Delete</button> -->
+            </div>
           </div>
         </div>
+
+        <!-- Reply Button -->
+
       </div>
-      
+
       <!-- Add Comment -->
       <div class="add-comment">
-        <input 
-          type="text" 
-          [(ngModel)]="newComment" 
-          placeholder="Write a comment..."
-          (keyup.enter)="addComment()"
+        <input type="text" [(ngModel)]="newComment" placeholder="Write a comment..." (keyup.enter)="addComment()"
           [disabled]="isSubmitting">
-        <button 
-          (click)="addComment()"
-          [disabled]="!newComment.trim() || isSubmitting">
+        <button (click)="addComment()" [disabled]="!newComment.trim() || isSubmitting">
           {{ isSubmitting ? 'Posting...' : 'Post' }}
         </button>
       </div>
@@ -125,6 +139,13 @@
 
   <!-- Loading State -->
   <div class="loading" *ngIf="!post">
-    Loading post...
+    <div class="spinner"></div>
+    <p>Loading post...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error" *ngIf="error">
+    <!-- <p>{{ error }}</p> -->
+    <button (click)="goBack()">Go Back</button>
   </div>
 </div>

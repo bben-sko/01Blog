@@ -6,20 +6,13 @@ import { FormsModule } from '@angular/forms';
 export interface Post {
   id: number;
   content: string;
-  media: string[];  // Array of media URLs (images/videos)
+  media: string[];  
   comments: Comment[];
   username: string;
   timestamp: Date;
-  videoUrl: string;
-  imageUrl: string;
   updatedAt: Date;
   isLiked: boolean;  // Changed from isLiked
   ismy: boolean;  // New field - indicates if post belongs to current user
-}
-
-export interface CreatePost {
-  content: string;
-  media: String[];
 }
 
 export interface Comment {
@@ -28,6 +21,11 @@ export interface Comment {
   content: string;
   timestamp: Date;
 }
+export interface CreatePost {
+  content: string;
+  media: String[];
+}
+
 
 @Component({
   selector: 'app-post',
