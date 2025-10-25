@@ -105,8 +105,12 @@ public class PostController {
     public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid,Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // String currentUsername = authentication != null ? authentication.get() : null;
-            PostResponseDto post = PostService.GetSinglePosts(Postid);
+              String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                ResponseEntity.badRequest().body("Invalid JWT token.");
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            PostResponseDto post = PostService.GetSinglePosts(Postid,userId);
             return ResponseEntity.ok(post);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e);

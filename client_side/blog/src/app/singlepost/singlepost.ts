@@ -79,7 +79,7 @@ export class Singlepost implements OnInit {
     this.closeMenu();
   }
   goBack() {
-    this.router.navigate(['/home']);
+    this.router.navigate(['/']);
   }
   editComment(comment: any) {
     console.log('Editing comment:', comment);
@@ -89,7 +89,7 @@ export class Singlepost implements OnInit {
     if (!this.post) return;
 
     // Call your like service
-    console.log('Toggle like for post:', this.post.id);
+    console.log('Toggle like for post:', this.post.postId);
     this.post.isLiked = !this.post.isLiked;
   }
 
@@ -106,7 +106,7 @@ export class Singlepost implements OnInit {
 
     const request: CreateCommentRequest = {
       content: this.newComment,
-      postId: this.post.id
+      postId: this.post.postId
     }
     const token = localStorage.getItem('jwt');
 
@@ -122,7 +122,7 @@ export class Singlepost implements OnInit {
         console.log('Comment added:', comment);
         this.newComment = '';
         this.isSubmitting = false;
-        this.loadPost(this.post!.id);
+        this.loadPost(this.post!.postId);
       },
       error: (error) => {
         console.error('Error adding comment:', error);

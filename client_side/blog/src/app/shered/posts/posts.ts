@@ -1,15 +1,17 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 // post.interface.ts
 export interface Post {
-  id: number;
+  postId: number;
   content: string;
-  media: string[];  
+  media: string[];
   comments: Comment[];
   username: string;
-  timestamp: Date;
+  createdAt: Date;
   updatedAt: Date;
   isLiked: boolean;  // Changed from isLiked
   ismy: boolean;  // New field - indicates if post belongs to current user
@@ -39,16 +41,47 @@ export class Posts {
   showComments = false;
   showMenu = false;
   newComment = '';
-  
-constructor() {
-  console.log(this.post);
-}
- 
 
-  toggleLike() {
-    this.post.isLiked = !this.post.isLiked;
+  constructor(private router: Router, private http: HttpClient) {
   }
 
+
+  toggleLike() {
+    if (this.post.isLiked) {
+      this.unlike(this.post.postId)
+
+
+    } else {
+      this.like(this.post.postId)
+    }
+    this.post.isLiked = !this.post.isLiked;
+  }
+  like(postId: number) {
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    const params = new HttpParams().set('postId', postId);
+    this.http.post(`/api/likes`, headers, { params });
+  }
+  unlike(postId: number) {
+       const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    const params = new HttpParams().set('postId', postId);
+    this.http.delete(`/api/likes`,{headers ,params });
+  }
   toggleComments() {
     this.showComments = !this.showComments;
   }
@@ -57,7 +90,7 @@ constructor() {
     this.showMenu = !this.showMenu;
   }
 
-  addComment() {}
+  addComment() { }
   //   if (this.newComment.trim()) {
   //     const comment: Comment = {
   //       id: this.post.comments.length + 1,
@@ -78,5 +111,10 @@ constructor() {
 
   closeMenu() {
     this.showMenu = false;
+  }
+
+  getMoreInfo(postid: number) {
+    console.log(postid)
+    this.router.navigate([`/post/${postid}`])
   }
 }
