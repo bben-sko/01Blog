@@ -26,7 +26,7 @@ public class CommentService {
     private  PostRepository PostRepository;
 
     public List<Comment> getCommentPost(Long id) {
-            return commentsR.findAllByPostId(id);
+            return commentsR.findAllByPostIdOrderByCreatedAtDesc(id);
     }   
 
      public Comment createComment(CreateCommentRequest request, Long id) {

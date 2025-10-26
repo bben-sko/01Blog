@@ -7,21 +7,23 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 // post.interface.ts
 export interface Post {
   postId: number;
+  avatar?: string;
   content: string;
   media: string[];
   comments: Comment[];
   username: string;
   createdAt: Date;
   updatedAt: Date;
-  isLiked: boolean;  // Changed from isLiked
+  likedByUser: boolean;  // Changed from isLiked
   ismy: boolean;  // New field - indicates if post belongs to current user
 }
 
 export interface Comment {
   id: number;
   username: string;
+  avatar?: string;
   content: string;
-  timestamp: Date;
+  time: Date;
 }
 export interface CreatePost {
   content: string;
@@ -47,14 +49,14 @@ export class Posts {
 
 
   toggleLike() {
-    if (this.post.isLiked) {
+    if (this.post.likedByUser) {
       this.unlike(this.post.postId)
 
 
     } else {
       this.like(this.post.postId)
     }
-    this.post.isLiked = !this.post.isLiked;
+    this.post.likedByUser = !this.post.likedByUser;
   }
   like(postId: number) {
     const token = localStorage.getItem('jwt');

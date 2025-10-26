@@ -1,54 +1,140 @@
 .navbar {
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 100%;
+  padding: 0;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 12px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 0.75rem 1.25rem;
 }
 
-.navbar-brand h2 {
+/* Brand */
+.brand-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0d6efd;
+  letter-spacing: -0.5px;
+}
+
+.navbar-brand {
+  text-decoration: none;
+  padding: 0;
   margin: 0;
-  font-size: 24px;
-  color: #1877f2;
+  transition: opacity 0.2s;
 }
 
+.navbar-brand:hover {
+  opacity: 0.8;
+}
+
+.navbar-brand:hover .brand-text {
+  color: #0d6efd;
+}
+
+/* Actions */
 .navbar-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+  gap: 0.5rem;
 }
 
-.icon-btn {
-  background: #f0f2f5;
-  border: none;
-  border-radius: 50%;
+/* Icon Buttons */
+.btn-icon {
   width: 40px;
   height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-  
-  &:hover {
-    background: #e4e6eb;
+  transition: all 0.2s ease;
+  color: #495057;
+  font-size: 1.25rem;
+}
+i {
+  color: #212529;
+}
+
+.btn-icon:hover {
+  background-color: #e9ecef;
+  color: #212529;
+  transform: translateY(-1px);
+}
+
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+.btn-icon:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Icons */
+.btn-icon i {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* Notification Badge */
+.badge {
+  font-size: 0.65rem;
+  padding: 0.25em 0.4em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0.5rem 1rem;
   }
   
-  &:active {
-    transform: scale(0.95);
+  .brand-text {
+    font-size: 1.25rem;
+  }
+  
+  .btn-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+  
+  .btn-icon i {
+    font-size: 1.1rem;
+  }
+  
+  .navbar-actions {
+    gap: 0.25rem;
   }
 }
 
-.icon {
-  font-size: 20px;
+@media (max-width: 480px) {
+  .brand-text {
+    font-size: 1.1rem;
+  }
+  
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .navbar {
+    background-color: #d8d8d8 !important;
+  }
+  
+  .brand-text {
+    color: #4d9fff;
+  }
+  
+  .btn-icon {
+    background-color: #ffffff;
+    color: #e9ecef;
+  }
+  
+  .btn-icon:hover {
+    background-color: #3a3a3a;
+    color: #fff;
+  }
 }

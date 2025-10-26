@@ -69,9 +69,9 @@ public class PostService {
         PostResponseDto dto = PostResponseDto.fromEntity(post, likedByUser, false);
         
         // Add comments
-        List<Comment> comments = CommentService.getCommentPost(postId);
+        // List<Comment> comments = CommentService.getCommentPost(postId);
 
-        dto.setComments(comments);
+        // dto.setComments(comments);
        
         
         return dto;

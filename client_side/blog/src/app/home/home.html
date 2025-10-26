@@ -1,6 +1,6 @@
 <app-nav-bar />
 <div class="posts-container">
-  @for (post of posts; track post.id) {
+  @for (post of posts; track post.postId) {
     <app-post [post]="post"></app-post>
   } @empty {
   <p>No items found</p>

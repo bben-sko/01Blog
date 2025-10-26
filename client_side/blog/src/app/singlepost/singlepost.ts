@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Post } from '../shered/posts/posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../sevice/post.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NavBar } from '../shered/nav-bar/nav-bar';
@@ -10,6 +10,15 @@ import { NavBar } from '../shered/nav-bar/nav-bar';
 interface CreateCommentRequest {
   content: string,
   postId: number
+}
+
+interface Comment {
+  commentId: number;
+  content: string;
+  createdAt: string;
+  username: number;
+  avatar?: string;
+  time: Date;
 }
 @Component({
   selector: 'app-singlepost',
@@ -21,10 +30,14 @@ interface CreateCommentRequest {
 
 export class Singlepost implements OnInit {
   post: Post | null = null;
+  comments: Comment[] = [];
   showMenu: boolean = false;
   showComments: boolean = true;
   newComment: string = '';
   isSubmitting: boolean = false;
+  reportText: string = '';
+  reportSubmitted: boolean = false;
+  showReportModal: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,18 +45,42 @@ export class Singlepost implements OnInit {
     private postService: PostService,
     private http: HttpClient,
     private cdr: ChangeDetectorRef
-    ) { }
+  ) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       const postId = +params['id'];
       this.loadPost(postId);
+      this.loadcomments(postId);
     });
   }
 
   deletePost() {
     if (!this.post) return;
- 
+
+  }
+  loadcomments(postId: number) {
+     const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+     this.http.get(`http://localhost:8080/api/comments/${postId}`,  { headers } ).subscribe({
+      next: (comment) => {
+        console.log(comment);
+      
+        this.comments = comment as Comment[]; 
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading post:', error);
+      }
+    });
+     this.cdr.detectChanges();
   }
   editPost() {
     if (!this.post) return;
@@ -61,7 +98,7 @@ export class Singlepost implements OnInit {
         console.error('Error loading post:', error);
       }
     });
-   
+
 
   }
 
@@ -81,23 +118,50 @@ export class Singlepost implements OnInit {
   goBack() {
     this.router.navigate(['/']);
   }
-  editComment(comment: any) {
-    console.log('Editing comment:', comment);
-    // Implement edit comment logic
-  }
-  toggleLike() {
+ 
+  toggleLike(postId: number) {
     if (!this.post) return;
 
-    // Call your like service
-    console.log('Toggle like for post:', this.post.postId);
-    this.post.isLiked = !this.post.isLiked;
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    const params = new HttpParams().set('postId', postId);
+    if (this.post.likedByUser) {
+      this.http.delete(`http://localhost:8080/api/likes`, { headers, params })
+        .subscribe({
+          next: () => {
+            console.log('Post unliked');
+          },
+          error: (error) => {
+            console.error('Error unliking post:', error);
+          }
+        });
+    } else {
+
+      this.http.post(`http://localhost:8080/api/likes`, null, { headers, params })
+        .subscribe({
+          next: () => {
+            console.log('Post liked');
+          },
+          error: (error) => {
+            console.error('Error liking post:', error);
+          }
+        });
+    }
+    this.post.likedByUser = !this.post.likedByUser;
   }
 
   toggleComments() {
     this.showComments = !this.showComments;
   }
 
-  addComment() {
+  addComment(postId: number) {
     if (!this.post || !this.newComment.trim() || this.isSubmitting) {
       return;
     }
@@ -117,12 +181,12 @@ export class Singlepost implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.post("http://localhost:8080/api/post/home", request,{ headers },  ).subscribe({
+    this.http.post(`http://localhost:8080/api/comments`, request, { headers },).subscribe({
       next: (comment) => {
         console.log('Comment added:', comment);
         this.newComment = '';
         this.isSubmitting = false;
-        this.loadPost(this.post!.postId);
+        // this.loadPost(this.post!.postId);
       },
       error: (error) => {
         console.error('Error adding comment:', error);
@@ -130,4 +194,7 @@ export class Singlepost implements OnInit {
       }
     });
   }
+  submitReport(){}
+  closeReportModal() {}
+  openReportModal(){}
 }
