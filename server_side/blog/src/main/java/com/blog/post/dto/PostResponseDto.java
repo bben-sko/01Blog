@@ -30,7 +30,7 @@ public class PostResponseDto {
         PostResponseDto dto = new PostResponseDto();
         dto.setPostId(post.getId());
         dto.setContent(post.getContent());
-        dto.setMedia(post.getMedia() != null ? Arrays.asList(post.getMedia()) : List.of());
+        dto.setMedia(post.getMedia() != null ? post.getMedia() : List.of());
         dto.setUsername(post.getUser().getUsername());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setLikedByUser(likedByUser);

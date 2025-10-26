@@ -1,5 +1,7 @@
 package com.blog.post.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,5 +17,5 @@ public class CreatePostRequest {
     @NotBlank(message = "required content")
     private String content;
 
-    private String[] media;
+    private List<String> media;
 }

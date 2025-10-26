@@ -2,6 +2,7 @@ package com.blog.post.model;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -34,7 +35,7 @@ public class Post {
     private User user;
     
      
-    private String[] media;
+    private List<String> media;
     
     @Column(nullable = false)
     private String content;

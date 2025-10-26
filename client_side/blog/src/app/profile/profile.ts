@@ -227,7 +227,7 @@ export class Profile implements OnInit {
         .subscribe({
           next: (a) => {
             FollowUser.isFollowing = true;
-            console.log(a)
+            this.cdr.detectChanges();
           },
           error: (error) => console.error('Error following user:', error)
         });
@@ -239,12 +239,19 @@ export class Profile implements OnInit {
         .subscribe({
           next: (a) => {
             FollowUser.isFollowing = false;
-            console.log(a)
+            this.cdr.detectChanges();
           },
           error: (error) => console.error('Error unfollowing user:', error)
         });
     }
     this.cdr.detectChanges();
 
+  }
+  GoToProfile(username: string) {
+    this.routenav.navigate([`/profile/${username}`]);
+    this.userPosts = [];
+    this.followers = [];
+    this.following = [];
+    this.ngOnInit();
   }
 }

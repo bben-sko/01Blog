@@ -123,8 +123,8 @@ public class SubscriptionController {
                     followerMap.put("id", follower.getId());
                     followerMap.put("username", follower.getFollower().getUsername());
                     followerMap.put("avatar", follower.getFollower().getAvatar());
-                    followerMap.put("isfollow", SubscriptionRepository.existsByFollowerIdAndFollowingId(follower.getId(), 
-                                currentUser.getId()));
+                    followerMap.put("isFollowing", SubscriptionRepository.existsByFollowerIdAndFollowingId(
+                            currentUser.getId(), follower.getFollower().getId()));
                     return followerMap;
                 })
                 .collect(Collectors.toList());
@@ -155,9 +155,7 @@ public class SubscriptionController {
                         followerMap.put("id", follower.getFollowing().getId());
                         followerMap.put("username", follower.getFollowing().getUsername());
                         followerMap.put("avatar", follower.getFollowing().getAvatar());
-                        followerMap.put("isfollow",
-                                SubscriptionRepository.existsByFollowerIdAndFollowingId(follower.getId(),
-                                        currentUser.getId()));
+                        followerMap.put("isFollowing", true);
                         return followerMap;
                     })
                     .collect(Collectors.toList());
@@ -167,32 +165,4 @@ public class SubscriptionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
-    // // Check if current user is following another user
-    // @GetMapping("/{username}/is-following")
-    // public ResponseEntity<?> isFollowing(
-    //         @PathVariable String username,
-    //         @RequestHeader("Authorization") String authorizationHeader) {
-    //     try {
-    //         String jwt = authorizationHeader.substring(7);
-    //         Long currentUserId = JwtService.extractUserId(jwt);
-            
-    //         User currentUser = userService.findById(currentUserId)
-    //             .orElseThrow(() -> new RuntimeException("Current user not found"));
-            
-    //         User targetUser = userService.findByUsername(username)
-    //             .orElseThrow(() -> new RuntimeException("User not found"));
-            
-    //         boolean isFollowing = currentUser.getFollowing().contains(targetUser);
-            
-    //         Map<String, Object> response = new HashMap<>();
-    //         response.put("isFollowing", isFollowing);
-    //         response.put("followersCount", targetUser.getFollowers().size());
-    //         response.put("followingCount", targetUser.getFollowing().size());
-            
-    //         return ResponseEntity.ok(response);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
 }

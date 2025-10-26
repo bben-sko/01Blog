@@ -1,12 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { NavBar } from '../shered/nav-bar/nav-bar';
-import { CreatePost, Post } from '../shered/posts/posts';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { CommonModule } from "@angular/common";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Component } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { NavBar } from "../shered/nav-bar/nav-bar";
 
 
+type Preview = { url: string; type: string; file: File };
 @Component({
   selector: 'app-new-post',
   standalone: true,
@@ -17,80 +17,64 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
 export class NewPost {
-  postContent: string = '';
-  postErr: string = '';
-  selectedImage: string | null = null;
-  selectedVideo: string | null = null;
-  imagePreview: string | null = null;
-  videoPreview: string | null = null;
-  private http = inject(HttpClient);
+  postContent = '';
+  postErr = '';
+  submitting = false;
 
-  constructor(private router: Router) { }
+  files: File[] = [];
+  previews: Preview[] = [];
 
-  onImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.imagePreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+  constructor(private router: Router, private http: HttpClient) {}
 
-  onVideoSelected(event: any) {
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('video/')) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.videoPreview = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
+  onFilesSelected(evt: Event, kind: 'image' | 'video') {
+    const input = evt.target as HTMLInputElement;
+    if (!input.files) return;
 
-  removeImage() {
-    this.imagePreview = null;
-    this.selectedImage = null;
-  }
+    Array.from(input.files).forEach((f) => {
+      if (kind === 'image' && !f.type.startsWith('image/')) return;
+      if (kind === 'video' && !f.type.startsWith('video/')) return;
 
-  removeVideo() {
-    this.videoPreview = null;
-    this.selectedVideo = null;
-  }
-
-  createPost() {
-
-    if (!this.postContent.trim() && !this.imagePreview && !this.videoPreview) {
-      this.postErr = "Please add some content to your post"
-      return
-    }
-    
-    const newPost: CreatePost = {
-      content: this.postContent,
-      media: [],
-    };
-    const token = localStorage.getItem('jwt');
-    console.log(token)
-    if (token === null) {
-      this.router.navigate(['/login']);
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      this.files.push(f);
+      this.previews.push({ url: URL.createObjectURL(f), type: f.type, file: f });
     });
-    this.http.post("http://localhost:8080/api/post/createpost", newPost, { headers }).subscribe({
-      next: (response) => {
-        this.router.navigate(['/']);
 
-      },
-      error: (e) => {
-        console.log(e)
-        this.postErr = e.err;
-      }
-    })
+    input.value = '';
   }
 
-  cancel() {
-    this.router.navigate(['/']);
+  removeAt(i: number) {
+    const p = this.previews[i];
+    if (p) URL.revokeObjectURL(p.url);
+    this.previews.splice(i, 1);
+    this.files.splice(i, 1);
   }
+
+  // Single submit path using FormData
+  submit() {
+    if (!this.postContent.trim() && this.files.length === 0) {
+      this.postErr = 'Please add some content to your post';
+      return;
+    }
+
+    const token = localStorage.getItem('jwt');
+    if (!token) { this.router.navigate(['/login']); return; }
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    const fd = new FormData();
+    fd.append('content', this.postContent);
+    this.files.forEach(f => fd.append('files', f));
+
+    this.submitting = true;
+    this.http.post('http://localhost:8080/api/post/createpost', fd, { headers })
+      .subscribe({
+        next: () => this.router.navigate(['/']),
+        error: () => {
+          // console.error(err);
+          // this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
+          // this.submitting = false;
+        }
+      });
+  }
+  createPost() {}
+  cancel() { this.router.navigate(['/']); }
 }

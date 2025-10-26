@@ -32,15 +32,15 @@
         <div class="stats-row">
           <div class="stat-item">
             <span class="stat-count">{{ userPosts.length }}</span>
-            <span class="stat-label">  Posts</span>
+            <span class="stat-label" (click)="setActiveTab('posts')">  Posts</span>
           </div>
           <div class="stat-item">
             <span class="stat-count">{{ followers.length }}</span>
-            <span class="stat-label">  Followers</span>
+            <span class="stat-label" (click)="setActiveTab('followers')">  Followers</span>
           </div>
           <div class="stat-item">
-            <span class="stat-count">{{ following.length }}</span> 
-            <span class="stat-label">  Following</span>
+            <span class="stat-count" >{{ following.length }}</span> 
+            <span class="stat-label" (click)="setActiveTab('following')">  Following</span>
           </div>
         </div>
 
@@ -108,9 +108,10 @@
                 <img 
                   src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
                   [alt]="follower.username"
-                  class="user-avatar">
+                  class="user-avatar"
+                  (click)="GoToProfile(follower.username)">
                 <div class="user-details">
-                  <h3 class="user-name">{{ follower.firstName }} {{ follower.lastName }}</h3>
+                  <h3 class="user-name" >{{ follower.firstName }} {{ follower.lastName }}</h3>
                   <p class="user-username">@{{ follower.username }}</p>
                   
                 </div>
@@ -141,7 +142,8 @@
                 <img 
                   src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
                   [alt]="followedUser.username"
-                  class="user-avatar">
+                  class="user-avatar"
+                  (click)="GoToProfile(followedUser.username)">
                 <div class="user-details">
                   <h3 class="user-name">{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
                   <p class="user-username">@{{ followedUser.username }}</p>
@@ -149,7 +151,7 @@
                 </div>
                 <button 
                   class="follow-btn-small"
-                  [class.following]="true"
+                  [class.following]="followedUser.isFollowing"
                   (click)="UnFollow(followedUser)"
                   >
                   {{ followedUser.isFollowing ? 'Following' : 'Follow' }}

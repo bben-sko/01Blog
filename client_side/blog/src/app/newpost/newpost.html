@@ -1,4 +1,5 @@
-<app-nav-bar />
+<app-nav-bar></app-nav-bar>
+
 <div class="new-post-container">
   <div class="new-post-card">
     <!-- Header -->
@@ -6,73 +7,68 @@
       <h2>Create New Post</h2>
       <button class="close-btn" (click)="cancel()">✕</button>
     </div>
-    
-    <div class="" >
-      {{ postErr }}
-    </div>
 
-    <!-- User Info -->
-    <!-- <div class="user-section">
-      <img src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" alt="Your avatar" class="avatar">
-      <div class="user-info">
-        <h3>Current User</h3>
-        <span class="visibility">Public</span>
-      </div>
-    </div> -->
+    <!-- Error / status -->
+    <div class="error" *ngIf="postErr">{{ postErr }}</div>
 
-    <!-- Post Content -->
+    <!-- Composer -->
     <div class="post-content-section">
-      <textarea 
+      <textarea
         [(ngModel)]="postContent"
+        name="content"
         placeholder="What's on your mind?"
         class="post-textarea"
         rows="6">
       </textarea>
 
-      <!-- Image Preview -->
-      <div class="media-preview" *ngIf="imagePreview">
-        <button class="remove-media-btn" (click)="removeImage()">✕</button>
-        <img [src]="imagePreview" alt="Preview" class="preview-image">
-      </div>
+      <!-- Media previews grid -->
+      <div class="grid-previews" *ngIf="previews?.length">
+        <div class="media-preview" *ngFor="let m of previews; let i = index">
+          <button type="button" class="remove-media-btn" (click)="removeAt(i)">✕</button>
 
-      <!-- Video Preview -->
-      <div class="media-preview" *ngIf="videoPreview">
-        <button class="remove-media-btn" (click)="removeVideo()">✕</button>
-        <video [src]="videoPreview" controls class="preview-video"></video>
+          <img *ngIf="m.type.startsWith('image/')" [src]="m.url" alt="Image preview" class="preview-image" />
+          <video *ngIf="m.type.startsWith('video/')" [src]="m.url" class="preview-video" controls></video>
+        </div>
       </div>
     </div>
 
-    <!-- Media Options -->
+    <!-- Media pickers -->
     <div class="media-options">
       <span class="add-to-post">Add to your post:</span>
-      
+
       <div class="media-buttons">
-        <label class="media-btn" title="Add Photo">
-          <input 
-            type="file" 
-            accept="image/*" 
-            (change)="onImageSelected($event)"
+        <!-- Multiple images -->
+        <label class="media-btn" title="Add Photos">
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            (change)="onFilesSelected($event, 'image')"
             hidden>
           <span class="icon">🖼️</span>
-          Photo
+          Photos
         </label>
 
-        <label class="media-btn" title="Add Video">
-          <input 
-            type="file" 
-            accept="video/*" 
-            (change)="onVideoSelected($event)"
+        <!-- Multiple videos -->
+        <label class="media-btn" title="Add Videos">
+          <input
+            type="file"
+            accept="video/*"
+            multiple
+            (change)="onFilesSelected($event, 'video')"
             hidden>
           <span class="icon">🎥</span>
-          Video
+          Videos
         </label>
       </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Footer actions -->
     <div class="action-buttons">
-      <button class="cancel-btn" (click)="cancel()">Cancel</button>
-      <button class="post-btn" (click)="createPost()">Post</button>
+      <button class="cancel-btn" type="button" (click)="cancel()">Cancel</button>
+      <button class="post-btn" type="button" (click)="submit()" [disabled]="submitting">
+        {{ submitting ? 'Posting…' : 'Post' }}
+      </button>
     </div>
   </div>
 </div>

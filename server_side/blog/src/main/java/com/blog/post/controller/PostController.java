@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.config.JwtService;
 import com.blog.post.dto.CreatePostRequest;
@@ -43,14 +46,20 @@ public class PostController {
         this.PostService = PostService;
     }
 
-    @PostMapping("/createpost")
-    public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostRequest post, Authentication authentication,
-            @RequestHeader("Authorization") String authorizationHeader) {
+    @PostMapping(value = "/createpost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createPost(
+            @RequestPart("content") String content,
+            @RequestPart(name = "files", required = false) List<MultipartFile> files,
+            Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
         try {
-            String jwt = authorizationHeader.substring(7);
+            // If your JWT filter sets Authentication with principal id, use it here.
+             String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                throw new Exception("Invalid JWT token.");
+            }
             Long userId = JwtService.extractUserId(jwt);
-            PostService.createPost(post.getContent(), post.getMedia(), userId);
-            return ResponseEntity.ok().body(new CreatePostResponse("success", null));
+            // User user = UserService.GetUserInfoByUsername(username);
+            return ResponseEntity.ok(new CreatePostResponse("success", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new CreatePostResponse(null, e.getMessage()));
         }
@@ -102,15 +111,15 @@ public class PostController {
     }
 
     @GetMapping("/{Postid}")
-    public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid,Authentication authentication,
+    public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid, Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-              String jwt = authorizationHeader.substring(7);
+            String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 ResponseEntity.badRequest().body("Invalid JWT token.");
             }
             Long userId = JwtService.extractUserId(jwt);
-            PostResponseDto post = PostService.GetSinglePosts(Postid,userId);
+            PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
             return ResponseEntity.ok(post);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e);
