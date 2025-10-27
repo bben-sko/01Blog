@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.config.JwtService;
+import com.blog.subscription.service.SubscriptionService;
 import com.blog.user.model.User;
 import com.blog.user.service.UserService;
 
@@ -23,6 +24,8 @@ public class UserController {
     private UserService UserService;
     @Autowired
     private JwtService JwtService;
+    @Autowired
+    private SubscriptionService SubscriptionService;
 
     @GetMapping("/{username}")
     public ResponseEntity<?> getProfile(@PathVariable String username,
@@ -40,6 +43,7 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("userInfo", userInfo);
             response.put("isMe", user.getId().equals(userId));
+            response.put("isFollowing", (user.getId().equals(userId) ? false : SubscriptionService.isFollowing(userId, user.getId())));
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

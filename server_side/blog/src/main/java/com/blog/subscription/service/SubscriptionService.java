@@ -25,4 +25,8 @@ public class SubscriptionService {
     public void DeletSubscription(User follower, User following) {
             subscriptionRepository.deleteByFollowerIdAndFollowingId(follower.getId(), following.getId());
     }
+
+    public boolean isFollowing(Long followerId, Long followingId) {
+        return subscriptionRepository.existsByFollowerIdAndFollowingId(followerId, followingId);
+    }
 }

@@ -19,12 +19,15 @@
            @if (!user.isme) {
              <button 
             class="follow-btn" 
-            (click)="toggleFollow()">
-            
-              <span>➕ Follow</span>
-            
+            [class.following]="user.isFollowing"
+            (click)="toggleFollow(user)">
+              @if (user.isFollowing) {
+                <span>Following</span>
+              } @else {
+
+              <span>Follow</span>
+              }
             </button>
-        
         }
         </div>
 
@@ -111,16 +114,16 @@
                   class="user-avatar"
                   (click)="GoToProfile(follower.username)">
                 <div class="user-details">
-                  <h3 class="user-name" >{{ follower.firstName }} {{ follower.lastName }}</h3>
                   <p class="user-username">@{{ follower.username }}</p>
                   
                 </div>
-                <button 
-                  class="follow-btn-small"
-                  [class.following]="follower.isFollowing"
-                  (click)="UnFollow(follower)">
-                  {{ follower.isFollowing ? 'Following' : 'Follow' }}
-                </button>
+               @if (!follower.isme) {
+                  <button  class="follow-btn-small" [class.following]="follower.isFollowing"
+                    (click)="UnFollow(follower)">
+                    {{ follower.isFollowing ? 'Following' : 'Follow' }}
+                  </button>
+                
+                }
               </div>
             }
           </div>

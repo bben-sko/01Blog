@@ -13,6 +13,7 @@ export interface User {
   avatar?: string;
   bio?: string;
   isme: boolean;
+  isFollowing?: boolean;
 }
 
 export interface FollowUser {
@@ -23,6 +24,7 @@ export interface FollowUser {
   avatar?: string;
   bio?: string;
   isFollowing: boolean;
+  isme?: boolean;
 }
 
 
@@ -95,6 +97,7 @@ export class Profile implements OnInit {
             username: (data as any).userInfo.username,
             avatar: (data as any).userInfo.image,
             bio: (data as any).userInfo.bio,
+            isFollowing: (data as any).isFollowing,
             isme: (data as any).isMe,
           }
           this.loadUserPosts(username);
@@ -161,7 +164,19 @@ export class Profile implements OnInit {
     this.activeTab = tab;
   }
 
-  toggleFollow() {
+  toggleFollow(user: User) {
+    const profil:  FollowUser = {
+      id: user.id,
+      username: user.username,
+      firstName: '',
+      lastName: '',
+      avatar: user.avatar,
+      bio: user.bio,
+      isFollowing: user.isFollowing || false,
+    }
+    this.UnFollow(profil);
+    user.isFollowing = !user.isFollowing;
+    this.cdr.detectChanges();
     
   }
   //   this.user.isFollowing = !this.user.isFollowing;

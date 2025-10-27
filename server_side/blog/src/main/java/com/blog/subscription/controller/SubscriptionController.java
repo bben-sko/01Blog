@@ -125,6 +125,7 @@ public class SubscriptionController {
                     followerMap.put("avatar", follower.getFollower().getAvatar());
                     followerMap.put("isFollowing", SubscriptionRepository.existsByFollowerIdAndFollowingId(
                             currentUser.getId(), follower.getFollower().getId()));
+                    followerMap.put("isme", follower.getFollower().getId().equals(currentUser.getId()));
                     return followerMap;
                 })
                 .collect(Collectors.toList());
