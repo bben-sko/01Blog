@@ -47,7 +47,7 @@ export class UsersList implements OnInit {
           this.users = data;
           
           for (const userData of data) {
-            console.log('User:', userData.user.username, 'Is Followed:', userData.isfollow);
+            console.log('User:', userData);
           }
           this.cdr.detectChanges();
         },

@@ -20,9 +20,10 @@
           <!-- Avatar -->
           <div class="avatar-container">
             <img
-              src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
+              [src]=" user.user.avatar ? user.user.avatar : 'https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80'"
               [alt]="user.user.username" class="avatar">
           </div>
+          <p></p>
           <div class="user-item">
            
             <div class="user-details">

@@ -186,13 +186,14 @@ export class Singlepost implements OnInit {
         console.log('Comment added:', comment);
         this.newComment = '';
         this.isSubmitting = false;
-        // this.loadPost(this.post!.postId);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error adding comment:', error);
         this.isSubmitting = false;
       }
     });
+    this.cdr.detectChanges();
   }
   submitReport(){}
   closeReportModal() {}

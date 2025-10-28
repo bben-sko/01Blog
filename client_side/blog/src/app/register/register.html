@@ -55,7 +55,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="avatar" class="form-label">avatar</label>
-                        <input type="avatar" class="form-control" id="avatar" name="avatar" [(ngModel)]="registerData.avatar"
+                        <input type="file" accept="image/*" class="form-control" id="avatar" name="avatar" (change)="onFileSelected($event)"
                             [ngClass]="{ 'is-invalid': submitted  }" placeholder="Enter avatar">
                         <!-- <div class="invalid-feedback" *ngIf="submitted ">
                                                                         <div *ngIf="email.errors?.['required']">Email is required</div>
@@ -64,13 +64,7 @@
                     </div>
 
 
-                    <!-- Password Input -->
-                   
-
-                    <!-- Remember Me & Forgot Password -->
-
-
-                    <!-- Submit Button -->
+                    
                     <button type="submit" (click)="d()" class="btn btn-primary w-100">
                         Sign In
                     </button>

@@ -5,10 +5,10 @@
     <!-- Header -->
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
-        <img [src]="post.avatar" 
+        <img [src]="post.avatar ? post.avatar : 'https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80'" 
              [alt]="post.username" 
              class="avatar me-3"
-             (error)="$event.target.src='https://via.placeholder.com/48'">
+             (error)="$event.target.src='https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80'">
         <div>
           <div class="username">{{ post.username }}</div>
           <div class="timestamp">{{ post.createdAt }}</div>
@@ -83,10 +83,10 @@
       <div class="comments-list p-3 bg-light">
         <div *ngFor="let comment of comments" class="comment-item mb-3">
           <div class="d-flex gap-3">
-            <img [src]="comment.avatar" 
+            <img [src]="comment.avatar ? comment.avatar : 'https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80'" 
                  [alt]="comment.username" 
                  class="avatar-sm flex-shrink-0"
-                 (error)="$event.target.src='https://via.placeholder.com/40'">
+                 (error)="$event.target.src='https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80'">
             <div class="flex-grow-1">
               <div class="comment-bubble">
                 <div class="comment-username">{{ comment.username }}</div>

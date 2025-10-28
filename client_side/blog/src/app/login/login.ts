@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { elementAt } from 'rxjs';
+import { authcheck } from '../sevice/authcheck';
 
 interface loginResponse{
   token: string;
@@ -16,13 +18,17 @@ interface loginResponse{
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class Login {
+export class Login implements  OnInit  {
   title = 'Login Page';
   dataLogin = { userEmail: "", password: "" };
   submitted = false;
   // private http = inject(HttpClient);
   error = "";
   constructor(private router: Router, private http: HttpClient) {}
+
+  ngOnInit(): void {
+    new authcheck(this.http, this.router).checkAuth();
+  }
   d() {
     this.submitted = true;
     

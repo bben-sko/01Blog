@@ -14,6 +14,7 @@ export interface User {
   bio?: string;
   isme: boolean;
   isFollowing?: boolean;
+  avatarUrl?: string;
 }
 
 export interface FollowUser {
@@ -99,7 +100,9 @@ export class Profile implements OnInit {
             bio: (data as any).userInfo.bio,
             isFollowing: (data as any).isFollowing,
             isme: (data as any).isMe,
+            avatarUrl: (data as any).avatar
           }
+          console.log('Loaded user profile:', this.user.avatar);
           this.loadUserPosts(username);
           this.cdr.detectChanges();
         },
@@ -179,14 +182,7 @@ export class Profile implements OnInit {
     this.cdr.detectChanges();
     
   }
-  //   this.user.isFollowing = !this.user.isFollowing;
-    
-  //   // Send to backend
-  //   // const endpoint = this.user.isFollowing ? 'follow' : 'unfollow';
-  //   // this.http.post(`http://localhost:8080/api/users/${this.user.id}/${endpoint}`, {})
-  //   //   .subscribe();
-  // }
-
+  
   toggleFollowUser(username: string) {
     if (this.followers.length > 0) return;
     const token = localStorage.getItem('jwt');
@@ -208,13 +204,7 @@ export class Profile implements OnInit {
       });
     this.cdr.detectChanges();
   }
-  //   user.isFollowing = !user.isFollowing;
-    
-  //   Send to backend
-  //   const endpoint = user.isFollowing ? 'follow' : 'unfollow';
-  //   this.http.post(`http://localhost:8080/api/users/${user.id}/${endpoint}`, {})
-  //     .subscribe();
-  // }
+
 
   editProfile() {}
   //   console.log('Edit profile');
