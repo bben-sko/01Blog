@@ -19,6 +19,8 @@ public class PostResponseDto {
     private String content;
     private List<String> media;
     private String username;
+    private Long userId;
+    private boolean enable;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<Comment> comments ;

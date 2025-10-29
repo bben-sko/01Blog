@@ -1,0 +1,426 @@
+<!-- admin-dashboard.component.html -->
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="switchTab('overview')"
+                style="cursor: pointer;">
+                Overview
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'reports'" (click)="switchTab('reports')"
+                style="cursor: pointer;">
+                Reports
+                <span class="badge bg-danger ms-2" *ngIf="stats">{{ stats.pendingReports }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'users'" (click)="switchTab('users')"
+                style="cursor: pointer;">
+                Users
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab === 'posts'" (click)="switchTab('posts')"
+                style="cursor: pointer;">
+                Posts
+            </a>
+        </li>
+    </ul>
+
+    <!-- Overview Tab -->
+    <div *ngIf="activeTab === 'overview' && stats">
+        <div class="row g-3">
+            <!-- Users Stats -->
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <h2 class="mb-0">{{ stats.totalUsers }}</h2>
+                        <small>Active: {{ stats.activeUsers }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <h5 class="card-title">Banned Users</h5>
+                        <h2 class="mb-0">{{ stats.bannedUsers }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Stats -->
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Posts</h5>
+                        <h2 class="mb-0">{{ stats.totalPosts }}</h2>
+                        <small>Active: {{ stats.activePosts }}</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">Hidden Posts</h5>
+                        <h2 class="mb-0">{{ stats.hiddenPosts }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-white bg-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title">Deleted Posts</h5>
+                        <h2 class="mb-0">{{ stats.deletedPosts }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Stats -->
+            <div class="col-md-4">
+                <div class="card text-white bg-danger">
+                    <div class="card-body">
+                        <h5 class="card-title">Pending Reports</h5>
+                        <h2 class="mb-0">{{ stats.pendingReports }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reports -->
+        <!-- <div class="mt-4" *ngIf="pendingReports.length > 0">
+            <h3>Recent Reports</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Reporter</th>
+                            <th>Reason</th>
+                            <th>Post Content</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of pendingReports">
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.reporterUsername }}</td>
+                            <td><span class="badge bg-warning">{{ report.reason }}</span></td>
+                            <td>{{ report.postContent?.substring(0, 50) }}...</td>
+                            <td>{{ report.createdAt | date:'short' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
+                                    Review
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Reports Tab -->
+    <div *ngIf="activeTab === 'reports'">
+        <h3>All Reports</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Reporter</th>
+                        <th>Reason</th>
+                        <th>Description</th>
+                        <th>Post Content</th>
+                        <th>Image</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <!-- <tbody>
+                    <tr *ngFor="let report of pendingReports">
+                        <td>{{ report.id }}</td>
+                        <td>{{ report.reporterUsername }}</td>
+                        <td><span class="badge bg-warning">{{ report.reason }}</span></td>
+                        <td>{{ report.description }}</td>
+                        <td>{{ report.postContent?.substring(0, 50) }}...</td>
+                        <td>
+                            <img *ngIf="report.postImageUrl" [src]="report.postImageUrl"
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td><span class="badge bg-info">{{ report.status }}</span></td>
+                        <td>{{ report.createdAt | date:'short' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
+                                Review
+                            </button>
+                        </td>
+                    </tr>
+                </tbody> -->
+            </table>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div *ngIf="activeTab === 'users'">
+        <h3>All Users</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Avatar</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Ban Reason</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users" [class.table-danger]="user.status === 'BANNED'">
+                        <td>{{ user.id }}</td>
+                        <td>
+                            <img [src]="user.avatar || 'assets/default-avatar.png'"
+                                style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        </td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>
+                            <span class="badge" [class.bg-success]="user.status === 'ACTIVE'"
+                                [class.bg-danger]="user.status === 'BANNED'"
+                                [class.bg-warning]="user.status === 'SUSPENDED'">
+                                {{ user.status }}
+                            </span>
+                        </td>
+                        <td>{{ user.createdAt | date:'short' }}</td>
+                        <td>
+                            <small *ngIf="user.banReason">{{ user.banReason }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button *ngIf="user.status === 'ACTIVE'" class="btn btn-warning"
+                                    (click)="openBanUserModal(user)">
+                                    Ban
+                                </button>
+                                <button *ngIf="user.status === 'BANNED'" class="btn btn-success"
+                                    (click)="unbanUser(user.id)">
+                                    Unban
+                                </button>
+                                <button class="btn btn-danger" (click)="deleteUser(user.id)">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Posts Tab -->
+    <div *ngIf="activeTab === 'posts'">
+        <h3>All Posts</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Image</th>
+                        <th>Username</th>
+                        <th>Content</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Hidden Reason</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let post of posts" [class.table-warning]="post.status === 'HIDDEN'"
+                        [class.table-secondary]="post.status === 'DELETED'">
+                        <td>{{ post.id }}</td>
+                        <td>
+                            <img *ngIf="post.imageUrl" [src]="post.imageUrl"
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                        </td>
+                        <td>{{ post.username }}</td>
+                        <td>{{ post.content?.substring(0, 100) }}...</td>
+                        <td>
+                            <span class="badge" [class.bg-success]="post.status === 'ACTIVE'"
+                                [class.bg-warning]="post.status === 'HIDDEN'"
+                                [class.bg-secondary]="post.status === 'DELETED'">
+                                {{ post.status }}
+                            </span>
+                        </td>
+                        <td>{{ post.createdAt | date:'short' }}</td>
+                        <td>
+                            <small *ngIf="post.hiddenReason">{{ post.hiddenReason }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button *ngIf="post.status === 'ACTIVE'" class="btn btn-warning"
+                                    (click)="openHidePostModal(post)">
+                                    Hide
+                                </button>
+                                <button *ngIf="post.status === 'HIDDEN'" class="btn btn-success"
+                                    (click)="unhidePost(post.id)">
+                                    Unhide
+                                </button>
+                                <button *ngIf="post.status !== 'DELETED'" class="btn btn-danger"
+                                    (click)="deletePost(post.id)">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Report Review Modal -->
+<div class="modal" [style.display]="selectedReport ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review Report #{{ selectedReport?.id }}</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedReport">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Reporter:</strong> {{ selectedReport.reporterUsername }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Reason:</strong>
+                        <span class="badge bg-warning">{{ selectedReport.reason }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Description:</strong>
+                    <p>{{ selectedReport.description }}</p>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>Reported Post</strong>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ selectedReport.postContent }}</p>
+                        <img *ngIf="selectedReport.postImageUrl" [src]="selectedReport.postImageUrl" class="img-fluid"
+                            style="max-height: 300px;">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Admin Note:</strong></label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="adminNote"
+                        placeholder="Add your resolution note..."></textarea>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Quick Actions:</strong>
+                    <div class="btn-group mt-2">
+                        <button class="btn btn-sm btn-warning"
+                            (click)="hidePost({id: selectedReport.postId, userId: 0, username: '', content: '', imageUrl: '', status: '', createdAt: ''})">
+                            Hide Post
+                        </button>
+                        <button class="btn btn-sm btn-danger" (click)="deletePost(selectedReport.postId)">
+                            Delete Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    Close
+                </button>
+                <button type="button" class="btn btn-success" (click)="resolveReport(selectedReport!)"
+                    [disabled]="!adminNote.trim()">
+                    Resolve Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ban User Modal -->
+<div class="modal" [style.display]="selectedUser ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ban User: {{ selectedUser?.username }}</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedUser">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Ban Reason:</strong></label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="actionReason"
+                        placeholder="Enter reason for banning this user..."></textarea>
+                </div>
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> This will prevent the user from accessing the platform.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-danger" (click)="banUser(selectedUser!)"
+                    [disabled]="!actionReason.trim()">
+                    Ban User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hide Post Modal -->
+<div class="modal" [style.display]="selectedPost ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Hide Post #{{ selectedPost?.id }}</h5>
+                <button type="button" class="btn-close" (click)="closeModal()"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedPost">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p>{{ selectedPost.content }}</p>
+                        <img *ngIf="selectedPost.imageUrl" [src]="selectedPost.imageUrl" class="img-fluid"
+                            style="max-height: 200px;">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Hide Reason:</strong></label>
+                    <textarea class="form-control" rows="3" [(ngModel)]="actionReason"
+                        placeholder="Enter reason for hiding this post..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="closeModal()">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-warning" (click)="hidePost(selectedPost!)"
+                    [disabled]="!actionReason.trim()">
+                    Hide Post
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

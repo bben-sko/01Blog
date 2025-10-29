@@ -1,4 +1,6 @@
 package com.blog.user.model;
+import org.springframework.security.access.method.P;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,4 +36,5 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.N_USER;
     private boolean enabled = true;
+    private String banReason;
 }

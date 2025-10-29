@@ -6,27 +6,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
-import com.blog.comment.dto.CommentDto;
-import com.blog.comment.model.Comment;
+
 import com.blog.comment.service.CommentService;
 import com.blog.post.dto.CreatePostRequest;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
-import com.blog.user.model.User;
+
 import com.blog.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -37,10 +35,7 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private CommentService CommentService;
+
 
     @Autowired
     private LikeService LikeService;

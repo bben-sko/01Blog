@@ -3,6 +3,7 @@ package com.blog.post.repository;
 import org.springframework.stereotype.Repository;
 
 import com.blog.post.model.Post;
+import com.blog.user.model.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,5 +30,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     boolean existsByIdAndUserId(Long id, Long Id);
 
     void deleteByUserId(Long Id);
+
+
+    long countByEnabled(boolean status);
+
+    List<Post> findByEnabledOrderByCreatedAtDesc(boolean status);
 
 }
