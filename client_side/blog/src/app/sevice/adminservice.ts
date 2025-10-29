@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 export interface DashboardStats {
     totalUsers: number;
@@ -63,43 +64,68 @@ export class AdminService {
         return this.http.get<DashboardStats>(`${this.API_URL}/dashboard/stats`);
     }
 
-    getPendingReports(): Observable<Report[]> {
-        return this.http.get<Report[]>(`${this.API_URL}/reports/pending`);
+    getTokern(): HttpHeaders | null {
+        const token = localStorage.getItem('jwt');
+
+        if (!token) {
+            console.error('No JWT token found');
+            // Router.navigate(['/login']);
+           return null;
+        }
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+    
+       return headers;
+            
     }
 
-    getAllUsers(page: number = 0, size: number = 50): Observable<User[]> {
-        return this.http.get<User[]>(`${this.API_URL}/users?page=${page}&size=${size}`);
+    getPendingReports() {
+        const getTokern = this.getTokern();
+        return this.http.get<Report[]>(`${this.API_URL}/reports/pending`, { headers: getTokern! });
     }
 
-    getAllPosts(page: number = 0, size: number = 50): Observable<Post[]> {
-        return this.http.get<Post[]>(`${this.API_URL}/posts?page=${page}&size=${size}`);
+    getAllUsers(page: number = 0, size: number = 50) {
+        const getTokern = this.getTokern();
+        return this.http.get<User[]>(`${this.API_URL}/users?page=${page}&size=${size}`, { headers: getTokern! });
     }
 
-    banUser(userId: number, reason: string): Observable<any> {
-        return this.http.post(`${this.API_URL}/users/${userId}/ban`, { reason });
+    getAllPosts(page: number = 0, size: number = 50){
+        const getTokern = this.getTokern();
+        return this.http.get<Post[]>(`${this.API_URL}/posts?page=${page}&size=${size}`, { headers: getTokern! });
     }
 
-    unbanUser(userId: number): Observable<any> {
-        return this.http.post(`${this.API_URL}/users/${userId}/unban`, {});
+    banUser(userId: number) {
+        const getTokern = this.getTokern();
+        return this.http.post(`${this.API_URL}/users/${userId}/ban`, { headers: getTokern! });
     }
 
-    deleteUser(userId: number): Observable<any> {
-        return this.http.delete(`${this.API_URL}/users/${userId}`);
+    unbanUser(userId: number) {
+        const getTokern = this.getTokern();
+        return this.http.post(`${this.API_URL}/users/${userId}/unban`, { headers: getTokern! });
     }
 
-    hidePost(postId: number, reason: string): Observable<any> {
-        return this.http.post(`${this.API_URL}/posts/${postId}/hide`, { reason });
+    deleteUser(userId: number) {
+        const getTokern = this.getTokern();
+        return this.http.delete(`${this.API_URL}/users/${userId}`, { headers: getTokern! });
     }
 
-    unhidePost(postId: number): Observable<any> {
-        return this.http.post(`${this.API_URL}/posts/${postId}/unhide`, {});
+    hidePost(postId: number, reason: string) {
+        const getTokern = this.getTokern();
+        return this.http.post(`${this.API_URL}/posts/${postId}/hide`,  { reason }, { headers: getTokern! });
     }
 
-    deletePost(postId: number): Observable<any> {
-        return this.http.delete(`${this.API_URL}/posts/${postId}`);
+    unhidePost(postId: number) {
+        const getTokern = this.getTokern();
+        return this.http.post(`${this.API_URL}/posts/${postId}/unhide`, { headers: getTokern! });
     }
 
-    resolveReport(reportId: number, adminNote: string, adminId: number): Observable<any> {
+    deletePost(postId: number) {
+        const getTokern = this.getTokern();
+        return this.http.delete(`${this.API_URL}/posts/${postId}`, { headers: getTokern! });
+    }
+
+    resolveReport(reportId: number, adminNote: string, adminId: number) {
         return this.http.post(`${this.API_URL}/reports/${reportId}/resolve`, {
             adminNote,
             adminId: adminId.toString()

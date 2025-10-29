@@ -5,12 +5,6 @@
     <!-- Navigation Tabs -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'overview'" (click)="switchTab('overview')"
-                style="cursor: pointer;">
-                Overview
-            </a>
-        </li>
-        <li class="nav-item">
             <a class="nav-link" [class.active]="activeTab === 'reports'" (click)="switchTab('reports')"
                 style="cursor: pointer;">
                 Reports
@@ -31,102 +25,7 @@
         </li>
     </ul>
 
-    <!-- Overview Tab -->
-    <div *ngIf="activeTab === 'overview' && stats">
-        <div class="row g-3">
-            <!-- Users Stats -->
-            <div class="col-md-4">
-                <div class="card text-white bg-primary">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Users</h5>
-                        <h2 class="mb-0">{{ stats.totalUsers }}</h2>
-                        <small>Active: {{ stats.activeUsers }}</small>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card text-white bg-danger">
-                    <div class="card-body">
-                        <h5 class="card-title">Banned Users</h5>
-                        <h2 class="mb-0">{{ stats.bannedUsers }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Posts Stats -->
-            <div class="col-md-4">
-                <div class="card text-white bg-success">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Posts</h5>
-                        <h2 class="mb-0">{{ stats.totalPosts }}</h2>
-                        <small>Active: {{ stats.activePosts }}</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-white bg-warning">
-                    <div class="card-body">
-                        <h5 class="card-title">Hidden Posts</h5>
-                        <h2 class="mb-0">{{ stats.hiddenPosts }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-white bg-secondary">
-                    <div class="card-body">
-                        <h5 class="card-title">Deleted Posts</h5>
-                        <h2 class="mb-0">{{ stats.deletedPosts }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports Stats -->
-            <div class="col-md-4">
-                <div class="card text-white bg-danger">
-                    <div class="card-body">
-                        <h5 class="card-title">Pending Reports</h5>
-                        <h2 class="mb-0">{{ stats.pendingReports }}</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Reports -->
-        <!-- <div class="mt-4" *ngIf="pendingReports.length > 0">
-            <h3>Recent Reports</h3>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Reporter</th>
-                            <th>Reason</th>
-                            <th>Post Content</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let report of pendingReports">
-                            <td>{{ report.id }}</td>
-                            <td>{{ report.reporterUsername }}</td>
-                            <td><span class="badge bg-warning">{{ report.reason }}</span></td>
-                            <td>{{ report.postContent?.substring(0, 50) }}...</td>
-                            <td>{{ report.createdAt | date:'short' }}</td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
-                                    Review
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div> -->
-    </div>
 
     <!-- Reports Tab -->
     <div *ngIf="activeTab === 'reports'">
@@ -199,11 +98,15 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.name }}</td>
                         <td>
-                            <span class="badge" [class.bg-success]="user.status === 'ACTIVE'"
-                                [class.bg-danger]="user.status === 'BANNED'"
-                                [class.bg-warning]="user.status === 'SUSPENDED'">
-                                {{ user.status }}
-                            </span>
+                            @if (user.status === 'BANNED') {
+                            <button class="badge bg-success" (click)="unbanUser(user)">
+                                {{ user.status ? 'BANNED' : 'ACTIVE' }}
+                            </button>
+                            } @else {
+                            <button class="badge bg-danger" (click)="banUser(user)">
+                                {{ user.status ? 'BANNED' : 'ACTIVE' }}
+                            </button>
+                            }
                         </td>
                         <td>{{ user.createdAt | date:'short' }}</td>
                         <td>
@@ -211,14 +114,6 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <button *ngIf="user.status === 'ACTIVE'" class="btn btn-warning"
-                                    (click)="openBanUserModal(user)">
-                                    Ban
-                                </button>
-                                <button *ngIf="user.status === 'BANNED'" class="btn btn-success"
-                                    (click)="unbanUser(user.id)">
-                                    Unban
-                                </button>
                                 <button class="btn btn-danger" (click)="deleteUser(user.id)">
                                     Delete
                                 </button>

@@ -76,7 +76,7 @@ export class Admin implements OnInit {
   users: User[] = [];
   posts: Post[] = [];
 
-  activeTab: 'overview' | 'reports' | 'users' | 'posts' = 'overview';
+  activeTab: 'reports' | 'users' | 'posts' = 'reports';
 
   selectedReport: Report | null = null;
   selectedUser: User | null = null;
@@ -125,7 +125,7 @@ export class Admin implements OnInit {
     });
   }
 
-  switchTab(tab: 'overview' | 'reports' | 'users' | 'posts') {
+  switchTab(tab: 'reports' | 'users' | 'posts') {
     this.activeTab = tab;
     this.error = '';
 
@@ -137,26 +137,23 @@ export class Admin implements OnInit {
   }
 
   banUser(user: User) {
-    if (!this.actionReason.trim()) {
-      alert('Please provide a reason');
-      return;
-    }
+    
 
-    this.adminService.banUser(user.id, this.actionReason).subscribe({
+    this.adminService.banUser(user.id).subscribe({
       next: () => {
         alert('User banned successfully');
         this.actionReason = '';
         this.selectedUser = null;
         this.loadUsers();
       },
-      error: (err) => alert('Failed to ban user: ' + (err.error || err.message))
+      error: (err) => console.error('Failed to ban user:', err)
     });
   }
 
-  unbanUser(userId: number) {
+  unbanUser(user: User) {
     if (!confirm('Are you sure you want to unban this user?')) return;
 
-    this.adminService.unbanUser(userId).subscribe({
+    this.adminService.unbanUser(user.id).subscribe({
       next: () => {
         alert('User unbanned successfully');
         this.loadUsers();
