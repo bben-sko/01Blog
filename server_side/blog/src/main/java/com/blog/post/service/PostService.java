@@ -25,7 +25,6 @@ import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
 
-import com.blog.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -35,23 +34,13 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-
-
     @Autowired
     private LikeService LikeService;
 
-    // public Post createPost(String content, String[] media, Long userId) {
-    // User user = userRepository.findById(userId).orElseThrow();
+    public Post getPostById(Long postId) {
 
-    // Post post = new Post();
-    // post.setContent(content);
-    // post.setMedia(media);
-    // post.setUser(user);
-
-    // System.out.println(post);
-
-    // return postRepository.save(post);
-    // }
+        return postRepository.findById(postId).orElse(null);
+    }
 
     @Transactional
     public CreatePostRequest createPost(String content, List<MultipartFile> files, Long userId) throws IOException {

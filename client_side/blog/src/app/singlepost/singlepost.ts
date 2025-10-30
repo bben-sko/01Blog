@@ -110,11 +110,9 @@ export class Singlepost implements OnInit {
     this.showMenu = false;
   }
 
-  reportPost(type: string) {
-    console.log(`Reporting post as: ${type}`);
-    // Implement report functionality
-    this.closeMenu();
-  }
+  reportPost() {
+    this.showReportModal = !this.showReportModal;
+  } 
   goBack() {
     this.router.navigate(['/']);
   }
@@ -195,7 +193,42 @@ export class Singlepost implements OnInit {
     });
     this.cdr.detectChanges();
   }
-  submitReport(){}
+  submitReport() {
+    if (this.reportSubmitted || !this.reportText.trim()) {
+      return;
+    }
+    if (!this.reportText.trim()) {
+      return;
+    }
+    this.reportSubmitted = true;
+
+    localStorage.getItem('jwt');
+    let token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.post(`http://localhost:8080/api/reports/add`, {
+      reason: this.reportText,
+      postId: this.post?.postId
+    }, { headers } ).subscribe({
+      next: () => {
+        console.log('Report submitted');
+        this.reportText = '';
+        this.reportSubmitted = false;
+        this.showReportModal = false;
+      },
+      error: (error) => {
+        console.error('Error submitting report:', error);
+        this.reportSubmitted = false;
+      }
+    });
+
+  }
   closeReportModal() {}
   openReportModal(){}
 }

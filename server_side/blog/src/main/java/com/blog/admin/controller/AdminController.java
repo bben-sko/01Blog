@@ -24,7 +24,7 @@ import com.blog.report.dto.ReportDTO;
 import com.blog.user.dto.UserDTO;
 
 @RestController
-@RequestMapping("/api/admin/")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     

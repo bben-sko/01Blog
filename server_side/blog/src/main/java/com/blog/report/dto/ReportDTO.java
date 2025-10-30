@@ -15,7 +15,7 @@ public class ReportDTO {
     private Long id;
     private Long postId;
     private String postContent;
-    private String postImageUrl;
+    // private String postImageUrl;
     private Long reporterId;
     private String reporterUsername;
     private String reason;

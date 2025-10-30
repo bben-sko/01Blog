@@ -17,7 +17,7 @@
       
       <!-- More Options -->
       <div *ngIf="!post.ismy">
-        <button class="btn btn-link text-secondary more-btn" (click)="openReportModal()">
+        <button class="btn btn-link text-secondary more-btn" (click)="reportPost()">
           <i class="bi bi-three-dots-vertical"></i>
         </button>
       </div>
@@ -123,7 +123,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Report Post</h5>
-        <button type="button" class="btn-close" (click)="closeReportModal()"></button>
+        <button type="button" class="btn-close" (click)="reportPost()"></button>
       </div>
       <div class="modal-body">
         <textarea class="form-control" 
@@ -132,7 +132,7 @@
                   placeholder="Describe the issue..."></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeReportModal()">
+        <button type="button" class="btn btn-secondary" (click)="reportPost()">
           Cancel
         </button>
         <button type="button" 

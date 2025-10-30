@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +25,7 @@ export interface Report {
   id: number;
   postId: number;
   postContent: string;
-  postImageUrl: string;
+  // postImageUrl: string;
   reporterId: number;
   reporterUsername: string;
   reason: string;
@@ -71,10 +71,11 @@ export interface Post {
 export class Admin implements OnInit {
 
   private adminService = inject(AdminService);
-
+  private http = inject(HttpClient);
   stats: DashboardStats | null = null;
   users: User[] = [];
   posts: Post[] = [];
+  reports: Report[] = [];
 
   activeTab: 'reports' | 'users' | 'posts' = 'reports';
 
@@ -90,7 +91,9 @@ export class Admin implements OnInit {
   error = '';
 
   ngOnInit() {
-   
+    this.loadReport();
+    // this.loadUsers();
+    // this.loadPosts();
   }
 
  
@@ -104,6 +107,37 @@ export class Admin implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load users:', err);
+        this.error = 'Failed to load users';
+        this.loading = false;
+      }
+    });
+  }
+  loadReport() {
+    this.loading = true;
+    console.log("Loading reports...");
+
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      this.loading = false;
+      return;
+    }
+
+
+     token;
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.adminService.getReportsByStatus("ALL")
+    this.http.get<Report[]>(`http://localhost:8080/api/reports/all`, { headers }).subscribe({
+      next: (data: Report[]) => {
+        console.log("Reports loaded:", data);
+         this.reports = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.log('Failed to load users:', err);
         this.error = 'Failed to load users';
         this.loading = false;
       }

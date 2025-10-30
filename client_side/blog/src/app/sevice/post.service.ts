@@ -26,8 +26,8 @@ export class PostService {
     }
 
     getcommentById(postId: number) {
-        // const headers = this.getAuthHeaders();
-      
         return this.http.get<any>(`http://localhost:8080/api/comments/${postId}`);
     }
+
+    
 }
