@@ -1,4 +1,5 @@
 <!-- admin-dashboard.component.html -->
+@if (checking) {
 <div class="container-fluid py-4">
     <h1 class="mb-4">Admin Dashboard</h1>
 
@@ -84,23 +85,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let user of users" [class.table-danger]="user.status === 'BANNED'">
+                    <tr *ngFor="let user of users" [class.table-danger]="!user.enable">
                         <td>{{ user.id }}</td>
                         <td>
-                            <img [src]="user.avatar || 'assets/default-avatar.png'"
+                            <img [src]="user.avatar || 'data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'"
                                 style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                         </td>
                         <td>{{ user.username }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.name }}</td>
                         <td>
-                            @if (user.status) {
-                            <button class="badge bg-success" (click)="unbanUser(user)">
-                                {{ user.status ? 'BANNED' : 'ACTIVE' }}
+                            @if (user.enable) {
+                            <button class="badge bg-danger" (click)="banUser(user)">
+                                {{ user.enable ? 'BAN' : 'ACTIVE' }}
                             </button>
                             } @else {
-                            <button class="badge bg-danger" (click)="banUser(user)">
-                                {{ user.status ? 'BANNED' : 'ACTIVE' }}
+                            <button class="badge bg-success" (click)="unbanUser(user)">
+                                {{ user.enable ? 'BAN' : 'ACTIVE' }}
                             </button>
                             }
                         </td>
@@ -144,7 +145,7 @@
                                     Hide
                                 </button>
                                 <button *ngIf="!post.enable" class="btn btn-success"
-                                    (click)="unhidePost(post.postId)">
+                                    (click)="unhidePost(post)">
                                     Unhide
                                 </button>
                         </td>
@@ -297,3 +298,4 @@
         </div>
     </div>
 </div>
+}

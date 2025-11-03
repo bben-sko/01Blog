@@ -41,7 +41,7 @@ export interface User {
   email: string;
   name: string;
   avatar: string;
-  status: string;
+  enable: boolean;
   createdAt: string;
   bannedAt?: string;
   banReason?: string;
@@ -87,7 +87,7 @@ export class Admin implements OnInit {
   actionReason = '';
   adminNote = '';
   adminId = 1; // Should come from auth service
-
+  checking = false
   loading = false;
   error = '';
   constructor(private cdr: ChangeDetectorRef) {
@@ -98,6 +98,9 @@ export class Admin implements OnInit {
     this.loadReport();
     this.loadUsers();
     this.loadPosts();
+    setTimeout(()=>{
+      this.checking = true
+    },1000)
   }
 
 
@@ -107,12 +110,13 @@ export class Admin implements OnInit {
     this.adminService.getAllUsers().subscribe({
       next: (data) => {
         this.users = data;
+        console.log(data)
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load users:', err);
-        this.error = 'Failed to load users';
-        this.loading = false;
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
       }
     });
   }
@@ -123,7 +127,7 @@ export class Admin implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
+      this.route.navigate(['/login'])
       this.loading = false;
       return;
     }
@@ -142,9 +146,9 @@ export class Admin implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.log('Failed to load users:', err);
-        this.error = 'Failed to load users';
-        this.loading = false;
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
       }
     });
   }
@@ -153,26 +157,25 @@ export class Admin implements OnInit {
     this.loading = true;
     const token = localStorage.getItem('jwt');
 
-        if (!token) {
-            console.error('No JWT token found');
-            // Router.navigate(['/login']);
-           this.route.navigate(['/login'])
-        }
-       
-   
-            const headers = new HttpHeaders({
-                'Authorization': `Bearer ${token}`
-            });
-    this.http.get<Post[]>(`http://localhost:8080/api/admin/posts?page=0&size=50`, {  headers }).subscribe({
+    if (!token) {
+      console.error('No JWT token found');
+      this.route.navigate(['/login'])
+    }
+
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.get<Post[]>(`http://localhost:8080/api/admin/posts?page=0&size=50`, { headers }).subscribe({
       next: (data) => {
         console.log(data)
-       this.posts = data
+        this.posts = data
         this.loading = false;
       },
       error: (err) => {
-        console.error('Failed to load posts:', err);
-        this.error = 'Failed to load posts';
-        this.loading = false;
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
       }
     });
   }
@@ -183,16 +186,28 @@ export class Admin implements OnInit {
   }
 
   banUser(user: User) {
+    const token = localStorage.getItem('jwt');
 
+    if (!token) {
+      console.error('No JWT token found');
+      this.route.navigate(['/login'])
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
 
-    this.adminService.banUser(user.id).subscribe({
+    this.http.post<String>(`http://localhost:8080/api/admin/users/${user.id}/ban`, {}, { headers }).subscribe({
       next: () => {
         alert('User banned successfully');
         this.actionReason = '';
         this.selectedUser = null;
         this.loadUsers();
       },
-      error: (err) => console.error('Failed to ban user:', err)
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
 
@@ -204,7 +219,11 @@ export class Admin implements OnInit {
         alert('User unbanned successfully');
         this.loadUsers();
       },
-      error: (err) => alert('Failed to unban user: ' + (err.error || err.message))
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
 
@@ -216,7 +235,11 @@ export class Admin implements OnInit {
         alert('User deleted successfully');
         this.loadUsers();
       },
-      error: (err) => alert('Failed to delete user: ' + (err.error || err.message))
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
 
@@ -228,29 +251,37 @@ export class Admin implements OnInit {
         this.adminNote = '';
         this.selectedPost = null;
         this.loadPosts();
+        post.enable = !post.enable
+        this.selectedPost = null;
+        this.cdr.detectChanges()
       },
-      
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
+
     });
-    post.enable = !post.enable
-    this.selectedPost = null;
-    this.cdr.detectChanges()
   }
 
-  unhidePost(postId: number) {
+  unhidePost(post: Post) {
     if (!confirm('Are you sure you want to unhide this post?')) return;
 
-    this.adminService.unhidePost(postId).subscribe({
+    this.adminService.unhidePost(post.postId).subscribe({
       next: () => {
         alert('Post unhidden successfully');
         this.loadPosts();
-        
+
       },
-      
+      error: (err) => {
+        this.route.navigate(['/'])
+      },
+
     });
+    post.enable = !post.enable
+    this.cdr.detectChanges()
 
-      this.cdr.detectChanges()
-
-    }
+  }
 
   deletePost(postId: number) {
     if (!confirm('Are you sure you want to delete this post?')) return;
@@ -263,7 +294,11 @@ export class Admin implements OnInit {
           this.closeModal();
         }
       },
-      error: (err) => alert('Failed to delete post: ' + (err.error || err.message))
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
 
@@ -280,7 +315,11 @@ export class Admin implements OnInit {
         this.selectedReport = null;
 
       },
-      error: (err) => alert('Failed to resolve report: ' + (err.error || err.message))
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
 
@@ -316,7 +355,11 @@ export class Admin implements OnInit {
       next: (a) => {
         alert('Post hidden successfully');
         this.actionReason = '';
-        
+      },
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
       }
     });
   }
@@ -328,11 +371,14 @@ export class Admin implements OnInit {
       next: () => {
         alert('Post deleted successfully');
       },
-      error: (err) => alert('Failed to delete post: ' + (err.error || err.message))
+      error: (err) => {
+        if (err.status == 401) {
+          this.route.navigate(['/'])
+        }
+      }
     });
   }
   GetViews(postId: number) {
-    console.log(postId)
     this.route.navigate([`/post/${postId}`]);
   }
 }

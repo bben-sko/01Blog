@@ -33,7 +33,7 @@ export interface User {
     email: string;
     name: string;
     avatar: string;
-    status: string;
+    enable: boolean;
     createdAt: string;
     bannedAt?: string;
     banReason?: string;
@@ -107,6 +107,7 @@ export class AdminService {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
+        console.log(getTokern)
         return this.http.post(`${this.API_URL}/users/${userId}/ban`, {  headers });
     }
 
@@ -115,7 +116,7 @@ export class AdminService {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
-        return this.http.post(`${this.API_URL}/users/${userId}/unban`, {  headers });
+        return this.http.post<string>(`${this.API_URL}/users/${userId}/unban`,  {}, {  headers });
     }
 
     deleteUser(userId: number) {

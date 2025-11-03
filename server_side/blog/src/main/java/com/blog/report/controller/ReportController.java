@@ -3,6 +3,7 @@ package com.blog.report.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,8 +58,27 @@ public class ReportController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ReportDTO>> fetchReports(
+    public ResponseEntity<?> fetchReports(
             @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String token = authorizationHeader.substring(7);
+                String role = JwtService.extractRole(token);
+                if (role.equals("N_USER")) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body("Authorization required");
+                }
+            }else {
+                // Handle missing or invalid authorization
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("Authorization required");
+            }
+            
+        } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Authorization required");
+
+        }
         List<Report> reports = reportService.getAllReports();
         List<ReportDTO> reportDTOs = reports.stream()
                 .map(report -> {

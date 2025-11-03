@@ -12,10 +12,10 @@ import com.blog.user.repository.UserRepository;
 public class AdminUserService {
       @Autowired
     private UserRepository userRepository;
-          public void banUser(Long userId, String reason) {
+          public void banUser(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
-        user.setEnabled(true);
+        user.setEnabled(false);
         userRepository.save(user);
     }
     
