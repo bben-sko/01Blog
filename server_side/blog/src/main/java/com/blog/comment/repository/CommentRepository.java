@@ -11,5 +11,6 @@ import com.blog.comment.model.Comment;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long>{
      List<Comment> findAllByPostIdOrderByCreatedAtDesc(Long postId);
+     void deleteByPostId(Long postId);
 
 }

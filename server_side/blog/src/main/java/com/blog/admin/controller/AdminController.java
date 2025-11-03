@@ -98,11 +98,10 @@ public class AdminController {
     
     @PostMapping("/posts/{id}/hide")
     public ResponseEntity<?> hidePost(
-        @PathVariable Long id,
-        @RequestBody Map<String, String> payload
+        @PathVariable Long id
     ) {
         try {
-            AdminPostService.hidePost(id, payload.get("reason"));
+            AdminPostService.hidePost(id);
             return ResponseEntity.ok("Post hidden successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

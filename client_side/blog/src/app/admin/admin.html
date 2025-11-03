@@ -79,8 +79,7 @@
                         <th>Email</th>
                         <th>Name</th>
                         <th>Status</th>
-                        <th>Created At</th>
-                        <th>Ban Reason</th>
+
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -95,7 +94,7 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.name }}</td>
                         <td>
-                            @if (user.status === 'BANNED') {
+                            @if (user.status) {
                             <button class="badge bg-success" (click)="unbanUser(user)">
                                 {{ user.status ? 'BANNED' : 'ACTIVE' }}
                             </button>
@@ -105,10 +104,7 @@
                             </button>
                             }
                         </td>
-                        <td>{{ user.createdAt | date:'short' }}</td>
-                        <td>
-                            <small *ngIf="user.banReason">{{ user.banReason }}</small>
-                        </td>
+
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <button class="btn btn-danger" (click)="deleteUser(user.id)">
@@ -129,52 +125,40 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Image</th>
+                        <th>Id</th>
                         <th>Username</th>
-                        <th>Content</th>
                         <th>Status</th>
                         <th>Created At</th>
-                        <th>Hidden Reason</th>
                         <th>Actions</th>
+                        <th>views</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let post of posts" [class.table-warning]="post.status === 'HIDDEN'"
-                        [class.table-secondary]="post.status === 'DELETED'">
-                        <td>{{ post.id }}</td>
-                        <td>
-                            <img *ngIf="post.imageUrl" [src]="post.imageUrl"
-                                style="width: 50px; height: 50px; object-fit: cover;">
-                        </td>
+                    <tr *ngFor="let post of posts" [class.table-warning]="post.enable   "
+                        [class.table-secondary]="!post.enable">
+                        <td>{{ post.postId }}</td>
                         <td>{{ post.username }}</td>
-                        <td>{{ post.content?.substring(0, 100) }}...</td>
                         <td>
-                            <span class="badge" [class.bg-success]="post.status === 'ACTIVE'"
-                                [class.bg-warning]="post.status === 'HIDDEN'"
-                                [class.bg-secondary]="post.status === 'DELETED'">
-                                {{ post.status }}
-                            </span>
-                        </td>
-                        <td>{{ post.createdAt | date:'short' }}</td>
-                        <td>
-                            <small *ngIf="post.hiddenReason">{{ post.hiddenReason }}</small>
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <button *ngIf="post.status === 'ACTIVE'" class="btn btn-warning"
+                             <button *ngIf="post.enable" class="btn btn-warning"
                                     (click)="openHidePostModal(post)">
                                     Hide
                                 </button>
-                                <button *ngIf="post.status === 'HIDDEN'" class="btn btn-success"
-                                    (click)="unhidePost(post.id)">
+                                <button *ngIf="!post.enable" class="btn btn-success"
+                                    (click)="unhidePost(post.postId)">
                                     Unhide
                                 </button>
-                                <button *ngIf="post.status !== 'DELETED'" class="btn btn-danger"
-                                    (click)="deletePost(post.id)">
+                        </td>
+                        <td>{{ post.createdAt | date:'short' }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-danger"
+                                    (click)="deletePost(post.postId)">
                                     Delete
                                 </button>
                             </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" (click)="GetViews(post.postId)">views</button>
                         </td>
                     </tr>
                 </tbody>
@@ -212,7 +196,13 @@
                         <strong>Reported Post</strong>
                     </div>
                     <div class="card-body">
-                        <p>{{ selectedReport.postContent }}</p>
+                        <div>
+                            <p >{{ selectedReport.postContent.substring(0,20)
+                                }} ... </p>
+                                <p (click)="GetViews(selectedReport.postId)">[ Show More ]</p>
+                        </div>
+
+
                         <!-- <img *ngIf="selectedReport.postImageUrl" [src]="selectedReport.postImageUrl" class="img-fluid"
                             style="max-height: 300px;"> -->
                     </div>
@@ -228,7 +218,7 @@
                     <strong>Quick Actions:</strong>
                     <div class="btn-group mt-2">
                         <button class="btn btn-sm btn-warning"
-                            (click)="hidePost({id: selectedReport.postId, userId: 0, username: '', content: '', imageUrl: '', status: '', createdAt: ''})">
+                            (click)="hidePost({postId: selectedReport.postId, userId: 0, username: '', content: '', imageUrl: '', enable: true, createdAt: ''})">
                             Hide Post
                         </button>
                         <button class="btn btn-sm btn-danger" (click)="deletePost(selectedReport.postId)">
@@ -286,30 +276,21 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Hide Post #{{ selectedPost?.id }}</h5>
+                <h5 class="modal-title">Hide Post #{{ selectedPost?.postId }}</h5>
                 <button type="button" class="btn-close" (click)="closeModal()"></button>
             </div>
             <div class="modal-body" *ngIf="selectedPost">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <p>{{ selectedPost.content }}</p>
-                        <img *ngIf="selectedPost.imageUrl" [src]="selectedPost.imageUrl" class="img-fluid"
-                            style="max-height: 200px;">
+                        <p>You want hide this post ??</p>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label"><strong>Hide Reason:</strong></label>
-                    <textarea class="form-control" rows="3" [(ngModel)]="actionReason"
-                        placeholder="Enter reason for hiding this post..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" (click)="closeModal()">
                     Cancel
                 </button>
-                <button type="button" class="btn btn-warning" (click)="hidePost(selectedPost!)"
-                    [disabled]="!actionReason.trim()">
+                <button type="button" class="btn btn-warning" (click)="hidePost(selectedPost!)">
                     Hide Post
                 </button>
             </div>

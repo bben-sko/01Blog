@@ -15,7 +15,7 @@ export interface DashboardStats {
 }
 
 export interface Post {
-    id: number;
+    postId: number;
     userId: number;
     username: string;
     content: string;
@@ -129,12 +129,12 @@ export class AdminService {
         return this.http.delete(`${this.API_URL}/users/${userId}`, { headers });
     }
 
-    hidePost(postId: number, reason: string) {
+    hidePost(postId: number) {
         const getTokern = this.getTokern();
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
-        return this.http.post(`${this.API_URL}/posts/${postId}/hide`,  { reason }, {  headers });
+        return this.http.post(`${this.API_URL}/posts/${postId}/hide`, {  headers });
     }
 
     unhidePost(postId: number) {

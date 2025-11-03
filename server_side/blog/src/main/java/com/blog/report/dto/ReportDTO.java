@@ -20,7 +20,6 @@ public class ReportDTO {
     private String reporterUsername;
     private String reason;
     private String description;
-    private String status;
+    private boolean enable;
     private LocalDateTime createdAt;
-    private String adminNote;
 }

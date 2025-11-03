@@ -116,7 +116,6 @@ export class Posts {
   }
 
   getMoreInfo(postid: number) {
-    console.log(postid)
     this.router.navigate([`/post/${postid}`])
   }
 }

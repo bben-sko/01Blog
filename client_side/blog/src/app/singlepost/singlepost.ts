@@ -60,7 +60,7 @@ export class Singlepost implements OnInit {
 
   }
   loadcomments(postId: number) {
-     const token = localStorage.getItem('jwt');
+    const token = localStorage.getItem('jwt');
 
     if (!token) {
       console.error('No JWT token found');
@@ -69,18 +69,18 @@ export class Singlepost implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-     this.http.get(`http://localhost:8080/api/comments/${postId}`,  { headers } ).subscribe({
+    this.http.get(`http://localhost:8080/api/comments/${postId}`, { headers }).subscribe({
       next: (comment) => {
         console.log(comment);
-      
-        this.comments = comment as Comment[]; 
+
+        this.comments = comment as Comment[];
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading post:', error);
       }
     });
-     this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
   editPost() {
     if (!this.post) return;
@@ -112,11 +112,11 @@ export class Singlepost implements OnInit {
 
   reportPost() {
     this.showReportModal = !this.showReportModal;
-  } 
+  }
   goBack() {
     this.router.navigate(['/']);
   }
- 
+
   toggleLike(postId: number) {
     if (!this.post) return;
 
@@ -215,20 +215,25 @@ export class Singlepost implements OnInit {
     this.http.post(`http://localhost:8080/api/reports/add`, {
       reason: this.reportText,
       postId: this.post?.postId
-    }, { headers } ).subscribe({
+    }, { headers }).subscribe({
       next: () => {
         console.log('Report submitted');
         this.reportText = '';
         this.reportSubmitted = false;
         this.showReportModal = false;
+        this.cdr.detectChanges();
+
       },
       error: (error) => {
-        console.error('Error submitting report:', error);
         this.reportSubmitted = false;
+        this.showReportModal = false;
+        this.reportText = '';
+        this.cdr.detectChanges();
+
       }
     });
 
   }
-  closeReportModal() {}
-  openReportModal(){}
+  closeReportModal() { }
+  openReportModal() { }
 }

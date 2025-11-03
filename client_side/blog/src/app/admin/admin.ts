@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../sevice/adminservice';
+import { Router } from '@angular/router';
 
 
 
@@ -30,7 +30,7 @@ export interface Report {
   reporterUsername: string;
   reason: string;
   description: string;
-  status: string;
+  status: boolean;
   createdAt: string;
   adminNote: string;
 }
@@ -48,12 +48,12 @@ export interface User {
 }
 
 export interface Post {
-  id: number;
+  postId: number;
   userId: number;
   username: string;
   content: string;
   imageUrl: string;
-  status: string;
+  enable: boolean;
   createdAt: string;
   hiddenAt?: string;
   hiddenReason?: string;
@@ -71,6 +71,7 @@ export interface Post {
 export class Admin implements OnInit {
 
   private adminService = inject(AdminService);
+  private route = inject(Router);
   private http = inject(HttpClient);
   stats: DashboardStats | null = null;
   users: User[] = [];
@@ -89,14 +90,17 @@ export class Admin implements OnInit {
 
   loading = false;
   error = '';
+  constructor(private cdr: ChangeDetectorRef) {
+
+  }
 
   ngOnInit() {
     this.loadReport();
-    // this.loadUsers();
-    // this.loadPosts();
+    this.loadUsers();
+    this.loadPosts();
   }
 
- 
+
 
   loadUsers() {
     this.loading = true;
@@ -125,7 +129,7 @@ export class Admin implements OnInit {
     }
 
 
-     token;
+    token;
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
@@ -133,8 +137,9 @@ export class Admin implements OnInit {
     this.http.get<Report[]>(`http://localhost:8080/api/reports/all`, { headers }).subscribe({
       next: (data: Report[]) => {
         console.log("Reports loaded:", data);
-         this.reports = data;
+        this.reports = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log('Failed to load users:', err);
@@ -146,9 +151,22 @@ export class Admin implements OnInit {
 
   loadPosts() {
     this.loading = true;
-    this.adminService.getAllPosts().subscribe({
+    const token = localStorage.getItem('jwt');
+
+        if (!token) {
+            console.error('No JWT token found');
+            // Router.navigate(['/login']);
+           this.route.navigate(['/login'])
+        }
+       
+   
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+    this.http.get<Post[]>(`http://localhost:8080/api/admin/posts?page=0&size=50`, {  headers }).subscribe({
       next: (data) => {
-        this.posts = data;
+        console.log(data)
+       this.posts = data
         this.loading = false;
       },
       error: (err) => {
@@ -162,16 +180,10 @@ export class Admin implements OnInit {
   switchTab(tab: 'reports' | 'users' | 'posts') {
     this.activeTab = tab;
     this.error = '';
-
-    if (tab === 'users' && this.users.length === 0) {
-      this.loadUsers();
-    } else if (tab === 'posts' && this.posts.length === 0) {
-      this.loadPosts();
-    } 
   }
 
   banUser(user: User) {
-    
+
 
     this.adminService.banUser(user.id).subscribe({
       next: () => {
@@ -209,20 +221,19 @@ export class Admin implements OnInit {
   }
 
   hidePost(post: Post) {
-    if (!this.actionReason.trim()) {
-      alert('Please provide a reason');
-      return;
-    }
 
-    this.adminService.hidePost(post.id, this.actionReason).subscribe({
+    this.adminService.hidePost(post.postId).subscribe({
       next: () => {
         alert('Post hidden successfully');
-        this.actionReason = '';
+        this.adminNote = '';
         this.selectedPost = null;
         this.loadPosts();
       },
-      error: (err) => alert('Failed to hide post: ' + (err.error || err.message))
+      
     });
+    post.enable = !post.enable
+    this.selectedPost = null;
+    this.cdr.detectChanges()
   }
 
   unhidePost(postId: number) {
@@ -232,10 +243,14 @@ export class Admin implements OnInit {
       next: () => {
         alert('Post unhidden successfully');
         this.loadPosts();
+        
       },
-      error: (err) => alert('Failed to unhide post: ' + (err.error || err.message))
+      
     });
-  }
+
+      this.cdr.detectChanges()
+
+    }
 
   deletePost(postId: number) {
     if (!confirm('Are you sure you want to delete this post?')) return;
@@ -263,7 +278,7 @@ export class Admin implements OnInit {
         alert('Report resolved successfully');
         this.adminNote = '';
         this.selectedReport = null;
-       
+
       },
       error: (err) => alert('Failed to resolve report: ' + (err.error || err.message))
     });
@@ -297,12 +312,12 @@ export class Admin implements OnInit {
       this.actionReason = 'Reported content violation';
     }
 
-    this.adminService.hidePost(postId, this.actionReason).subscribe({
-      next: () => {
+    this.adminService.hidePost(postId).subscribe({
+      next: (a) => {
         alert('Post hidden successfully');
         this.actionReason = '';
-      },
-      error: (err) => alert('Failed to hide post: ' + (err.error || err.message))
+        
+      }
     });
   }
 
@@ -315,5 +330,9 @@ export class Admin implements OnInit {
       },
       error: (err) => alert('Failed to delete post: ' + (err.error || err.message))
     });
+  }
+  GetViews(postId: number) {
+    console.log(postId)
+    this.route.navigate([`/post/${postId}`]);
   }
 }

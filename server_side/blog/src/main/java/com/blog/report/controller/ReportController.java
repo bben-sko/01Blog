@@ -70,9 +70,8 @@ public class ReportController {
                     dto.setReporterId(report.getReporter().getId());
                     dto.setReporterUsername(report.getReporter().getUsername());
                     dto.setReason(report.getReason());
-                    dto.setStatus(report.getStatus().name());
+                    dto.setEnable(report.getPost().isEnabled());
                     dto.setCreatedAt(report.getCreatedAt());
-                    dto.setAdminNote(report.getAdminNote());
                     return dto;
                 })
                 .toList();
