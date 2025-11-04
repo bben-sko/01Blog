@@ -1,5 +1,4 @@
 package com.blog.user.model;
-import org.springframework.security.access.method.P;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +20,7 @@ import lombok.Getter;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     @Column(nullable = false, unique = true)
     private String username;
@@ -36,5 +35,4 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.N_USER;
     private boolean enabled = true;
-    private String banReason;
 }

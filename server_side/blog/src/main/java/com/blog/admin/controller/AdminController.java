@@ -1,7 +1,6 @@
 package com.blog.admin.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,7 @@ import com.blog.admin.service.AdminPostService;
 import com.blog.admin.service.AdminReportService;
 import com.blog.admin.service.AdminUserService;
 import com.blog.config.JwtService;
-import com.blog.post.dto.PostResponseDto;
-import com.blog.user.dto.UserDTO;
-import com.blog.user.model.User;
+
 
 @RestController
 @RequestMapping("/api/admin")
@@ -157,7 +154,10 @@ public class AdminController {
                         .body("Authorization required");
             }
             adminUserService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
+            HashMap<String, String> response = new HashMap<String, String>();
+            response.put("message", "User deleted successfully");
+            response.put("err", null);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -207,9 +207,15 @@ public class AdminController {
                         .body("Authorization required");
             }
             AdminPostService.unhidePost(id);
-            return ResponseEntity.ok("Post unhidden successfully");
+            HashMap<String, String> response = new HashMap<String, String>();
+            response.put("message", "Post unhidden successfully");
+            response.put("err", null);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+             HashMap<String, String> response = new HashMap<String, String>();
+            response.put("message", null);
+            response.put("err", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
     }
 
@@ -229,6 +235,9 @@ public class AdminController {
                         .body("Authorization required");
             }
             AdminPostService.deletePost(id);
+            HashMap<String, String> response = new HashMap<String, String>();
+            response.put("message", "Post deleted successfully");
+            response.put("err", null);
             return ResponseEntity.ok("Post deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

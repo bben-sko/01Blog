@@ -77,7 +77,6 @@ public class AdminReportService {
         dto.setName(user.getName());
         dto.setAvatar(user.getAvatar());
         dto.setEnable(user.isEnabled());
-        dto.setBanReason(user.getBanReason());
         return dto;
     }
     

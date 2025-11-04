@@ -135,7 +135,7 @@ export class AdminService {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
-        return this.http.post(`${this.API_URL}/posts/${postId}/hide`, {  headers });
+        return this.http.post(`${this.API_URL}/posts/${postId}/hide`, {},{  headers });
     }
 
     unhidePost(postId: number) {
@@ -143,7 +143,7 @@ export class AdminService {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
-        return this.http.post(`${this.API_URL}/posts/${postId}/unhide`, {  headers });
+        return this.http.post(`${this.API_URL}/posts/${postId}/unhide`, {},{  headers });
     }
 
     deletePost(postId: number) {

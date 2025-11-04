@@ -8,9 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import com.blog.comment.model.Comment;
 
+import jakarta.transaction.Transactional;
+
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long>{
      List<Comment> findAllByPostIdOrderByCreatedAtDesc(Long postId);
-     void deleteByPostId(Long postId);
+
+     @Transactional
+     void deleteAllByPostId(Long postId);
 
 }

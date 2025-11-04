@@ -98,9 +98,7 @@ export class Admin implements OnInit {
     this.loadReport();
     this.loadUsers();
     this.loadPosts();
-    setTimeout(()=>{
-      this.checking = true
-    },1000)
+    this.checking = true
   }
 
 
@@ -201,7 +199,8 @@ export class Admin implements OnInit {
         alert('User banned successfully');
         this.actionReason = '';
         this.selectedUser = null;
-        this.loadUsers();
+        this.cdr.detectChanges()
+
       },
       error: (err) => {
         if (err.status == 401) {
@@ -217,7 +216,8 @@ export class Admin implements OnInit {
     this.adminService.unbanUser(user.id).subscribe({
       next: () => {
         alert('User unbanned successfully');
-        this.loadUsers();
+        this.cdr.detectChanges()
+
       },
       error: (err) => {
         if (err.status == 401) {
@@ -239,12 +239,12 @@ export class Admin implements OnInit {
         if (err.status == 401) {
           this.route.navigate(['/'])
         }
+        console.log(err)
       }
     });
   }
 
   hidePost(post: Post) {
-
     this.adminService.hidePost(post.postId).subscribe({
       next: () => {
         alert('Post hidden successfully');
@@ -271,10 +271,11 @@ export class Admin implements OnInit {
       next: () => {
         alert('Post unhidden successfully');
         this.loadPosts();
+        this.cdr.detectChanges()
 
       },
       error: (err) => {
-        this.route.navigate(['/'])
+        console.error(err)
       },
 
     });
@@ -298,6 +299,7 @@ export class Admin implements OnInit {
         if (err.status == 401) {
           this.route.navigate(['/'])
         }
+        console.error(err);
       }
     });
   }
@@ -375,10 +377,11 @@ export class Admin implements OnInit {
         if (err.status == 401) {
           this.route.navigate(['/'])
         }
+        
       }
     });
   }
   GetViews(postId: number) {
-    this.route.navigate([`/post/${postId}`]);
+     window.open(`post/${postId}`);
   }
 }

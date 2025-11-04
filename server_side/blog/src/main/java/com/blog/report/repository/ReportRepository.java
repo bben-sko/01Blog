@@ -17,4 +17,6 @@ public interface  ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByStatusOrderByCreatedAtDesc(ReportStatus status);
 
     List<Report> findByStatus(ReportStatus status);
+
+    void deleteAllByPostId(Long PostId);
 }

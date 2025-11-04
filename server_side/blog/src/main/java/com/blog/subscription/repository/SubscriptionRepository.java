@@ -17,5 +17,11 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     List<Subscription> findByFollowingId(Long followingId);
     @Transactional
     void deleteByFollowerIdAndFollowingId(Long followerId, Long followingId);
+
+    @Transactional
+    void deleteAllByFollowerId(Long followerId);
+
+    @Transactional
+    void deleteAllByFollowingId(Long followingId);
     
 }

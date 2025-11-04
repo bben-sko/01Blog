@@ -20,7 +20,7 @@ export class PostService {
         });
     }
 
-    getPostById(postId: number): Observable<Post> {
+    getPostById(postId: number) {
         const headers = this.getAuthHeaders();
         return this.http.get<Post>(`${this.apiUrl}/${postId}`, { headers });
     }
