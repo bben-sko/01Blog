@@ -4,10 +4,10 @@ import { Router } from "@angular/router";
 export class authcheck {
     constructor(private http: HttpClient, private router: Router) {}
 
-    checkAuth() {
+    checkAuth(route: String) {
         const token = localStorage.getItem('jwt');
         if (!token) {
-            this.router.navigate(['/login']);
+            this.router.navigate([route]);
             return;
         }
 
@@ -18,12 +18,12 @@ export class authcheck {
         this.http.get('http://localhost:8080/api/users/me', { headers })
             .subscribe({
                 next: () => {
-                   this.router.navigate(['/']);
+                    this.router.navigate(['/']);
                 },
                 error: (error) => {
                     console.error('Error fetching current user', error);
 
-                    this.router.navigate(['/login']);
+                    this.router.navigate([route]);
 
                 }
             });

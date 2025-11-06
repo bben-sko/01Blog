@@ -92,18 +92,7 @@ export class Posts {
     this.showMenu = !this.showMenu;
   }
 
-  addComment() { }
-  //   if (this.newComment.trim()) {
-  //     const comment: Comment = {
-  //       id: this.post.comments.length + 1,
-  //       username: 'Current User',
-  //       content: this.newComment,
-  //       timestamp: new Date()
-  //     };
-  //     this.post.comments.push(comment);
-  //     this.newComment = '';
-  //   }
-  // }
+ 
 
   reportPost(reason: string) {
     console.log(`Post reported for: ${reason}`);

@@ -10,19 +10,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.blog.Likes.service.LikeService;
 import com.blog.config.JwtService;
-import com.blog.user.service.UserService;
 
 @RestController
 @RequestMapping("/api/likes")
 
 public class LikeController {
     private final LikeService LikeService;
-    private final UserService userService;
     private final JwtService JwtService;
 
-    LikeController(LikeService LikeService, UserService userService, JwtService JwtService) {
+    LikeController(LikeService LikeService, JwtService JwtService) {
         this.LikeService = LikeService;
-        this.userService = userService;
         this.JwtService = JwtService;
     }
 

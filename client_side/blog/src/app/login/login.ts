@@ -27,7 +27,7 @@ export class Login implements  OnInit  {
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    new authcheck(this.http, this.router).checkAuth();
+    new authcheck(this.http, this.router).checkAuth('/login');
   }
   d() {
     this.submitted = true;

@@ -68,10 +68,10 @@ export class NewPost {
     this.http.post('http://localhost:8080/api/post/createpost', fd, { headers })
       .subscribe({
         next: () => this.router.navigate(['/']),
-        error: () => {
-          // console.error(err);
-          // this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
-          // this.submitting = false;
+        error: (err) => {
+          console.error(err);
+          this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
+          this.submitting = false;
         }
       });
   }

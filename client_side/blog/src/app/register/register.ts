@@ -41,7 +41,7 @@ export class Register implements OnInit{
     this.file = selected; // capture the File from <input type="file"> [web:124][web:132]
   }
   ngOnInit(): void {
-    new authcheck(this.http, this.router).checkAuth();
+    new authcheck(this.http, this.router).checkAuth("/register");
   }
   d() {
     this.submitted = true;

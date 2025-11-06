@@ -20,11 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.blog.Likes.service.LikeService;
 
 import com.blog.comment.service.CommentService;
+import com.blog.common.util.StorageService;
 import com.blog.post.dto.CreatePostRequest;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
-
+import com.blog.user.model.User;
 
 import jakarta.transaction.Transactional;
 
@@ -37,32 +38,23 @@ public class PostService {
     @Autowired
     private LikeService LikeService;
 
+    @Autowired
+    private StorageService storageService;
+
     public Post getPostById(Long postId) {
 
         return postRepository.findById(postId).orElse(null);
     }
 
     @Transactional
-    public CreatePostRequest createPost(String content, List<MultipartFile> files, Long userId) throws IOException {
+    public CreatePostRequest createPost(String content, List<MultipartFile> files, User user) throws IOException {
         Post post = new Post();
         post.setContent(content);
-        // post.setUserId(userId);
-
+        post.setUser(user);
         List<String> urls = new ArrayList<>();
-        if (files != null) {
-            Files.createDirectories(Path.of("uploads"));
+        if (files != null && !files.isEmpty()) {
             for (MultipartFile f : files) {
-                if (f.isEmpty())
-                    continue;
-                String name = Optional.ofNullable(f.getOriginalFilename()).orElse("media");
-                String ext = name.contains(".") ? name.substring(name.lastIndexOf('.')) : "";
-                String fileName = UUID.randomUUID() + ext;
-                Path target = Path.of("uploads").resolve(fileName);
-                String ct = Optional.ofNullable(f.getContentType()).orElse("");
-                if (!(ct.startsWith("image/") || ct.startsWith("video/")))
-                    continue;
-                Files.copy(f.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
-                urls.add("/media/" + fileName);
+                urls.add(storageService.saveAndReturnUrl(f));
             }
         }
         post.setMedia(urls);
