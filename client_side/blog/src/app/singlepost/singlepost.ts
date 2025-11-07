@@ -57,7 +57,19 @@ export class Singlepost implements OnInit {
 
   deletePost() {
     if (!this.post) return;
+    const token = localStorage.getItem('jwt');
 
+    if (!token) {
+      console.error('No JWT token found');
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.delete('http://localhost:8080/api/likes', {}).subscribe({
+      next:() => {},
+      error: (err) => {}
+    })
   }
   loadcomments(postId: number) {
     const token = localStorage.getItem('jwt');

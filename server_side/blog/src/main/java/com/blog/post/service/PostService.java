@@ -68,22 +68,10 @@ public class PostService {
 
     @Transactional
     public PostResponseDto GetSinglePosts(Long postId, Long userid) {
-
-        // Use JOIN FETCH to eagerly load user
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        // Check if user liked the post
-
         boolean likedByUser = LikeService.isLikedByUser(userid, postId);
-
-        // Convert to DTO
-        PostResponseDto dto = PostResponseDto.fromEntity(post, likedByUser, false);
-
-        // Add comments
-        // List<Comment> comments = CommentService.getCommentPost(postId);
-
-        // dto.setComments(comments);
+        PostResponseDto dto = PostResponseDto.fromEntity(post, likedByUser, post.getUser().getId().equals(userid));
 
         return dto;
     }
@@ -100,6 +88,10 @@ public class PostService {
         // post.setMedia(newMedia);
 
         return postRepository.save(post);
+    }
+
+    public void DeletePost(Long postId) {
+        postRepository.deleteById(postId);
     }
 
 }

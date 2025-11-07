@@ -1,28 +1,28 @@
 package com.blog.post.controller;
 
+import java.lang.Thread.State;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Authentication;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
 import com.blog.config.JwtService;
-import com.blog.post.dto.CreatePostRequest;
 import com.blog.post.dto.CreatePostResponse;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.dto.ProfileReponse;
@@ -52,12 +52,11 @@ public class PostController {
     public ResponseEntity<?> createPost(
             @RequestPart("content") String content,
             @RequestPart(name = "files", required = false) List<MultipartFile> files,
-            Authentication authentication,@RequestHeader("Authorization") String authorizationHeader) {
+            Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            // If your JWT filter sets Authentication with principal id, use it here.
-             String jwt = authorizationHeader.substring(7);
+            String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
-                throw new Exception("Invalid JWT token.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
@@ -74,14 +73,15 @@ public class PostController {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
-                throw new Exception("Invalid JWT token.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
             List<Post> posts = PostService.GetPostsProfile(user.getId());
 
             List<PostResponseDto> postDtos = posts.stream()
-                    .map(post -> PostResponseDto.fromEntity(post, likeService.isLikedByUser(userId, post.getId()), post.getUser().getId().equals(userId)))
+                    .map(post -> PostResponseDto.fromEntity(post, likeService.isLikedByUser(userId, post.getId()),
+                            post.getUser().getId().equals(userId)))
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(postDtos);
@@ -97,16 +97,36 @@ public class PostController {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
-                throw new Exception("Invalid JWT token.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
-            List<Post> posts = PostService.GetPostsProfile(user.getId());
-            List<PostResponseDto> postDtos = posts.stream()
-                    .map(post -> PostResponseDto.fromEntity(post, false, post.getUser().getId().equals(userId)))
-                    .collect(Collectors.toList());
 
-            return ResponseEntity.ok(postDtos);
+            return ResponseEntity.ok(user);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{Postid}")
+    public ResponseEntity<?> DeletePost(@PathVariable Long Postid, Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
+            if (!post.getUserId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            PostService.DeletePost(Postid);
+            HashMap<String, String> response = new HashMap<>();
+            response.put("message", "delete post");
+            response.put("err", null);
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
@@ -125,7 +145,8 @@ public class PostController {
             List<Post> posts = PostService.GetPostsHome(userId);
 
             List<PostResponseDto> postDtos = posts.stream()
-                    .map(post -> PostResponseDto.fromEntity(post, false, post.getUser().getId().equals(userId)))
+                    .map(post -> PostResponseDto.fromEntity(post, likeService.isLikedByUser(userId,
+                            post.getId()), post.getUser().getId().equals(userId)))
                     .collect(Collectors.toList());
 
             return ResponseEntity.ok(postDtos);
