@@ -39,7 +39,10 @@ public class LikeService {
   public void unlike(Long userId, Long postId) {
     LikeRepository.deleteByUserIdAndPostId(userId, postId);
   }
-
+  
+  public void deletePostLikes(Long postid) {
+        LikeRepository.deleteAllByPostId(postid);
+    }
 
 public boolean isLikedByUser(Long userId, Long postId) {
     return LikeRepository.existsByUserIdAndPostId(userId, postId);

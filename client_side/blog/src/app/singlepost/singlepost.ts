@@ -66,9 +66,13 @@ export class Singlepost implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.delete('http://localhost:8080/api/likes', {}).subscribe({
-      next:() => {},
-      error: (err) => {}
+    this.http.delete(`http://localhost:8080/api/post/${this.post.postId}`, { headers }).subscribe({
+      next:() => {
+        this.router.navigate(['/'])
+      },
+      error: (err) => {
+        console.log(err)
+      }
     })
   }
   loadcomments(postId: number) {

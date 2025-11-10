@@ -66,6 +66,7 @@ public class PostService {
         return postRepository.findByUserId(userId);
     }
 
+   
     @Transactional
     public PostResponseDto GetSinglePosts(Long postId, Long userid) {
         Post post = postRepository.findById(postId)
@@ -91,6 +92,7 @@ public class PostService {
     }
 
     public void DeletePost(Long postId) {
+        LikeService.deletePostLikes(postId);
         postRepository.deleteById(postId);
     }
 
