@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NavBar } from '../shered/nav-bar/nav-bar';
+import { NewPost } from '../newpost/newpost';
 
 interface CreateCommentRequest {
   content: string,
@@ -20,6 +21,8 @@ interface Comment {
   avatar?: string;
   time: Date;
 }
+type Preview = { url: string; type: string; file: File };
+
 @Component({
   selector: 'app-singlepost',
   imports: [CommonModule, FormsModule, NavBar],
@@ -38,6 +41,13 @@ export class Singlepost implements OnInit {
   reportText: string = '';
   reportSubmitted: boolean = false;
   showReportModal: boolean = false;
+  converteToEdit: boolean = false;
+  submitting: boolean = false;
+  files: File[] = [];
+  previews: Preview[] = [];
+  newcontent = this.post?.content;
+  postErr: string = "";
+ 
 
   constructor(
     private route: ActivatedRoute,
@@ -100,7 +110,10 @@ export class Singlepost implements OnInit {
   }
   editPost() {
     if (!this.post) return;
-    // this.router.navigate(['/edit-post', this.post.postId]);
+  }
+
+  edit() {
+    this.converteToEdit = !this.converteToEdit;
   }
 
   loadPost(postId: number) {
@@ -252,4 +265,28 @@ export class Singlepost implements OnInit {
   }
   closeReportModal() { }
   openReportModal() { }
+
+
+  onFilesSelected(evt: Event, kind: 'image' | 'video') {
+    const input = evt.target as HTMLInputElement;
+    if (!input.files) return;
+
+    Array.from(input.files).forEach((f) => {
+      if (kind === 'image' && !f.type.startsWith('image/')) return;
+      if (kind === 'video' && !f.type.startsWith('video/')) return;
+
+      this.files.push(f);
+      this.previews.push({ url: URL.createObjectURL(f), type: f.type, file: f });
+    });
+
+    input.value = '';
+  }
+
+  removeAt(i: number) {
+    const p = this.previews[i];
+    if (p) URL.revokeObjectURL(p.url);
+    this.previews.splice(i, 1);
+    this.files.splice(i, 1);
+  }
+
 }

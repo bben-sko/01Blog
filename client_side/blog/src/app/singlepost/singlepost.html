@@ -1,6 +1,64 @@
 <app-nav-bar />
+
+
 <div class="container py-4">
   <!-- Post Card -->
+   <div *ngIf="converteToEdit">
+      <div class="new-post-container">
+        <div class="new-post-card">
+          <!-- Header -->
+          <div class="post-header">
+            <h2>Create New Post</h2>
+            <button class="close-btn" (click)="edit()">✕</button>
+          </div>
+      
+          <!-- Error / status -->
+          <div class="error" *ngIf="postErr">{{ postErr }}</div>
+      
+          <!-- Composer -->
+          <div class="post-content-section">
+            <textarea [(ngModel)]="newcontent" name="content" placeholder="What's on your mind?" class="post-textarea"
+              rows="6">
+            </textarea>
+      
+            <!-- Media previews grid -->
+            <div class="grid-previews" *ngIf="previews?.length">
+              <div class="media-preview" *ngFor="let m of previews; let i = index">
+                <button type="button" class="remove-media-btn" (click)="removeAt(i)">✕</button>
+      
+                <img *ngIf="m.type.startsWith('image/')" [src]="m.url" alt="Image preview" class="preview-image" />
+                <video *ngIf="m.type.startsWith('video/')" [src]="m.url" class="preview-video" controls></video>
+              </div>
+            </div>
+          </div>
+          <div class="media-options">
+            <span class="add-to-post">Add to your post:</span>
+      
+            <div class="media-buttons">
+              <label class="media-btn" title="Add Photos">
+                <input type="file" accept="image/*" multiple (change)="onFilesSelected($event, 'image')" hidden>
+                <span class="icon">🖼️</span>
+                Photos
+              </label>
+      
+              <label class="media-btn" title="Add Videos">
+                <input type="file" accept="video/*" multiple (change)="onFilesSelected($event, 'video')" hidden>
+                <span class="icon">🎥</span>
+                Videos
+              </label>
+            </div>
+          </div>
+      
+          <div class="action-buttons">
+            <button class="cancel-btn" type="button" (click)="edit()">Cancel</button>
+            <button class="post-btn" type="button"  [disabled]="submitting">
+              {{ submitting ? 'Posting…' : 'Post' }}
+            </button>
+          </div>
+        </div>
+      </div>
+   </div>
+   <div *ngIf="!converteToEdit"></div>
   <div class="card post-card shadow-sm" *ngIf="post">
     <!-- Header -->
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -24,7 +82,7 @@
       
       <!-- Owner Actions -->
       <div *ngIf="post.ismy" class="d-flex gap-2">
-        <button class="btn btn-sm btn-outline-primary" (click)="editPost()">
+        <button class="btn btn-sm btn-outline-primary" (click)="edit()">
           <i class="bi bi-pencil"></i> Edit
         </button>
         <button class="btn btn-sm btn-outline-danger" (click)="deletePost()">
