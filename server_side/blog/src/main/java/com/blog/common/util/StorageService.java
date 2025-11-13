@@ -41,7 +41,8 @@ public class StorageService {
 
         // Validate file type
         String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
+        System.out.println(contentType);
+        if (contentType == null || !(contentType.startsWith("image/") || contentType.startsWith("video/"))) {
             throw new IllegalArgumentException("Only image files are allowed");
         }
 

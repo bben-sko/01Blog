@@ -69,9 +69,9 @@ export class NewPost {
       .subscribe({
         next: () => this.router.navigate(['/']),
         error: (err) => {
+          this.submitting = false;
           console.error(err);
           this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
-          this.submitting = false;
         }
       });
   }

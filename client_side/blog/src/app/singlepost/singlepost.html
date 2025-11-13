@@ -8,7 +8,7 @@
         <div class="new-post-card">
           <!-- Header -->
           <div class="post-header">
-            <h2>Create New Post</h2>
+            <h2>Edit post</h2>
             <button class="close-btn" (click)="edit()">✕</button>
           </div>
       
@@ -58,7 +58,8 @@
         </div>
       </div>
    </div>
-   <div *ngIf="!converteToEdit"></div>
+  
+   <div *ngIf="!converteToEdit">
   <div class="card post-card shadow-sm" *ngIf="post">
     <!-- Header -->
     <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -96,11 +97,19 @@
       <p class="post-content" *ngIf="post.content">{{ post.content }}</p>
       
       <!-- Media -->
-      <div class="media-container" *ngIf="post.media?.length">
-        <img *ngFor="let mediaUrl of post.media" 
-             [src]="mediaUrl" 
-             alt="Post media" 
-             class="post-media">
+    
+      <div class="media-container" *ngIf="post.media?.length" >
+          @for (mediaUrl of post.media; track mediaUrl) {
+        @if (mediaUrl.endsWith('.mp4')) {
+          <video  [src]="mediaUrl"  alt="Post media" 
+               class="post-media" controls></video>
+        }@else {
+          <img *ngFor="let mediaUrl of post.media" 
+               [src]="mediaUrl" 
+               alt="Post media" 
+               class="post-media">
+        }
+      }
       </div>
     </div>
     
@@ -201,5 +210,6 @@
         </button>
       </div>
     </div>
+  </div>
   </div>
 </div>

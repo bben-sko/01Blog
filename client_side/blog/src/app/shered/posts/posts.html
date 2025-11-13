@@ -17,7 +17,7 @@
 
   <!-- Post Content -->
   <div class="post-content">
-    <p *ngIf="post.content">{{ post.content }}</p>
+    <p *ngIf="post.content">{{ post.content.substring(0,50) }} ...</p>
     
     <!-- Image -->
     <!-- <img *ngIf="post.imageUrl" 

@@ -6,7 +6,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NavBar } from '../shered/nav-bar/nav-bar';
-import { NewPost } from '../newpost/newpost';
 
 interface CreateCommentRequest {
   content: string,
@@ -64,7 +63,10 @@ export class Singlepost implements OnInit {
       this.loadcomments(postId);
     });
   }
-
+  async loadPostToEdit() {
+    this.newcontent = this.post?.content
+    await this.loadExistingImages(this.post?.media)
+  }
   deletePost() {
     if (!this.post) return;
     const token = localStorage.getItem('jwt');
@@ -112,8 +114,11 @@ export class Singlepost implements OnInit {
     if (!this.post) return;
   }
 
-  edit() {
+  async edit() {
     this.converteToEdit = !this.converteToEdit;
+    
+    await this.loadPostToEdit();
+   
   }
 
   loadPost(postId: number) {
@@ -265,7 +270,34 @@ export class Singlepost implements OnInit {
   }
   closeReportModal() { }
   openReportModal() { }
+  async loadExistingImages(imageUrls: string[]| undefined) {
+    if (imageUrls == undefined || this.previews.length > 0) return;
+    
+    for (const url of imageUrls) {
+      try {
+        // Fetch the image from your backend
+        const response = await fetch(url);
+        const blob = await response.blob();
 
+        // Extract filename from URL
+        // e.g., "77186d0c-923d-4cfa-99c4-200c7451fa69.png"
+        const filename = url.split('/').pop() || 'image.png';
+
+        // Convert blob to File object
+        const file = new File([blob], filename, { type: blob.type });
+
+        // Add to your existing arrays (same as your onFilesSelected does)
+        this.files.push(file);
+        this.previews.push({
+          url: url, // Use the original URL for preview
+          type: blob.type,
+          file: file
+        });
+      } catch (error) {
+        console.error(`Failed to load image: ${url}`, error);
+      }
+    }
+  }
 
   onFilesSelected(evt: Event, kind: 'image' | 'video') {
     const input = evt.target as HTMLInputElement;

@@ -54,6 +54,7 @@ public class PostController {
             @RequestPart(name = "files", required = false) List<MultipartFile> files,
             Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
         try {
+            System.out.println("test---------------------------------");
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -113,25 +114,19 @@ public class PostController {
     public ResponseEntity<?> DeletePost(@PathVariable Long Postid, Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            System.out.println("test ==================");
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
-            System.out.println("test1 ==================");
 
             Long userId = JwtService.extractUserId(jwt);
-            System.out.println("test2 ==================");
 
             PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
-            System.out.println("test3 ==================");
             // if (!post.getUserId().equals(userId)) {
             //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             // }
-            System.out.println("test4 ==================");
 
             PostService.DeletePost(Postid);
-            System.out.println("test5 ==================");
 
             HashMap<String, String> response = new HashMap<>();
             response.put("message", "delete post");
