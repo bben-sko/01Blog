@@ -47,7 +47,7 @@ public class PostService {
     }
 
     @Transactional
-    public CreatePostRequest createPost(String content, List<MultipartFile> files, User user) throws IOException {
+    public Post createPost(String content, List<MultipartFile> files, User user) throws IOException {
         Post post = new Post();
         post.setContent(content);
         post.setUser(user);
@@ -59,7 +59,7 @@ public class PostService {
         }
         post.setMedia(urls);
         Post saved = postRepository.save(post);
-        return new CreatePostRequest(saved.getContent(), saved.getMedia());
+        return saved;
     }
 
     public List<Post> GetPostsProfile(Long userId) {

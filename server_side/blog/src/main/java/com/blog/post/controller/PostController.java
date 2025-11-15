@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
 import com.blog.config.JwtService;
+import com.blog.notification.service.NotificationService;
 import com.blog.post.dto.CreatePostResponse;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.dto.ProfileReponse;
@@ -43,6 +44,8 @@ public class PostController {
     private JwtService JwtService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private NotificationService notificationService;
 
     PostController(PostService PostService) {
         this.PostService = PostService;
@@ -54,14 +57,15 @@ public class PostController {
             @RequestPart(name = "files", required = false) List<MultipartFile> files,
             Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
         try {
-            System.out.println("test---------------------------------");
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
-            PostService.createPost(content, files, user);
+            Post save = PostService.createPost(content, files, user);
+            notificationService.notifySubscribers(save, user);
+
             return ResponseEntity.ok(new CreatePostResponse("success", null));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new CreatePostResponse(null, e.getMessage()));
