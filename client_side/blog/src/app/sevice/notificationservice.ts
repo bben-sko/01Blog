@@ -32,17 +32,17 @@ export class NotificationService {
 
   
 
-    loadNotifications(): Observable<Notification[]> {
-        return new Observable(observer => {
-            this.http.get<Notification[]>(this.apiUrl).subscribe({
+    loadNotifications(): any {
+        this.http.get<Notification[]>(this.apiUrl).subscribe({
                 next: (notifications) => {
-                   
+                    return notifications
                 },
                 error: (error) => {
-                    observer.error(error);
+                    console.log(error.message + "=============")
+                    return []
                 }
             });
-        });
+       
     }
 
 
@@ -51,15 +51,7 @@ export class NotificationService {
     }
 
     markAsRead(notificationId: number) {
-            this.http.put<void>(`${this.apiUrl}/${notificationId}/read`, {}).subscribe({
-                next: () => {
-                },
-                error: (error) => {
-                 console.log(error);
-                 
-                }
-
-            });
+          return  this.http.put<void>(`${this.apiUrl}/${notificationId}/read`, {})
         
     }
 

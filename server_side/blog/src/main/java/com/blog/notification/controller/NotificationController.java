@@ -4,15 +4,18 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blog.config.JwtService;
 import com.blog.notification.model.Notification;
 import com.blog.notification.service.NotificationService;
 import com.blog.user.model.User;
@@ -23,12 +26,26 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private JwtService JwtService;
 
-    // Get all notifications for current user
+   
     @GetMapping
-    public ResponseEntity<List<Notification>> getNotifications(@AuthenticationPrincipal User user) {
-        List<Notification> notifications = notificationService.getUserNotifications(user.getId());
-        return ResponseEntity.ok(notifications);
+    public ResponseEntity<List<Notification>> getNotifications(
+            @RequestHeader("Authorization") String authorizationHeader) {
+         try {
+                String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            List<Notification> notifications = notificationService.getUserNotifications(userId);
+            return ResponseEntity.ok(notifications);
+         }catch (Exception e) {
+                
+         }   
+        // System.out.println("test get notificcations ==================================="+user.getId);
+       
     }
 
     // Get unread notifications only
