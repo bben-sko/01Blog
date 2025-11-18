@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, interval, Subscription } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
 
 export interface Notification {
     id: number;
@@ -32,19 +31,7 @@ export class NotificationService {
 
   
 
-    loadNotifications(): any {
-        this.http.get<Notification[]>(this.apiUrl).subscribe({
-                next: (notifications) => {
-                    return notifications
-                },
-                error: (error) => {
-                    console.log(error.message + "=============")
-                    return []
-                }
-            });
-       
-    }
-
+    
 
     getUnreadCount(): Observable<number> {
         return this.http.get<number>(`${this.apiUrl}/unread-count`);

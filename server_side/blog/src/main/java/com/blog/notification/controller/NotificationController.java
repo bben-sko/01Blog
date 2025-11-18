@@ -42,9 +42,8 @@ public class NotificationController {
             List<Notification> notifications = notificationService.getUserNotifications(userId);
             return ResponseEntity.ok(notifications);
          }catch (Exception e) {
-                
+                return ResponseEntity.badRequest().body(null);
          }   
-        // System.out.println("test get notificcations ==================================="+user.getId);
        
     }
 
