@@ -56,7 +56,6 @@ export class Notification implements OnInit {
                       this.notifications = notifications
                      this.cdr.detectChanges();
 
-                      
                     },
                     error: (error) => {
                         return []
@@ -65,20 +64,8 @@ export class Notification implements OnInit {
   }  
   onNotificationClick(notification: NotificationItem): void {
     if (!notification.isRead) {
-      // Mark as read locally
       notification.isRead = true;
-
-      // Uncomment when using real service
-      // this.notificationService.markAsRead(notification.id).subscribe();
+      this.router.navigate([`/post/${notification.postId}`])
     }
-    // Navigate to the post
-    this.router.navigate(['/posts', notification.postId]);
   }
-
-  shoewpost(number: postid) {
-    
-  }
-
-
-
 }

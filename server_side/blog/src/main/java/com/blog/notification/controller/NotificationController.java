@@ -1,9 +1,7 @@
 package com.blog.notification.controller;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.config.JwtService;
@@ -49,40 +46,39 @@ public class NotificationController {
 
     // Get unread notifications only
     @GetMapping("/unread")
-    public ResponseEntity<List<Notification>> getUnreadNotifications(@AuthenticationPrincipal User user) {
-        List<Notification> notifications = notificationService.getUnreadNotifications(user.getId());
+    public ResponseEntity<List<Notification>> getUnreadNotifications( @RequestHeader("Authorization") String authorizationHeader) {
+         try {
+                String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Long userId = JwtService.extractUserId(jwt);
+        List<Notification> notifications = notificationService.getUnreadNotifications(userId);
         return ResponseEntity.ok(notifications);
+        } catch (Exception e) {
+        return ResponseEntity.badRequest().body(null);
+    }
     }
 
-    // Get new notifications after a specific timestamp (for polling)
-    @GetMapping("/new")
-    public ResponseEntity<List<Notification>> getNewNotifications(
-            @AuthenticationPrincipal User user,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime after) {
-        List<Notification> notifications = notificationService.getNotificationsAfter(user.getId(), after);
-        return ResponseEntity.ok(notifications);
-    }
+    // @GetMapping("/new")
+    // public ResponseEntity<List<Notification>> getNewNotifications(
+    //         @AuthenticationPrincipal User user,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime after) {
+    //     List<Notification> notifications = notificationService.getNotificationsAfter(user.getId(), after);
+    //     return ResponseEntity.ok(notifications);
+    // }
 
-    // Get unread count
     @GetMapping("/unread-count")
     public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal User user) {
         long count = notificationService.getUnreadCount(user.getId());
         return ResponseEntity.ok(count);
     }
 
-    // Mark specific notification as read
     @PutMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(
             @PathVariable Long id,
             @AuthenticationPrincipal User user) {
         notificationService.markAsRead(id, user.getId());
-        return ResponseEntity.ok().build();
-    }
-
-    // Mark all notifications as read
-    @PutMapping("/read-all")
-    public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal User user) {
-        notificationService.markAllAsRead(user.getId());
         return ResponseEntity.ok().build();
     }
 }
