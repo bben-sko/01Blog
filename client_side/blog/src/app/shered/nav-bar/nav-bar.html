@@ -34,15 +34,17 @@
               title="Create Post"
               aria-label="Create Post">
         <i class="bi bi-plus-lg"></i>
+        <!-- Profile -->
       </button>
-      
-      <!-- Profile -->
       <button class="btn btn-icon" 
-              [routerLink]="[`/profile/${profileusername}`]" 
-              title="Profile"
-              aria-label="Profile">
-        <i class="bi bi-person-fill"></i>
-      </button>
+      [routerLink]="[`/profile/${profileusername}`]" 
+      title="Profile"
+      aria-label="Profile">
+      <i class="bi bi-person-fill"></i>
+    </button>
+    <button class="btn btn-icon" (click)="Logout()" title="Logout" aria-label="Logout">
+      <i class="bi bi-box-arrow-left"></i>
+  </button>
     </div>
   </div>
 </nav>

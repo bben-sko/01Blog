@@ -1,4 +1,5 @@
 package com.blog.notification.controller;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,59 +27,71 @@ public class NotificationController {
     @Autowired
     private JwtService JwtService;
 
-   
     @GetMapping
     public ResponseEntity<List<Notification>> getNotifications(
             @RequestHeader("Authorization") String authorizationHeader) {
-         try {
-                String jwt = authorizationHeader.substring(7);
+        try {
+            String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
-            List<Notification> notifications = notificationService.getUserNotifications(userId);
+            List<Notification> notifications = notificationService.getUnreadNotifications(userId);
             return ResponseEntity.ok(notifications);
-         }catch (Exception e) {
-                return ResponseEntity.badRequest().body(null);
-         }   
-       
-    }
-
-    // Get unread notifications only
-    @GetMapping("/unread")
-    public ResponseEntity<List<Notification>> getUnreadNotifications( @RequestHeader("Authorization") String authorizationHeader) {
-         try {
-                String jwt = authorizationHeader.substring(7);
-            if (jwt == null || jwt.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-            }
-            Long userId = JwtService.extractUserId(jwt);
-        List<Notification> notifications = notificationService.getUnreadNotifications(userId);
-        return ResponseEntity.ok(notifications);
         } catch (Exception e) {
-        return ResponseEntity.badRequest().body(null);
-    }
+            return ResponseEntity.badRequest().body(null);
+        }
+
     }
 
-    // @GetMapping("/new")
-    // public ResponseEntity<List<Notification>> getNewNotifications(
-    //         @AuthenticationPrincipal User user,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime after) {
-    //     List<Notification> notifications = notificationService.getNotificationsAfter(user.getId(), after);
-    //     return ResponseEntity.ok(notifications);
+    // // Get unread notifications only
+    // @GetMapping("/unread")
+    // public ResponseEntity<List<Notification>> getUnreadNotifications(
+    // @RequestHeader("Authorization") String authorizationHeader) {
+    // try {
+    // String jwt = authorizationHeader.substring(7);
+    // if (jwt == null || jwt.isEmpty()) {
+    // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    // }
+    // Long userId = JwtService.extractUserId(jwt);
+    // List<Notification> notifications =
+    // notificationService.getUnreadNotifications(userId);
+    // return ResponseEntity.ok(notifications);
+    // } catch (Exception e) {
+    // return ResponseEntity.badRequest().body(null);
+    // }
     // }
 
     @GetMapping("/unread-count")
-    public ResponseEntity<Long> getUnreadCount(@AuthenticationPrincipal User user) {
-        long count = notificationService.getUnreadCount(user.getId());
-        return ResponseEntity.ok(count);
+    public ResponseEntity<Long> getUnreadCount(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            long count = notificationService.getUnreadCount(userId);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     @PutMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(
             @PathVariable Long id,
-            @AuthenticationPrincipal User user) {
-        notificationService.markAsRead(id, user.getId());
-        return ResponseEntity.ok().build();
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            notificationService.markAsRead(id, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

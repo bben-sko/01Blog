@@ -61,4 +61,8 @@ export class NavBar implements OnInit {
         }
       });
   }
+  Logout() {
+    localStorage.removeItem("jwt")
+    this.router.navigate(["/login"])
+  }
 }

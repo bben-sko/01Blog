@@ -65,7 +65,27 @@ export class Notification implements OnInit {
   onNotificationClick(notification: NotificationItem): void {
     if (!notification.isRead) {
       notification.isRead = true;
-      this.router.navigate([`/post/${notification.postId}`])
+      const token = localStorage.getItem('jwt');
+
+      if (!token) {
+        console.error('No JWT token found');
+        return;
+      }
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+      this.http.put(`http://localhost:8080/api/notifications/${notification.id}/read`, {}, { headers }).subscribe({
+        next: () => {
+          this.router.navigate([`/post/${notification.postId}`])
+        },
+        error: (error) => {
+          console.error(error)
+          //notification post not found or samthing else
+        }
+      });
+     
     }
   }
 }
+
+
