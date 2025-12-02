@@ -17,6 +17,7 @@ interface UserResponse {
 export class NavBar implements OnInit {
   username: UserResponse | null = null;
   profileusername: string = "";
+  menuOpen = false;
 
   constructor(
     private router: Router,
@@ -64,5 +65,9 @@ export class NavBar implements OnInit {
   Logout() {
     localStorage.removeItem("jwt")
     this.router.navigate(["/login"])
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
 }

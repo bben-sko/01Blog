@@ -70,13 +70,29 @@ i {
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
 
-/* Icons */
 .btn-icon i {
   font-size: 1.25rem;
   line-height: 1;
 }
 
-/* Notification Badge */
+.navbar-toggler {
+  border: none;
+  outline: none;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.navbar-actions {
+  gap: 0.5rem;
+}
+
 .badge {
   font-size: 0.65rem;
   padding: 0.25em 0.4em;
@@ -104,6 +120,28 @@ i {
   
   .navbar-actions {
     gap: 0.25rem;
+  }
+  
+  .navbar-actions {
+    position: fixed;
+    top: 64px;
+    right: 0;
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #fff;
+    border-radius: 0 0 0 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .navbar-actions.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 

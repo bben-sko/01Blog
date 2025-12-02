@@ -1,12 +1,16 @@
 <nav class="navbar navbar-light bg-white sticky-top shadow-sm">
   <div class="container-fluid navbar-container">
     <!-- Brand -->
-    <a class="navbar-brand" routerLink="/">
+    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
       <h2 class="mb-0 brand-text">01BLOG</h2>
     </a>
+
+    <button class="navbar-toggler d-inline-flex d-md-none" type="button" (click)="toggleMenu()" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     
     <!-- Actions -->
-    <div class="d-flex align-items-center gap-2 navbar-actions">
+    <div class="d-flex align-items-center gap-2 navbar-actions" [class.open]="menuOpen">
       <!-- Add User -->
       <button class="btn btn-icon" 
               routerLink="/adduser" 
@@ -21,7 +25,6 @@
               routerLink="/notification" 
               aria-label="Notifications">
         <i class="bi bi-bell"></i>
-        <!-- Notification badge (optional) -->
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
           3
           <span class="visually-hidden">unread notifications</span>
@@ -34,17 +37,18 @@
               title="Create Post"
               aria-label="Create Post">
         <i class="bi bi-plus-lg"></i>
-        <!-- Profile -->
       </button>
+
       <button class="btn btn-icon" 
-      [routerLink]="[`/profile/${profileusername}`]" 
-      title="Profile"
-      aria-label="Profile">
-      <i class="bi bi-person-fill"></i>
-    </button>
-    <button class="btn btn-icon" (click)="Logout()" title="Logout" aria-label="Logout">
-      <i class="bi bi-box-arrow-left"></i>
-  </button>
+        [routerLink]="[`/profile/${profileusername}`]" 
+        title="Profile"
+        aria-label="Profile">
+        <i class="bi bi-person-fill"></i>
+      </button>
+
+      <button class="btn btn-icon" (click)="Logout()" title="Logout" aria-label="Logout">
+        <i class="bi bi-box-arrow-left"></i>
+      </button>
     </div>
   </div>
 </nav>
