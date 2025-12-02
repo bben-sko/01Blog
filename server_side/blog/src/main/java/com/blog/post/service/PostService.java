@@ -19,9 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
 
-import com.blog.comment.service.CommentService;
 import com.blog.common.util.StorageService;
-import com.blog.post.dto.CreatePostRequest;
+import com.blog.common.exception.ResourceNotFoundException;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
@@ -70,7 +69,7 @@ public class PostService {
     @Transactional
     public PostResponseDto GetSinglePosts(Long postId, Long userid) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         boolean likedByUser = LikeService.isLikedByUser(userid, postId);
         PostResponseDto dto = PostResponseDto.fromEntity(post, likedByUser, post.getUser().getId().equals(userid));
 
@@ -85,7 +84,7 @@ public class PostService {
     public PostResponseDto updatePost(Long postId, String newContent, List<MultipartFile> newFiles,
             List<String> existingMedia, User user) throws IOException {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
         if (!post.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized");

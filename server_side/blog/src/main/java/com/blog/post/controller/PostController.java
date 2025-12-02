@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
 import com.blog.config.JwtService;
+import com.blog.common.exception.ResourceNotFoundException;
 import com.blog.notification.service.NotificationService;
 import com.blog.post.dto.CreatePostResponse;
 import com.blog.post.dto.PostResponseDto;
@@ -94,6 +95,8 @@ public class PostController {
 
             return ResponseEntity.ok(postDtos);
 
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
         }
@@ -124,6 +127,9 @@ public class PostController {
             return ResponseEntity.ok(updatedPost);
 
         } catch (RuntimeException e) {
+            if (e instanceof ResourceNotFoundException) {
+                throw e;
+            }
             if ("Unauthorized".equals(e.getMessage())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
             }
@@ -156,6 +162,8 @@ public class PostController {
             response.put("err", null);
             return ResponseEntity.ok(response);
 
+        } catch (ResourceNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new ProfileReponse(null, e.getMessage()));
         }
@@ -188,18 +196,18 @@ public class PostController {
 
     @GetMapping("/{Postid}")
     public ResponseEntity<?> GetSinglePost(@PathVariable Long Postid, Authentication authentication,
-            @RequestHeader("Authorization") String authorizationHeader) {
-        try {
-            String jwt = authorizationHeader.substring(7);
-            if (jwt == null || jwt.isEmpty()) {
-                ResponseEntity.badRequest().body("Invalid JWT token.");
-            }
-            Long userId = JwtService.extractUserId(jwt);
-            PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
-            return ResponseEntity.ok(post);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e);
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization required");
         }
 
+        String jwt = authorizationHeader.substring(7);
+        if (jwt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token.");
+        }
+
+        Long userId = JwtService.extractUserId(jwt);
+        PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
+        return ResponseEntity.ok(post);
     }
 }

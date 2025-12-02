@@ -12,6 +12,7 @@ import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
 import com.blog.user.model.User;
 import com.blog.user.repository.UserRepository;
+import com.blog.common.exception.ResourceNotFoundException;
 
 @Service
 public class CommentService {
@@ -32,7 +33,7 @@ public class CommentService {
             .orElseThrow(() -> new RuntimeException("User not found"));
         
         Post post = PostRepository.findById(request.getPostId())
-            .orElseThrow(() -> new RuntimeException("Post not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         
         Comment comment = new Comment();
         comment.setContent(request.getContent());

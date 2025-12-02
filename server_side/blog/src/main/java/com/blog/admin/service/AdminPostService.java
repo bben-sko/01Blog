@@ -8,6 +8,7 @@ import com.blog.comment.repository.CommentRepository;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
 import com.blog.report.repository.ReportRepository;
+import com.blog.common.exception.ResourceNotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -27,14 +28,14 @@ public class AdminPostService {
 
     public void hidePost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         post.setEnabled(false);
         postRepository.save(post);
     }
 
     public void unhidePost(Long postId) {
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         post.setEnabled(true);
         postRepository.save(post);
     }
