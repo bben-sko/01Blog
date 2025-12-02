@@ -93,6 +93,7 @@
   display: flex;
   gap: 40px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -142,11 +143,13 @@
   margin-top: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .tabs-nav {
   display: flex;
   border-bottom: 1px solid #e4e6eb;
+  flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -331,62 +334,136 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .header-content {
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 24px;
   }
-  
-  .profile-avatar {
-    width: 120px;
-    height: 120px;
+
+  .avatar-section {
+    margin-bottom: 8px;
   }
-  
+
   .username-row {
     flex-direction: column;
-    align-items: center;
+    gap: 12px;
   }
-  
+
   .stats-row {
     justify-content: center;
     gap: 24px;
   }
-  
-  .tabs-nav {
-    overflow-x: auto;
+
+  .tabs-container {
+    margin: 20px 16px;
   }
-  
-  .tab-btn {
-    min-width: 120px;
-    font-size: 12px;
+
+  .posts-grid {
+    padding: 0 12px;
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .profile-header {
-    padding: 20px 10px;
+    padding: 24px 16px;
   }
-  
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .username {
+    font-size: 24px;
+  }
+
+  .stats-row {
+    gap: 20px;
+  }
+
+  .tab-btn {
+    flex: 0 0 auto;
+    min-width: 140px;
+  }
+
+  .tabs-nav {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .tabs-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+
+  .user-item {
+    padding: 12px;
+  }
+
+  .user-avatar {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 576px) {
+  .profile-header {
+    padding: 20px 12px;
+  }
+
   .profile-avatar {
     width: 100px;
     height: 100px;
   }
-  
+
   .username {
-    font-size: 24px;
+    font-size: 22px;
   }
-  
-  .stats-row {
-    gap: 16px;
-  }
-  
-  .stat-number {
+
+  .stat-count {
     font-size: 16px;
   }
-  
+
   .stat-label {
     font-size: 14px;
+  }
+
+  .tabs-container {
+    margin: 12px;
+  }
+
+  .tab-content {
+    padding: 14px 10px;
+  }
+
+  .posts-grid {
+    padding: 0;
+  }
+
+  .user-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .follow-btn-small {
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-dialog {
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .modal-content {
+    margin: 0 10px;
   }
 }
