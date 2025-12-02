@@ -12,6 +12,7 @@ import com.blog.comment.repository.CommentRepository;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,6 +46,7 @@ public class CommentController {
                 dto.setContent(comment.getContent());
                 dto.setUsername(comment.getUser().getUsername());
                 dto.setAvatar(comment.getUser().getAvatar());
+                dto.setUserId(comment.getUser().getId());
                 dto.setTime(comment.getCreatedAt());
                 return dto;
             }).toList();
@@ -71,5 +73,26 @@ public class CommentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token.");
+            }
+            Long userId = JwtService.extractUserId(jwt);
+            commentService.deleteComment(commentId, userId);
+            return ResponseEntity.ok().body("Comment deleted successfully");
+        } catch (RuntimeException e) {
+            if ("Unauthorized".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -51,7 +51,7 @@
       
           <div class="action-buttons">
             <button class="cancel-btn" type="button" (click)="edit()">Cancel</button>
-            <button class="post-btn" type="button"  [disabled]="submitting">
+            <button class="post-btn" type="button" (click)="submitUpdate()" [disabled]="submitting">
               {{ submitting ? 'Posting…' : 'Post' }}
             </button>
           </div>
@@ -159,7 +159,13 @@
                 <div class="comment-username">{{ comment.username }}</div>
                 <p class="comment-text mb-0">{{ comment.content }}</p>
               </div>
-              <div class="comment-time">{{ comment.createdAt }}</div>
+              <div class="comment-time d-flex justify-content-between">
+                <span>{{ comment.time | date:'short' }}</span>
+                <button *ngIf="comment.userId === currentUserId" class="btn btn-link text-danger p-0 ms-2"
+                        (click)="deleteComment(comment)">
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>

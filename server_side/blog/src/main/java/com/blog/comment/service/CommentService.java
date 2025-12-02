@@ -2,11 +2,9 @@ package com.blog.comment.service;
 
 import java.util.List;
 
-import org.aspectj.apache.bcel.generic.LOOKUPSWITCH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.blog.comment.dto.CommentDto;
 import com.blog.comment.dto.CreateCommentRequest;
 import com.blog.comment.model.Comment;
 import com.blog.comment.repository.CommentRepository;
@@ -30,25 +28,30 @@ public class CommentService {
     }   
 
      public Comment createComment(CreateCommentRequest request, Long id) {
-        // Get the authenticated user
         User user = userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("User not found"));
         
-        // Get the post
         Post post = PostRepository.findById(request.getPostId())
             .orElseThrow(() -> new RuntimeException("Post not found"));
         
-        // Create comment entity
         Comment comment = new Comment();
         comment.setContent(request.getContent());
         comment.setPost(post);
         comment.setUser(user);
         
-       
-        
-        // Save comment
         Comment savedComment = commentsR.save(comment);
         return savedComment;
         
+    }
+
+    public void deleteComment(Long commentId, Long userId) {
+        Comment comment = commentsR.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        commentsR.delete(comment);
     }
 }

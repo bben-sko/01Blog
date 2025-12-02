@@ -13,14 +13,14 @@ interface CreateCommentRequest {
 }
 
 interface Comment {
-  commentId: number;
+  id: number;
   content: string;
-  createdAt: string;
-  username: number;
+  username: string;
+  userId: number;
   avatar?: string;
-  time: Date;
+  time: string;
 }
-type Preview = { url: string; type: string; file: File };
+type Preview = { url: string; type: string; file?: File; existing?: boolean };
 
 @Component({
   selector: 'app-singlepost',
@@ -33,6 +33,7 @@ type Preview = { url: string; type: string; file: File };
 export class Singlepost implements OnInit {
   post: Post | null = null;
   comments: Comment[] = [];
+  currentUserId: number | null = null;
   showMenu: boolean = false;
   showComments: boolean = true;
   newComment: string = '';
@@ -46,6 +47,7 @@ export class Singlepost implements OnInit {
   previews: Preview[] = [];
   newcontent = this.post?.content;
   postErr: string = "";
+  existingMedia: string[] = [];
  
 
   constructor(
@@ -57,15 +59,35 @@ export class Singlepost implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.initCurrentUserId();
     this.route.params.subscribe(params => {
       const postId = +params['id'];
       this.loadPost(postId);
       this.loadcomments(postId);
     });
   }
+
+  private initCurrentUserId() {
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      return;
+    }
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      this.currentUserId = Number(payload.id);
+    } catch (err) {
+      console.error('Failed to decode JWT payload', err);
+    }
+  }
   async loadPostToEdit() {
-    this.newcontent = this.post?.content
-    await this.loadExistingImages(this.post?.media)
+    if (!this.post) {
+      return;
+    }
+    this.newcontent = this.post.content;
+    this.previews = [];
+    this.files = [];
+    this.existingMedia = [];
+    await this.loadExistingImages(this.post.media);
   }
   deletePost() {
     if (!this.post) return;
@@ -101,7 +123,14 @@ export class Singlepost implements OnInit {
       next: (comment) => {
         console.log(comment);
 
-        this.comments = comment as Comment[];
+        this.comments = (comment as any[]).map(c => ({
+          id: c.id,
+          content: c.content,
+          username: c.username,
+          userId: c.userId,
+          avatar: c.avatar,
+          time: c.time,
+        }));
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -114,11 +143,39 @@ export class Singlepost implements OnInit {
     if (!this.post) return;
   }
 
+  deleteComment(comment: Comment) {
+    if (comment.userId !== this.currentUserId) {
+      return;
+    }
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.delete(`http://localhost:8080/api/comments/${comment.id}`, { headers }).subscribe({
+      next: () => {
+        this.comments = this.comments.filter(c => c.id !== comment.id);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Failed to delete comment', error);
+      }
+    });
+  }
+
   async edit() {
     this.converteToEdit = !this.converteToEdit;
-    
-    await this.loadPostToEdit();
-   
+    this.postErr = '';
+    if (this.converteToEdit) {
+      await this.loadPostToEdit();
+    } else {
+      this.previews = [];
+      this.files = [];
+      this.existingMedia = [];
+    }
   }
 
   loadPost(postId: number) {
@@ -270,28 +327,21 @@ export class Singlepost implements OnInit {
   }
   closeReportModal() { }
   openReportModal() { }
-  async loadExistingImages(imageUrls: string[]| undefined) {
-    if (imageUrls == undefined || this.previews.length > 0) return;
-    
+  async loadExistingImages(imageUrls: string[] | undefined) {
+    if (!imageUrls || imageUrls.length === 0) {
+      return;
+    }
+
     for (const url of imageUrls) {
       try {
-        // Fetch the image from your backend
         const response = await fetch(url);
         const blob = await response.blob();
 
-        // Extract filename from URL
-        // e.g., "77186d0c-923d-4cfa-99c4-200c7451fa69.png"
-        const filename = url.split('/').pop() || 'image.png';
-
-        // Convert blob to File object
-        const file = new File([blob], filename, { type: blob.type });
-
-        // Add to your existing arrays (same as your onFilesSelected does)
-        this.files.push(file);
+        this.existingMedia.push(url);
         this.previews.push({
-          url: url, // Use the original URL for preview
+          url,
           type: blob.type,
-          file: file
+          existing: true
         });
       } catch (error) {
         console.error(`Failed to load image: ${url}`, error);
@@ -308,7 +358,7 @@ export class Singlepost implements OnInit {
       if (kind === 'video' && !f.type.startsWith('video/')) return;
 
       this.files.push(f);
-      this.previews.push({ url: URL.createObjectURL(f), type: f.type, file: f });
+      this.previews.push({ url: URL.createObjectURL(f), type: f.type, file: f, existing: false });
     });
 
     input.value = '';
@@ -316,9 +366,66 @@ export class Singlepost implements OnInit {
 
   removeAt(i: number) {
     const p = this.previews[i];
-    if (p) URL.revokeObjectURL(p.url);
+    if (!p) {
+      return;
+    }
+
+    if (!p.existing && p.file) {
+      const fileIndex = this.files.indexOf(p.file);
+      if (fileIndex !== -1) {
+        this.files.splice(fileIndex, 1);
+      }
+      URL.revokeObjectURL(p.url);
+    }
+
+    if (p.existing) {
+      this.existingMedia = this.existingMedia.filter((url) => url !== p.url);
+    }
+
     this.previews.splice(i, 1);
-    this.files.splice(i, 1);
+  }
+
+  submitUpdate() {
+    if (!this.post) {
+      return;
+    }
+
+    const trimmedContent = (this.newcontent || '').trim();
+    if (!trimmedContent && this.existingMedia.length === 0 && this.files.length === 0) {
+      this.postErr = 'Please add some content or media to update the post.';
+      return;
+    }
+
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    const fd = new FormData();
+    fd.append('content', trimmedContent);
+    this.existingMedia.forEach((url) => fd.append('existingMedia', url));
+    this.files.forEach((file) => fd.append('files', file));
+
+    this.submitting = true;
+    this.http.post(`http://localhost:8080/api/post/${this.post.postId}`, fd, { headers }).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.converteToEdit = false;
+        this.previews = [];
+        this.files = [];
+        this.existingMedia = [];
+        this.loadPost(this.post!.postId);
+      },
+      error: (err) => {
+        this.submitting = false;
+        this.postErr = err?.error?.message || 'Failed to update post';
+      }
+    });
   }
 
 }

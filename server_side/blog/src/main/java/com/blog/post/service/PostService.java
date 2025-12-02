@@ -82,13 +82,36 @@ public class PostService {
         return postRepository.Homepage(userId);
     }
 
-    public Post updatePost(Long postId, String newContent, String newMedia[]) {
-        Post post = postRepository.findById(postId).orElseThrow();
+    public PostResponseDto updatePost(Long postId, String newContent, List<MultipartFile> newFiles,
+            List<String> existingMedia, User user) throws IOException {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("Unauthorized");
+        }
 
         post.setContent(newContent);
-        // post.setMedia(newMedia);
 
-        return postRepository.save(post);
+        List<String> updatedMedia = new ArrayList<>();
+
+        if (existingMedia != null && !existingMedia.isEmpty()) {
+            updatedMedia.addAll(existingMedia);
+        } else if ((newFiles == null || newFiles.isEmpty()) && post.getMedia() != null) {
+            updatedMedia.addAll(post.getMedia());
+        }
+
+        if (newFiles != null && !newFiles.isEmpty()) {
+            for (MultipartFile file : newFiles) {
+                updatedMedia.add(storageService.saveAndReturnUrl(file));
+            }
+        }
+
+        post.setMedia(updatedMedia);
+        Post saved = postRepository.save(post);
+
+        boolean liked = LikeService.isLikedByUser(user.getId(), saved.getId());
+        return PostResponseDto.fromEntity(saved, liked, true);
     }
 
     public void DeletePost(Long postId) {
