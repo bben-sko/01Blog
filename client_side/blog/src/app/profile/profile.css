@@ -282,6 +282,28 @@
   }
 }
 
+.report-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.report-modal .modal-dialog {
+  margin: 0;
+  pointer-events: auto;
+}
+
+.report-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9998;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .header-content {

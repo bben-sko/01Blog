@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { NavBar } from '../nav-bar/nav-bar';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 export interface User {
   id: number;
@@ -20,13 +21,14 @@ export interface Users {
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [CommonModule,NavBar],
+  imports: [CommonModule, FormsModule, NavBar],
   templateUrl: './users-list.html',
   styleUrl: './users-list.css'
 })
 export class UsersList implements OnInit {
   users: Users[] = [];
   loading = false;
+  searchTerm = '';
 
   constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -53,6 +55,29 @@ export class UsersList implements OnInit {
         },
         error: (error) => {
           console.error('Error loading users:', error);
+          this.loading = false;
+        }
+      });
+  }
+
+  onSearchTermChange() {
+    const term = this.searchTerm.trim();
+    if (!term) {
+      this.loadUsers();
+      return;
+    }
+
+    this.loading = true;
+    const headers = { Authorization: `Bearer ${localStorage.getItem('jwt')}` };
+    this.http.get<Users[]>(`http://localhost:8080/api/users/search?query=${encodeURIComponent(term)}`, { headers })
+      .subscribe({
+        next: (data) => {
+          this.users = data;
+          this.loading = false;
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error searching users:', error);
           this.loading = false;
         }
       });

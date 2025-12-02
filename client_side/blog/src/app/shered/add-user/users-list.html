@@ -3,8 +3,13 @@
   <div class="followers-tab">
     <!-- Header -->
     <div class="card-header">
-      <h2>Suggested Users</h2>
-      <span class="user-count">{{ users.length }} users</span>
+      <div>
+        <h2>Suggested Users</h2>
+        <span class="user-count">{{ users.length }} users</span>
+      </div>
+      <div class="search-box">
+        <input type="text" class="form-control" placeholder="Search by username" [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()" />
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -47,7 +52,7 @@
         </div>
 
         <!-- Empty State -->
-        <div class="empty-state" *ngIf="users.length === 0">
+        <div class="empty-state" *ngIf="!loading && users.length === 0">
           <span class="icon">👥</span>
           <p>No users to display</p>
         </div>

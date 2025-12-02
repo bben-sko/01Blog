@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Post, Posts, } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
 import { Users, UsersList } from '../shered/add-user/users-list';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 
 
@@ -32,7 +34,7 @@ export interface FollowUser {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NavBar, RouterModule,Posts],
+  imports: [NavBar, RouterModule, Posts, FormsModule, CommonModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -43,6 +45,9 @@ export class Profile implements OnInit {
   userPosts: Post[] = [];
   followers: FollowUser[] = [];
   following: FollowUser[] = [];
+  reportModalOpen = false;
+  reportReason = '';
+  reportError = '';
   
   // loading = false;
 
@@ -258,5 +263,52 @@ export class Profile implements OnInit {
     this.followers = [];
     this.following = [];
     this.ngOnInit();
+  }
+
+  openReportModal() {
+    if (!this.user || this.user.isme) {
+      return;
+    }
+    this.reportReason = '';
+    this.reportError = '';
+    this.reportModalOpen = true;
+  }
+
+  closeReportModal() {
+    this.reportModalOpen = false;
+    this.reportReason = '';
+    this.reportError = '';
+  }
+
+  submitReport() {
+    if (!this.user) return;
+    const reason = this.reportReason.trim();
+    if (!reason) {
+      this.reportError = 'Please provide a reason for reporting.';
+      return;
+    }
+
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      this.routenav.navigate(['/login']);
+      return;
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    this.http.post('http://localhost:8080/api/profile-reports', {
+      username: this.user.username,
+      reason
+    }, { headers }).subscribe({
+      next: () => {
+        this.reportModalOpen = false;
+        this.reportReason = '';
+        alert('Thank you. The profile has been reported.');
+      },
+      error: (error) => {
+        console.error('Failed to report profile', error);
+        this.reportError = error?.error || 'Unable to submit report right now.';
+      }
+    });
   }
 }

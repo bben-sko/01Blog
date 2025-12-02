@@ -16,17 +16,22 @@
         <div class="username-row">
           <h1 class="username">{{ user.username }}</h1>
            @if (!user.isme) {
-             <button 
-            class="follow-btn" 
-            [class.following]="user.isFollowing"
-            (click)="toggleFollow(user)">
-              @if (user.isFollowing) {
-                <span>Following</span>
-              } @else {
+             <div class="d-flex gap-2 flex-wrap">
+               <button 
+              class="follow-btn" 
+              [class.following]="user.isFollowing"
+              (click)="toggleFollow(user)">
+                @if (user.isFollowing) {
+                  <span>Following</span>
+                } @else {
 
-              <span>Follow</span>
-              }
-            </button>
+                <span>Follow</span>
+                }
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="openReportModal()">
+                Report
+              </button>
+            </div>
         }
         </div>
 
@@ -169,6 +174,31 @@
           }
         </div>
       }
+    </div>
+  </div>
+</div>
+
+<!-- Report profile modal -->
+<div class="modal fade report-modal" [class.show]="reportModalOpen" [style.display]="reportModalOpen ? 'block' : 'none'">
+  <div class="modal-backdrop fade show report-modal-backdrop" *ngIf="reportModalOpen" (click)="closeReportModal()"></div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Report {{ user?.username }}</h5>
+        <button type="button" class="btn-close" (click)="closeReportModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Reason</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="reportReason"
+                    placeholder="Describe why you are reporting this profile"></textarea>
+        </div>
+        <div class="text-danger" *ngIf="reportError">{{ reportError }}</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeReportModal()">Cancel</button>
+        <button class="btn btn-danger" (click)="submitReport()" [disabled]="!reportReason.trim()">Submit</button>
+      </div>
     </div>
   </div>
 </div>

@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     long countByEnabled(boolean status);
 
     List<User> findByEnabledOrderByIdDesc(boolean status);
+
+    List<User> findByUsernameContainingIgnoreCase(String username);
 }

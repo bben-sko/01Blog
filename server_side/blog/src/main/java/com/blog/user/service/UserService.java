@@ -76,8 +76,7 @@ public class UserService {
         return user;
     }
 
-    public List<HashMap<String, Object>> GetAllUsers(Long userID) {
-        List<User> users = userRepository.findAll();
+    private List<HashMap<String, Object>> mapUsers(List<User> users, Long userID) {
         List<HashMap<String, Object>> userList = new ArrayList<>();
         for (User us : users) {
             if (us.getId().equals(userID) || us.getRole() == Role.ADMIN_USER || us.isEnabled() == false) {
@@ -95,6 +94,15 @@ public class UserService {
         }
 
         return userList;
+    }
+
+    public List<HashMap<String, Object>> GetAllUsers(Long userID) {
+        return mapUsers(userRepository.findAll(), userID);
+    }
+
+    public List<HashMap<String, Object>> searchUsers(Long userID, String query) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(query);
+        return mapUsers(users, userID);
     }
 
     public User GetUserInfoByUsername(String username) throws Exception {
