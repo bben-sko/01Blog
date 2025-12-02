@@ -1,72 +1,15 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-
-import { Injectable, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../sevice/adminservice';
+import { AdminService, DashboardStats, Post, Report, ReportStatus, User } from '../sevice/adminservice';
 import { Router } from '@angular/router';
-
-
-
-export interface DashboardStats {
-  totalUsers: number;
-  activeUsers: number;
-  bannedUsers: number;
-  totalPosts: number;
-  activePosts: number;
-  hiddenPosts: number;
-  deletedPosts: number;
-  pendingReports: number;
-  resolvedReports: number;
-}
-
-export interface Report {
-  id: number;
-  postId: number;
-  postContent: string;
-  // postImageUrl: string;
-  reporterId: number;
-  reporterUsername: string;
-  reason: string;
-  description: string;
-  status: boolean;
-  createdAt: string;
-  adminNote: string;
-}
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  name: string;
-  avatar: string;
-  enable: boolean;
-  createdAt: string;
-  bannedAt?: string;
-  banReason?: string;
-}
-
-export interface Post {
-  postId: number;
-  userId: number;
-  username: string;
-  content: string;
-  imageUrl: string;
-  enable: boolean;
-  createdAt: string;
-  hiddenAt?: string;
-  hiddenReason?: string;
-}
 
 @Component({
   selector: 'app-admin',
   imports: [CommonModule, FormsModule],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
-})
-@Injectable({
-  providedIn: 'root'
 })
 export class Admin implements OnInit {
 
@@ -77,6 +20,7 @@ export class Admin implements OnInit {
   users: User[] = [];
   posts: Post[] = [];
   reports: Report[] = [];
+  reportFilter: 'ALL' | ReportStatus = 'ALL';
 
   activeTab: 'reports' | 'users' | 'posts' = 'reports';
 
@@ -86,7 +30,8 @@ export class Admin implements OnInit {
 
   actionReason = '';
   adminNote = '';
-  adminId = 1; // Should come from auth service
+  reportDecision: ReportStatus = 'RESOLVED';
+  hidePostOnResolve = false;
   checking = false
   loading = false;
   error = '';
@@ -118,34 +63,20 @@ export class Admin implements OnInit {
       }
     });
   }
-  loadReport() {
+  loadReport(status: 'ALL' | ReportStatus = 'ALL') {
     this.loading = true;
-    console.log("Loading reports...");
+    this.reportFilter = status;
 
-    const token = localStorage.getItem('jwt');
-
-    if (!token) {
-      this.route.navigate(['/login'])
-      this.loading = false;
-      return;
-    }
-
-
-    token;
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    this.adminService.getReportsByStatus("ALL")
-    this.http.get<Report[]>(`http://localhost:8080/api/reports/all`, { headers }).subscribe({
+    this.adminService.getReports(status).subscribe({
       next: (data: Report[]) => {
-        console.log("Reports loaded:", data);
         this.reports = data;
         this.loading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+        this.loading = false;
+        if (err.status === 401) {
+          this.route.navigate(['/']);
         }
       }
     });
@@ -304,17 +235,25 @@ export class Admin implements OnInit {
     });
   }
 
-  resolveReport(report: Report) {
+  resolveReport() {
+    if (!this.selectedReport) {
+      return;
+    }
     if (!this.adminNote.trim()) {
       alert('Please provide an admin note');
       return;
     }
 
-    this.adminService.resolveReport(report.id, this.adminNote, this.adminId).subscribe({
+    this.adminService.resolveReport(this.selectedReport.id, {
+      status: this.reportDecision,
+      adminNote: this.adminNote.trim(),
+      hidePost: this.hidePostOnResolve
+    }).subscribe({
       next: () => {
-        alert('Report resolved successfully');
-        this.adminNote = '';
-        this.selectedReport = null;
+        alert('Report updated successfully');
+        this.loadReport(this.reportFilter);
+        this.loadPosts();
+        this.closeModal();
 
       },
       error: (err) => {
@@ -327,7 +266,9 @@ export class Admin implements OnInit {
 
   openReportModal(report: Report) {
     this.selectedReport = report;
-    this.adminNote = '';
+    this.adminNote = report.adminNote || '';
+    this.reportDecision = report.status === 'PENDING' ? 'RESOLVED' : report.status;
+    this.hidePostOnResolve = !report.postEnabled;
   }
 
   openBanUserModal(user: User) {
@@ -346,17 +287,19 @@ export class Admin implements OnInit {
     this.selectedPost = null;
     this.actionReason = '';
     this.adminNote = '';
+    this.reportDecision = 'RESOLVED';
+    this.hidePostOnResolve = false;
   }
 
   hidePostFromReport(postId: number) {
-    if (!this.actionReason.trim()) {
-      this.actionReason = 'Reported content violation';
-    }
-
     this.adminService.hidePost(postId).subscribe({
-      next: (a) => {
+      next: () => {
         alert('Post hidden successfully');
-        this.actionReason = '';
+        if (this.selectedReport && this.selectedReport.postId === postId) {
+          this.selectedReport.postEnabled = false;
+          this.hidePostOnResolve = true;
+        }
+        this.loadPosts();
       },
       error: (err) => {
         if (err.status == 401) {
@@ -372,6 +315,11 @@ export class Admin implements OnInit {
     this.adminService.deletePost(postId).subscribe({
       next: () => {
         alert('Post deleted successfully');
+        this.loadPosts();
+        this.loadReport(this.reportFilter);
+        if (this.selectedReport?.postId === postId) {
+          this.closeModal();
+        }
       },
       error: (err) => {
         if (err.status == 401) {

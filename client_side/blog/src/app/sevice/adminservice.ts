@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export type ReportStatus = 'PENDING' | 'RESOLVED' | 'DISMISSED';
+
 export interface DashboardStats {
     totalUsers: number;
     activeUsers: number;
@@ -13,19 +15,6 @@ export interface DashboardStats {
     pendingReports: number;
     resolvedReports: number;
 }
-
-export interface Post {
-    postId: number;
-    userId: number;
-    username: string;
-    content: string;
-    imageUrl: string;
-    status: string;
-    createdAt: string;
-    hiddenAt?: string;
-    hiddenReason?: string;
-}
-
 
 export interface User {
     id: number;
@@ -40,15 +29,31 @@ export interface User {
 }
 
 export interface Post {
-    id: number;
+    postId: number;
     userId: number;
     username: string;
     content: string;
-    imageUrl: string;
-    status: string;
+    imageUrl?: string;
+    enable: boolean;
     createdAt: string;
     hiddenAt?: string;
     hiddenReason?: string;
+}
+
+export interface Report {
+    id: number;
+    postId: number;
+    postContent: string;
+    postEnabled: boolean;
+    reporterId: number;
+    reporterUsername: string;
+    reason: string;
+    description: string;
+    status: ReportStatus;
+    createdAt: string;
+    resolvedAt?: string;
+    adminNote?: string;
+    resolvedBy?: string;
 }
 
 @Injectable({
@@ -75,15 +80,6 @@ export class AdminService {
     
         return token;
             
-    }
-
-    getPendingReports() {
-        const getTokern = this.getTokern();
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${getTokern}`
-        });
-        
-        return this.http.get<Report[]>(`${this.API_URL}/reports/pending`, {  headers });
     }
 
     getAllUsers(page: number = 0, size: number = 50) {
@@ -154,11 +150,21 @@ export class AdminService {
         return this.http.delete(`${this.API_URL}/posts/${postId}`, {  headers });
     }
 
-    resolveReport(reportId: number, adminNote: string, adminId: number) {
-        return this.http.put(`${this.API_REPORT_URL}/${reportId}`, {
-            adminNote,
-            adminId: adminId.toString()
+    getReports(status: 'ALL' | ReportStatus = 'ALL') {
+        const getTokern = this.getTokern();
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${getTokern}`
         });
+        const query = status ? `?status=${status}` : '';
+        return this.http.get<Report[]>(`${this.API_REPORT_URL}/all${query}`, { headers });
+    }
+
+    resolveReport(reportId: number, payload: { status: ReportStatus; adminNote: string; hidePost: boolean; }) {
+        const getTokern = this.getTokern();
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${getTokern}`
+        });
+        return this.http.put(`${this.API_REPORT_URL}/${reportId}`, payload, { headers });
     }
     getReportById(reportId: number) {
         const getTokern = this.getTokern();
@@ -166,13 +172,5 @@ export class AdminService {
             'Authorization': `Bearer ${getTokern}`
         });
         return this.http.get<Report>(`${this.API_REPORT_URL}/${reportId}`, {  headers });
-    }
-    getReportsByStatus(status: string) {
-        const getTokern = this.getTokern();
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${getTokern}`
-        });
-      
-        return this.http.get<Report[]>(`${this.API_REPORT_URL}/${status.toLowerCase() }`, { headers });
     }
 }

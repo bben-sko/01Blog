@@ -1,8 +1,9 @@
 package com.blog.comment.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.blog.comment.dto.CreateCommentRequest;
@@ -24,9 +25,12 @@ public class CommentService {
     @Autowired
     private  PostRepository PostRepository;
 
-    public List<Comment> getCommentPost(Long id) {
-            return commentsR.findAllByPostIdOrderByCreatedAtDesc(id);
-    }   
+    public Page<Comment> getCommentPost(Long id, int page, int size) {
+        int pageNumber = Math.max(page, 0);
+        int pageSize = Math.min(Math.max(size, 1), 100);
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return commentsR.findByPostId(id, pageable);
+    }
 
      public Comment createComment(CreateCommentRequest request, Long id) {
         User user = userRepository.findById(id)

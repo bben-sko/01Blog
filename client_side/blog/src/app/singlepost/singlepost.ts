@@ -20,6 +20,15 @@ interface Comment {
   avatar?: string;
   time: string;
 }
+
+interface CommentApiResponse {
+  comments: Comment[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
 type Preview = { url: string; type: string; file?: File; existing?: boolean };
 
 @Component({
@@ -33,6 +42,10 @@ type Preview = { url: string; type: string; file?: File; existing?: boolean };
 export class Singlepost implements OnInit {
   post: Post | null = null;
   comments: Comment[] = [];
+  commentPage = 0;
+  commentPageSize = 2;
+  hasMoreComments = true;
+  loadingComments = false;
   currentUserId: number | null = null;
   showMenu: boolean = false;
   showComments: boolean = true;
@@ -63,7 +76,7 @@ export class Singlepost implements OnInit {
     this.route.params.subscribe(params => {
       const postId = +params['id'];
       this.loadPost(postId);
-      this.loadcomments(postId);
+      this.loadcomments(postId, true);
     });
   }
 
@@ -109,21 +122,34 @@ export class Singlepost implements OnInit {
       }
     })
   }
-  loadcomments(postId: number) {
+  loadcomments(postId: number, reset: boolean = false) {
+    if (this.loadingComments) {
+      return;
+    }
+    if (reset) {
+      this.commentPage = 0;
+      this.comments = [];
+      this.hasMoreComments = true;
+    } else if (!this.hasMoreComments) {
+      return;
+    }
+    this.loadingComments = true;
     const token = localStorage.getItem('jwt');
 
     if (!token) {
       console.error('No JWT token found');
+      this.loadingComments = false;
       return;
     }
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.get(`http://localhost:8080/api/comments/${postId}`, { headers }).subscribe({
-      next: (comment) => {
-        console.log(comment);
-
-        this.comments = (comment as any[]).map(c => ({
+    const params = new HttpParams()
+      .set('page', this.commentPage)
+      .set('size', this.commentPageSize);
+    this.http.get<CommentApiResponse>(`http://localhost:8080/api/comments/${postId}`, { headers, params }).subscribe({
+      next: (response) => {
+        const fetched = response.comments.map(c => ({
           id: c.id,
           content: c.content,
           username: c.username,
@@ -131,13 +157,25 @@ export class Singlepost implements OnInit {
           avatar: c.avatar,
           time: c.time,
         }));
+        this.comments = [...this.comments, ...fetched];
+        this.hasMoreComments = !response.last;
+        this.commentPage = response.page + 1;
+        this.loadingComments = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading post:', error);
+        this.loadingComments = false;
       }
     });
     this.cdr.detectChanges();
+  }
+
+  loadMoreComments() {
+    if (!this.post) {
+      return;
+    }
+    this.loadcomments(this.post.postId);
   }
   editPost() {
     if (!this.post) return;
@@ -275,6 +313,9 @@ export class Singlepost implements OnInit {
         console.log('Comment added:', comment);
         this.newComment = '';
         this.isSubmitting = false;
+        if (this.post) {
+          this.loadcomments(this.post.postId, true);
+        }
         this.cdr.detectChanges();
       },
       error: (error) => {

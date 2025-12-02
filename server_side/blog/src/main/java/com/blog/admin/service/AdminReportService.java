@@ -64,8 +64,14 @@ public class AdminReportService {
         dto.setPostContent(report.getPost().getContent());
         dto.setReporterId(report.getReporter().getId());
         dto.setReporterUsername(report.getReporter().getUsername());
-        dto.setEnable(report.getPost().isEnabled());
+        dto.setPostEnabled(report.getPost().isEnabled());
+        dto.setReason(report.getReason());
+        dto.setDescription(report.getReason());
+        dto.setStatus(report.getStatus());
         dto.setCreatedAt(report.getCreatedAt());
+        dto.setResolvedAt(report.getResolvedAt());
+        dto.setAdminNote(report.getAdminNote());
+        dto.setResolvedBy(report.getResolvedBy() != null ? report.getResolvedBy().getUsername() : null);
         return dto;
     }
     

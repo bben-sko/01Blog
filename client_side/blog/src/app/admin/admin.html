@@ -49,12 +49,21 @@
                         <td>{{ report.id }}</td>
                         <td>{{ report.reporterUsername }}</td>
                         <td><span class="badge bg-warning">{{ report.reason }}</span></td>
-                        <td>{{ report.postContent?.substring(0, 50) }}...</td>
+                        <td>{{ (report.postContent || '').substring(0, 50) }}...</td>
                         <!-- <td>
                             <img *ngIf="report.postImageUrl" [src]="report.postImageUrl"
                                 style="width: 50px; height: 50px; object-fit: cover;">
                         </td> -->
-                        <td><span class="badge bg-info">{{ report.status }}</span></td>
+                        <td>
+                            <span class="badge"
+                                [ngClass]="{
+                                    'bg-warning': report.status === 'PENDING',
+                                    'bg-success': report.status === 'RESOLVED',
+                                    'bg-secondary': report.status === 'DISMISSED'
+                                }">
+                                {{ report.status }}
+                            </span>
+                        </td>
                         <td>{{ report.createdAt | date:'short' }}</td>
                         <td>
                             <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
@@ -201,15 +210,50 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <strong>Quick Actions:</strong>
-                    <button class="btn btn-sm btn-warning"
-                        (click)="hidePost({postId: selectedReport.postId, userId: 0, username: '', content: '', imageUrl: '', enable: true, createdAt: ''})">
-                        Hide Post
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deletePost(selectedReport.postId)">
-                        Delete Post
-                    </button>
+                <div class="modal-footer flex-column align-items-stretch gap-3">
+                    <div class="w-100 d-flex flex-wrap align-items-center gap-2">
+                        <strong>Quick Actions:</strong>
+                        <button class="btn btn-sm btn-warning" *ngIf="selectedReport.postEnabled"
+                            (click)="hidePostFromReport(selectedReport.postId)">
+                            Hide Post
+                        </button>
+                        <span class="badge bg-secondary" *ngIf="!selectedReport.postEnabled">
+                            Post Hidden
+                        </span>
+                        <button class="btn btn-sm btn-danger" (click)="deletePostFromReport(selectedReport.postId)">
+                            Delete Post
+                        </button>
+                    </div>
+                    <div class="w-100">
+                        <div class="mb-3">
+                            <label class="form-label">Admin Note</label>
+                            <textarea class="form-control" rows="3" [(ngModel)]="adminNote"
+                                placeholder="Document the action you are taking..."></textarea>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Decision</label>
+                                <select class="form-select" [(ngModel)]="reportDecision">
+                                    <option value="RESOLVED">Resolve</option>
+                                    <option value="DISMISSED">Dismiss</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" id="hidePostToggle"
+                                        [(ngModel)]="hidePostOnResolve">
+                                    <label class="form-check-label" for="hidePostToggle">
+                                        Hide post when saving
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button class="btn btn-success" (click)="resolveReport()" [disabled]="!adminNote.trim()">
+                                Save Decision
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

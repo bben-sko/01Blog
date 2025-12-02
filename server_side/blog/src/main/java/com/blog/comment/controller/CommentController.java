@@ -2,20 +2,15 @@
 package com.blog.comment.controller;
 
 import com.blog.comment.dto.CommentDto;
+import com.blog.comment.dto.CommentPageResponse;
 import com.blog.comment.dto.CreateCommentRequest;
 import com.blog.comment.model.Comment;
 import com.blog.comment.service.CommentService;
 import com.blog.config.JwtService;
-import com.blog.user.model.User;
-import com.blog.comment.repository.CommentRepository;
-
-
 import jakarta.validation.Valid;
-
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,20 +21,19 @@ public class CommentController {
 
     private final CommentService commentService;
     private final JwtService JwtService;
-    private final CommentRepository CommentRepository;
 
-    public CommentController(CommentService commentService, JwtService jwtService, CommentRepository commentRepository) {
+    public CommentController(CommentService commentService, JwtService jwtService) {
         this.commentService = commentService;
         this.JwtService = jwtService;
-        this.CommentRepository = commentRepository;
     }
 
     @GetMapping("/{postId}")
-     public ResponseEntity<List<CommentDto>> getComments(@PathVariable Long postId) {
-
+     public ResponseEntity<CommentPageResponse> getComments(@PathVariable Long postId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
         try {
-            List<Comment> comments = commentService.getCommentPost(postId);
+            Page<Comment> comments = commentService.getCommentPost(postId, page, size);
             List<CommentDto> commentDtos = comments.stream().map(comment -> {
                 CommentDto dto = new CommentDto();
                 dto.setId(comment.getId());
@@ -51,7 +45,15 @@ public class CommentController {
                 return dto;
             }).toList();
 
-            return ResponseEntity.ok(commentDtos);
+            CommentPageResponse response = new CommentPageResponse(
+                    commentDtos,
+                    comments.getNumber(),
+                    comments.getSize(),
+                    comments.getTotalElements(),
+                    comments.getTotalPages(),
+                    comments.isLast());
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

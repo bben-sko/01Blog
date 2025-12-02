@@ -22,13 +22,18 @@ public class NotificationService {
     private SubscriptionRepository subscriptionRepository;
 
     public void notifySubscribers(Post post, User author) {
-        List<Subscription> subscribers = subscriptionRepository.findByFollowerId(author.getId());
+        List<Subscription> subscribers = subscriptionRepository.findByFollowingId(author.getId());
 
-        for (Subscription subscriber : subscribers) {
+        for (Subscription subscription : subscribers) {
+            User follower = subscription.getFollower();
+            if (follower == null || !follower.isEnabled() || follower.getId().equals(author.getId())) {
+                continue;
+            }
+
             Notification notification = new Notification();
-            notification.setMessage(author.getName() + " posted a new blog ");
+            notification.setMessage(author.getName() + " posted a new blog");
             notification.setPostId(post.getId());
-            notification.setUser(subscriber.getFollowing());
+            notification.setUser(follower);
             notification.setRead(false);
             notification.setCreatedAt(LocalDateTime.now());
             notificationRepository.save(notification);
