@@ -1,8 +1,18 @@
 <app-nav-bar />
 <div class="posts-container">
+  @if (posts.length === 0 && loading) {
+    <p>Loading posts...</p>
+  }
   @for (post of posts; track post.postId) {
     <app-post [post]="post"></app-post>
   } @empty {
-  <p>No items found</p>
+  @if (!loading) {
+    <p>No items found</p>
+  }
 }
+  <div class="load-more-container" >
+    <button class="load-more-btn" [disabled]="loading" (click)="showMore()">
+      {{ loading ? 'Loading...' : 'Show more' }}
+    </button>
+  </div>
 </div>

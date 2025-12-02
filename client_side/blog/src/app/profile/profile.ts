@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Inject, NgModule, OnInit, PLATFORM_ID } from '@angular/core';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Post, Posts, } from '../shered/posts/posts';
 import { NavBar } from '../shered/nav-bar/nav-bar';
 import { Users, UsersList } from '../shered/add-user/users-list';
@@ -45,6 +45,11 @@ export class Profile implements OnInit {
   userPosts: Post[] = [];
   followers: FollowUser[] = [];
   following: FollowUser[] = [];
+  postPage = 0;
+  postPageSize = 10;
+  postHasMore = true;
+  postLoading = false;
+  currentProfileUsername: string | null = null;
   reportModalOpen = false;
   reportReason = '';
   reportError = '';
@@ -70,6 +75,7 @@ export class Profile implements OnInit {
     const username = params.get('username');
 
     if (username && !username.includes('.')) {
+      this.currentProfileUsername = username;
       console.log('Profile username from route:', username);
       
         console.log('Running in browser');
@@ -108,7 +114,7 @@ export class Profile implements OnInit {
             avatarUrl: (data as any).avatar
           }
           console.log('Loaded user profile:', this.user.avatar);
-          this.loadUserPosts(username);
+          this.loadUserPosts(username, true);
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -123,25 +129,38 @@ export class Profile implements OnInit {
     
   }
 
-  loadUserPosts(username: string) {
-    if (this.userPosts.length > 0) return;
+  loadUserPosts(username: string, reset = false) {
+    if (reset) {
+      this.userPosts = [];
+      this.postPage = 0;
+      this.postHasMore = true;
+    }
     const token = localStorage.getItem('jwt'); 
-
+    if (!token) {
+      this.routenav.navigate(['/login']);
+      return;
+    }
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.get<Post[]>(`http://localhost:8080/api/post/profile/${username}`, { headers })
+    const params = new HttpParams()
+      .set('page', this.postPage)
+      .set('size', this.postPageSize);
+    this.postLoading = true;
+    this.http.get<Post[]>(`http://localhost:8080/api/post/profile/${username}`, { headers, params })
       .subscribe(
         (data) => {
-          this.userPosts = data;
+          this.userPosts = [...this.userPosts, ...data];
+          this.postHasMore = data.length === this.postPageSize;
+          this.postLoading = false;
           this.cdr.detectChanges();
           
         },
         (error) => {
           console.error('Error fetching user posts', error);
+          this.postLoading = false;
         }
       );
-   
     
   }
 
@@ -260,9 +279,19 @@ export class Profile implements OnInit {
   GoToProfile(username: string) {
     this.routenav.navigate([`/profile/${username}`]);
     this.userPosts = [];
+    this.postPage = 0;
+    this.postHasMore = true;
     this.followers = [];
     this.following = [];
     this.ngOnInit();
+  }
+
+  loadMorePosts() {
+    if (this.postLoading || !this.postHasMore || !this.currentProfileUsername) {
+      return;
+    }
+    this.postPage += 1;
+    this.loadUserPosts(this.currentProfileUsername);
   }
 
   openReportModal() {

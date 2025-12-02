@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,8 +62,8 @@ public class PostService {
         return saved;
     }
 
-    public List<Post> GetPostsProfile(Long userId) {
-        return postRepository.findByUserId(userId);
+    public List<Post> GetPostsProfile(Long userId, int page, int size) {
+        return postRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size)).getContent();
     }
 
    
@@ -77,9 +77,9 @@ public class PostService {
         return dto;
     }
 
-    public List<Post> GetPostsHome(Long userId) {
+    public List<Post> GetPostsHome(Long userId, int page, int size) {
 
-        return postRepository.Homepage(userId);
+        return postRepository.Homepage(userId, PageRequest.of(page, size)).getContent();
     }
 
     public PostResponseDto updatePost(Long postId, String newContent, List<MultipartFile> newFiles,

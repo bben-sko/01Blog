@@ -31,6 +31,7 @@ export class Login implements  OnInit  {
   }
   d() {
     this.submitted = true;
+    this.error = "";
     
     this.http.post<loginResponse>("http://localhost:8080/api/auth/login", this.dataLogin)
       .subscribe({
@@ -39,9 +40,18 @@ export class Login implements  OnInit  {
           localStorage.setItem("jwt", response.token )
           this.router.navigate(["/"])
         },
-        error: (error) => {
-          console.error("Login failed:", error);
-          this.error = error.err || "Login failed";
+        error: (errorResponse) => {
+          console.error("Login failed:", errorResponse);
+          const backendError = errorResponse?.error;
+          if (typeof backendError === 'string') {
+            this.error = backendError;
+          } else if (backendError?.err) {
+            this.error = backendError.err;
+          } else if (backendError?.message) {
+            this.error = backendError.message;
+          } else {
+            this.error = "Login failed. Please check your credentials.";
+          }
         }
       });
   }

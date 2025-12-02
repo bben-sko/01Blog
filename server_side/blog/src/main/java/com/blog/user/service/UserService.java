@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -100,8 +101,13 @@ public class UserService {
         return mapUsers(userRepository.findAll(), userID);
     }
 
-    public List<HashMap<String, Object>> searchUsers(Long userID, String query) {
-        List<User> users = userRepository.findByUsernameContainingIgnoreCase(query);
+    public List<HashMap<String, Object>> searchUsers(Long userID, String query, int page, int size) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(query, PageRequest.of(page, size));
+        return mapUsers(users, userID);
+    }
+
+    public List<HashMap<String, Object>> getUsersPage(Long userID, int page, int size) {
+        List<User> users = userRepository.findAll(PageRequest.of(page, size)).getContent();
         return mapUsers(users, userID);
     }
 

@@ -97,12 +97,17 @@
               <app-post [post]="post"></app-post>
             }
           </div>
-          @if (userPosts.length === 0) {
+          <div class="loading-text" *ngIf="postLoading && userPosts.length === 0">Loading posts...</div>
+          @if (userPosts.length === 0 && !postLoading) {
             <div class="empty-state">
               <span class="icon">📝</span>
               <p>No posts yet</p>
             </div>
           }
+          <div class="load-more-container" *ngIf="!postLoading && postHasMore && userPosts.length > 0">
+            <button class="load-more-btn" (click)="loadMorePosts()">Show more</button>
+          </div>
+          <div class="loading-text" *ngIf="postLoading && userPosts.length > 0">Loading...</div>
         </div>
       }
 

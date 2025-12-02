@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input, NgModule, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { NavBar } from '../nav-bar/nav-bar';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -29,6 +29,10 @@ export class UsersList implements OnInit {
   users: Users[] = [];
   loading = false;
   searchTerm = '';
+  pageSize = 10;
+  currentPage = 0;
+  hasMore = true;
+  currentSearchTerm = '';
 
   constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {}
 
@@ -36,21 +40,35 @@ export class UsersList implements OnInit {
     this.loadUsers();
   }
 
-  loadUsers() {
-    this.loading = true;
+  private fetchUsers() {
     if (!localStorage.getItem('jwt')) {
       this.router.navigate(['/login']);
       return;
     }
-    this.http.get<Users[]>('http://localhost:8080/api/users/all', { headers: { Authorization: `Bearer ${localStorage.getItem('jwt')}` } })
+
+    this.loading = true;
+    const headers = { Authorization: `Bearer ${localStorage.getItem('jwt')}` };
+    let params = new HttpParams()
+      .set('page', this.currentPage)
+      .set('size', this.pageSize);
+
+    let url = 'http://localhost:8080/api/users/all';
+    const query = this.currentSearchTerm.trim();
+    if (query) {
+      url = 'http://localhost:8080/api/users/search';
+      params = params.set('query', query);
+    }
+
+    this.http.get<Users[]>(url, { headers, params })
       .subscribe({
         next: (data: Users[]) => {
           this.loading = false;
-          this.users = data;
-          
-          for (const userData of data) {
-            console.log('User:', userData);
+          if (this.currentPage === 0) {
+            this.users = data;
+          } else {
+            this.users = [...this.users, ...data];
           }
+          this.hasMore = data.length === this.pageSize;
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -60,27 +78,20 @@ export class UsersList implements OnInit {
       });
   }
 
-  onSearchTermChange() {
-    const term = this.searchTerm.trim();
-    if (!term) {
-      this.loadUsers();
-      return;
-    }
+  loadUsers() {
+    this.currentPage = 0;
+    this.users = [];
+    this.hasMore = true;
+    this.currentSearchTerm = '';
+    this.fetchUsers();
+  }
 
-    this.loading = true;
-    const headers = { Authorization: `Bearer ${localStorage.getItem('jwt')}` };
-    this.http.get<Users[]>(`http://localhost:8080/api/users/search?query=${encodeURIComponent(term)}`, { headers })
-      .subscribe({
-        next: (data) => {
-          this.users = data;
-          this.loading = false;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('Error searching users:', error);
-          this.loading = false;
-        }
-      });
+  onSearchTermChange() {
+    this.currentSearchTerm = this.searchTerm.trim();
+    this.currentPage = 0;
+    this.users = [];
+    this.hasMore = true;
+    this.fetchUsers();
   }
 
   toggleFollow(user: Users) {
@@ -127,5 +138,13 @@ export class UsersList implements OnInit {
 
   viewProfile(User: string) {
     this.router.navigate([`/profile/${ User }`]);
+  }
+
+  showMore() {
+    if (this.loading || !this.hasMore) {
+      return;
+    }
+    this.currentPage += 1;
+    this.fetchUsers();
   }
 }

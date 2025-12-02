@@ -75,7 +75,9 @@ public class PostController {
 
     @GetMapping("/profile/{username}")
     public ResponseEntity<?> GetPosts(@PathVariable String username, Authentication authentication,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
@@ -83,7 +85,7 @@ public class PostController {
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
-            List<Post> posts = PostService.GetPostsProfile(user.getId());
+            List<Post> posts = PostService.GetPostsProfile(user.getId(), page, size);
 
             List<PostResponseDto> postDtos = posts.stream()
                     .map(post -> PostResponseDto.fromEntity(post, likeService.isLikedByUser(userId, post.getId()),
@@ -161,14 +163,16 @@ public class PostController {
 
     @GetMapping("/home")
     public ResponseEntity<?> GetPostshome(Authentication authentication,
-            @RequestHeader("Authorization") String authorizationHeader) {
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 throw new Exception("Invalid JWT token.");
             }
             Long userId = JwtService.extractUserId(jwt);
-            List<Post> posts = PostService.GetPostsHome(userId);
+            List<Post> posts = PostService.GetPostsHome(userId, page, size);
 
             List<PostResponseDto> postDtos = posts.stream()
                     .map(post -> PostResponseDto.fromEntity(post, likeService.isLikedByUser(userId,

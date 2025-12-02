@@ -1,5 +1,7 @@
 package com.blog.post.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.blog.post.model.Post;
@@ -16,11 +18,10 @@ import org.springframework.data.repository.query.Param;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUserId(Long Id);
+    Page<Post> findByUserIdOrderByCreatedAtDesc(Long Id, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.user.id = :userId OR p.user.id IN (SELECT s.following.id FROM Subscription s WHERE s.follower.id = :userId) ORDER BY p.createdAt DESC")
-        List<Post> Homepage(@Param("userId") Long username);
-
-    List<Post> findByUserIdOrderByCreatedAtDesc(Long Id);
+        Page<Post> Homepage(@Param("userId") Long username, Pageable pageable);
 
     Optional<Post> findByIdAndUserId(Long id, Long Id);
     

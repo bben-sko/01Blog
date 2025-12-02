@@ -1,6 +1,7 @@
 package com.blog.user.repository;
 
 import com.blog.user.model.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +20,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByEnabledOrderByIdDesc(boolean status);
 
-    List<User> findByUsernameContainingIgnoreCase(String username);
+    List<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);
 }

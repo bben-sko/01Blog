@@ -195,6 +195,27 @@
   }
 }
 
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.load-more-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  background: #1877f2;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.load-more-btn:hover {
+  background: #166fe5;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .users-grid {

@@ -58,4 +58,7 @@
         </div>
       </div>
     </div>
+    <div class="load-more-container" *ngIf="!loading && hasMore">
+      <button class="load-more-btn" (click)="showMore()">Show more</button>
+    </div>
   </div>

@@ -53,11 +53,14 @@ public class UserController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllProfiles(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> getAllProfiles(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         try {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
-            List<HashMap<String, Object>> user = UserService.GetAllUsers(userId);
+            List<HashMap<String, Object>> user = UserService.getUsersPage(userId, page, size);
             return ResponseEntity.ok().body(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -81,11 +84,13 @@ public class UserController {
 
     @GetMapping("/search")
     public ResponseEntity<?> searchUsers(@RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
             Long userId = JwtService.extractUserId(jwt);
-            List<HashMap<String, Object>> user = UserService.searchUsers(userId, query);
+            List<HashMap<String, Object>> user = UserService.searchUsers(userId, query, page, size);
             return ResponseEntity.ok().body(user);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
