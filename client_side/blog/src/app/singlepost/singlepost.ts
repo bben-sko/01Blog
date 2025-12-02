@@ -46,6 +46,7 @@ export class Singlepost implements OnInit {
   commentPageSize = 2;
   hasMoreComments = true;
   loadingComments = false;
+  postLoadError: string | null = null;
   currentUserId: number | null = null;
   showMenu: boolean = false;
   showComments: boolean = true;
@@ -76,7 +77,6 @@ export class Singlepost implements OnInit {
     this.route.params.subscribe(params => {
       const postId = +params['id'];
       this.loadPost(postId);
-      this.loadcomments(postId, true);
     });
   }
 
@@ -123,6 +123,9 @@ export class Singlepost implements OnInit {
     })
   }
   loadcomments(postId: number, reset: boolean = false) {
+    if (this.postLoadError) {
+      return;
+    }
     if (this.loadingComments) {
       return;
     }
@@ -221,10 +224,21 @@ export class Singlepost implements OnInit {
       next: (post) => {
         console.log(post);
         this.post = post;
+        this.postLoadError = null;
+        this.loadcomments(postId, true);
         this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading post:', error);
+        if (error.status === 404) {
+          this.postLoadError = 'Post not found or has been removed.';
+        } else {
+          this.postLoadError = 'Unable to load this post right now.';
+        }
+        this.post = null;
+        this.comments = [];
+        this.hasMoreComments = false;
+        this.cdr.detectChanges();
       }
     });
 
