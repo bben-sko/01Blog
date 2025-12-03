@@ -19,7 +19,6 @@
             <div class="notifications-container">
                 @if (notifications.length > 0) {
 
-                
                 <div *ngFor="let notification of notifications" class="notification-card"
                     [class.unread]="!notification.isRead" (click)="onNotificationClick(notification)">
 
@@ -44,6 +43,12 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="show-more-container text-center mt-3" *ngIf="hasMore">
+                    <button class="btn btn-outline-primary" (click)="loadMore()">
+                        <i class="bi bi-plus-lg me-1"></i>Show more
+                    </button>
                 </div>
             }@else {
                 <p>no notification</p>

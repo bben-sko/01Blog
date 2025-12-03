@@ -3,6 +3,50 @@
 <div class="container-fluid py-4">
     <h1 class="mb-4">Admin Dashboard</h1>
 
+    <div class="row g-3 mb-4" *ngIf="stats">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-title text-muted mb-1">Total Users</p>
+                    <h2>{{ stats.totalUsers }}</h2>
+                    <small class="text-muted">Active: {{ stats.activeUsers }} • Banned: {{ stats.bannedUsers }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-title text-muted mb-1">Total Posts</p>
+                    <h2>{{ stats.totalPosts }}</h2>
+                    <small class="text-muted">Active: {{ stats.activePosts }} • Hidden: {{ stats.hiddenPosts }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-title text-muted mb-1">Pending Reports</p>
+                    <h2>{{ stats.pendingReports }}</h2>
+                    <small class="text-muted">Resolved: {{ stats.resolvedReports }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 col-xl-3" *ngIf="profileReports">
+            <div class="card h-100">
+                <div class="card-body">
+                    <p class="card-title text-muted mb-1">Profile Reports</p>
+                    <h2>{{ profileReports.length }}</h2>
+                    <small class="text-muted">Updated {{ profileReports.length ? (profileReports[0]?.createdAt | date:'short') : 'recently' }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info d-flex align-items-center gap-2" *ngIf="loading">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        <span>Refreshing data...</span>
+    </div>
+
     <!-- Navigation Tabs -->
     <ul class="nav nav-tabs mb-4">
         <li class="nav-item">
@@ -30,7 +74,32 @@
 
     <!-- Reports Tab -->
     <div *ngIf="activeTab === 'reports'">
-        <h3>All Reports</h3>
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <div class="btn-group">
+                <button class="btn" [class.btn-primary]="reportView === 'posts'" [class.btn-outline-primary]="reportView !== 'posts'"
+                    (click)="switchReportView('posts')">
+                    Post Reports
+                </button>
+                <button class="btn" [class.btn-primary]="reportView === 'profiles'" [class.btn-outline-primary]="reportView !== 'profiles'"
+                    (click)="switchReportView('profiles')">
+                    Profile Reports
+                </button>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2" *ngIf="reportView === 'posts'">
+                <label class="form-label m-0">Filter:</label>
+                <select class="form-select" style="min-width: 180px"
+                    [ngModel]="reportFilter"
+                    (ngModelChange)="loadReport($event)">
+                    <option value="ALL">All</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="RESOLVED">Resolved</option>
+                    <option value="DISMISSED">Dismissed</option>
+                </select>
+            </div>
+        </div>
+
+        <div *ngIf="reportView === 'posts'">
+        <h3>Post Reports</h3>
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
@@ -71,9 +140,53 @@
                             </button>
                         </td>
                     </tr>
+                    <tr *ngIf="reports.length === 0">
+                        <td colspan="7" class="text-center text-muted">No reports found</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <div *ngIf="reportView === 'profiles'">
+        <h3>Profile Reports</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Reporter</th>
+                        <th>Reported User</th>
+                        <th>Reason</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let report of profileReports">
+                        <td>{{ report.id }}</td>
+                        <td>{{ report.reporterUsername }}</td>
+                        <td>{{ report.reportedUsername }}</td>
+                        <td>{{ report.reason }}</td>
+                        <td>{{ report.createdAt | date:'short' }}</td>
+                        <td class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-sm btn-outline-primary" (click)="viewProfile(report.reportedUsername)">
+                                View Profile
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger"
+                                [disabled]="!canBanReportedUser(report.reportedUsername)"
+                                (click)="promptBanFromProfile(report.reportedUsername)">
+                                Ban User
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="profileReports.length === 0">
+                        <td colspan="6" class="text-center text-muted">No profile reports right now</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     </div>
 
     <!-- Users Tab -->
@@ -316,5 +429,12 @@
             </div>
         </div>
     </div>
+</div>
+}
+@else {
+<div class="d-flex flex-column align-items-center justify-content-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <p class="text-muted mb-2">Checking admin access...</p>
+    <p class="text-muted">You will be redirected if you do not have permission.</p>
 </div>
 }

@@ -14,4 +14,7 @@ public class DashboardStatsDTO {
     private long totalPosts;
     private long activePosts;
     private long hiddenPosts;
+    private long deletedPosts;
+    private long pendingReports;
+    private long resolvedReports;
 }

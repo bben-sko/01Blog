@@ -56,6 +56,22 @@ export interface Report {
     resolvedBy?: string;
 }
 
+export interface ProfileReport {
+    id: number;
+    reporterUsername: string;
+    reportedUsername: string;
+    reason: string;
+    createdAt: string;
+}
+
+export interface AdminDashboardData {
+    stats: DashboardStats;
+    postReports: Report[];
+    profileReports: ProfileReport[];
+    users: User[];
+    posts: Post[];
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -65,7 +81,19 @@ export class AdminService {
     private API_REPORT_URL = 'http://localhost:8080/api/reports';
 
     getDashboardStats(): Observable<DashboardStats> {
-        return this.http.get<DashboardStats>(`${this.API_URL}/dashboard/stats`);
+        const token = this.getTokern();
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        return this.http.get<DashboardStats>(`${this.API_URL}/dashboard/stats`, { headers });
+    }
+
+    getDashboard(page: number = 0, size: number = 50): Observable<AdminDashboardData> {
+        const token = this.getTokern();
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        return this.http.get<AdminDashboardData>(`${this.API_URL}/dashboard?page=${page}&size=${size}`, { headers });
     }
 
     getTokern(): string  {
@@ -104,7 +132,7 @@ export class AdminService {
             'Authorization': `Bearer ${getTokern}`
         });
         console.log(getTokern)
-        return this.http.post(`${this.API_URL}/users/${userId}/ban`, {  headers });
+        return this.http.post(`${this.API_URL}/users/${userId}/ban`, {}, {  headers });
     }
 
     unbanUser(userId: number) {
@@ -172,5 +200,13 @@ export class AdminService {
             'Authorization': `Bearer ${getTokern}`
         });
         return this.http.get<Report>(`${this.API_REPORT_URL}/${reportId}`, {  headers });
+    }
+
+    getProfileReports() {
+        const token = this.getTokern();
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        return this.http.get<ProfileReport[]>(`http://localhost:8080/api/profile-reports`, { headers });
     }
 }

@@ -1,8 +1,12 @@
 package com.blog.notification.service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.blog.notification.model.Notification;
@@ -14,6 +18,8 @@ import com.blog.user.model.User;
 
 @Service
 public class NotificationService {
+
+    private static final int MAX_PAGE_SIZE = 50;
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -40,15 +46,22 @@ public class NotificationService {
         }
     }
 
-    public List<Notification> getUserNotifications(Long userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public Page<Notification> getUserNotifications(Long userId, int page, int size) {
+        Pageable pageable = buildPageable(page, size);
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 
-    public List<Notification> getUnreadNotifications(Long userId) {
-        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId);
+    public Page<Notification> getUnreadNotifications(Long userId, int page, int size) {
+        Pageable pageable = buildPageable(page, size);
+        return notificationRepository.findByUserIdAndIsReadFalseOrderByCreatedAtDesc(userId, pageable);
     }
 
- 
+    private Pageable buildPageable(int page, int size) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
+        return PageRequest.of(safePage, safeSize);
+    }
+
     public void markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
@@ -60,11 +73,12 @@ public class NotificationService {
     }
 
     // public void markAllAsRead(Long userId) {
-    //     List<Notification> unreadNotifications = getUnreadNotifications(userId);
-    //     for (Notification notification : unreadNotifications) {
-    //         notification.setRead(true);
-    //         notificationRepository.save(notification);
-    //     }
+    // Page<Notification> unreadNotifications = getUnreadNotifications(userId, 0,
+    // MAX_PAGE_SIZE);
+    // for (Notification notification : unreadNotifications) {
+    // notification.setRead(true);
+    // notificationRepository.save(notification);
+    // }
     // }
 
     public long getUnreadCount(Long userId) {

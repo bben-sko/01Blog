@@ -8,6 +8,7 @@ import { UsersList } from './shered/add-user/users-list';
 import { Singlepost } from './singlepost/singlepost';
 import { Admin } from './admin/admin';
 import { Notification } from './notification/notification';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
@@ -22,7 +23,8 @@ export const routes: Routes = [
   },
 {
   path: 'admin',
-    component: Admin, 
+    component: Admin,
+    canActivate: [adminGuard]
   },
   {
     path: 'notification',

@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminService, DashboardStats, Post, Report, ReportStatus, User } from '../sevice/adminservice';
+import { AdminService, DashboardStats, Post, ProfileReport, Report, ReportStatus, User } from '../sevice/adminservice';
 import { Router } from '@angular/router';
 
 @Component({
@@ -15,14 +14,15 @@ export class Admin implements OnInit {
 
   private adminService = inject(AdminService);
   private route = inject(Router);
-  private http = inject(HttpClient);
   stats: DashboardStats | null = null;
   users: User[] = [];
   posts: Post[] = [];
   reports: Report[] = [];
+  profileReports: ProfileReport[] = [];
   reportFilter: 'ALL' | ReportStatus = 'ALL';
 
   activeTab: 'reports' | 'users' | 'posts' = 'reports';
+  reportView: 'posts' | 'profiles' = 'posts';
 
   selectedReport: Report | null = null;
   selectedUser: User | null = null;
@@ -32,7 +32,7 @@ export class Admin implements OnInit {
   adminNote = '';
   reportDecision: ReportStatus = 'RESOLVED';
   hidePostOnResolve = false;
-  checking = false
+  checking = false;
   loading = false;
   error = '';
   constructor(private cdr: ChangeDetectorRef) {
@@ -40,20 +40,44 @@ export class Admin implements OnInit {
   }
 
   ngOnInit() {
-    this.loadReport();
-    this.loadUsers();
-    this.loadPosts();
-    this.checking = true
+    this.loadDashboard();
   }
 
+  loadDashboard(page: number = 0, size: number = 50) {
+    this.loading = true;
+    this.adminService.getDashboard(page, size).subscribe({
+      next: (data) => {
+        this.stats = data.stats;
+        this.reports = data.postReports;
+        this.profileReports = data.profileReports;
+        this.users = data.users;
+        this.posts = data.posts;
+        this.reportFilter = 'ALL';
+        this.loading = false;
+        this.checking = true;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 401) {
+          this.route.navigate(['/']);
+        }
+      }
+    });
+  }
 
+  switchReportView(view: 'posts' | 'profiles') {
+    this.reportView = view;
+    if (view === 'profiles' && this.profileReports.length === 0) {
+      this.loadProfileReports();
+    }
+  }
 
   loadUsers() {
     this.loading = true;
     this.adminService.getAllUsers().subscribe({
       next: (data) => {
         this.users = data;
-        console.log(data)
         this.loading = false;
       },
       error: (err) => {
@@ -66,6 +90,7 @@ export class Admin implements OnInit {
   loadReport(status: 'ALL' | ReportStatus = 'ALL') {
     this.loading = true;
     this.reportFilter = status;
+    this.reportView = 'posts';
 
     this.adminService.getReports(status).subscribe({
       next: (data: Report[]) => {
@@ -82,23 +107,28 @@ export class Admin implements OnInit {
     });
   }
 
+  loadProfileReports() {
+    this.loading = true;
+    this.adminService.getProfileReports().subscribe({
+      next: (data) => {
+        this.profileReports = data;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.loading = false;
+        if (err.status === 401) {
+          this.route.navigate(['/']);
+        }
+      }
+    });
+  }
+
   loadPosts() {
     this.loading = true;
-    const token = localStorage.getItem('jwt');
-
-    if (!token) {
-      console.error('No JWT token found');
-      this.route.navigate(['/login'])
-    }
-
-
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    this.http.get<Post[]>(`http://localhost:8080/api/admin/posts?page=0&size=50`, { headers }).subscribe({
+    this.adminService.getAllPosts().subscribe({
       next: (data) => {
-        console.log(data)
-        this.posts = data
+        this.posts = data;
         this.loading = false;
       },
       error: (err) => {
@@ -112,25 +142,18 @@ export class Admin implements OnInit {
   switchTab(tab: 'reports' | 'users' | 'posts') {
     this.activeTab = tab;
     this.error = '';
+    if (tab !== 'reports') {
+      this.reportView = 'posts';
+    }
   }
 
   banUser(user: User) {
-    const token = localStorage.getItem('jwt');
-
-    if (!token) {
-      console.error('No JWT token found');
-      this.route.navigate(['/login'])
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    this.http.post<String>(`http://localhost:8080/api/admin/users/${user.id}/ban`, {}, { headers }).subscribe({
+    this.adminService.banUser(user.id).subscribe({
       next: () => {
         alert('User banned successfully');
         this.actionReason = '';
         this.selectedUser = null;
-        this.cdr.detectChanges()
+        this.loadDashboard();
 
       },
       error: (err) => {
@@ -147,7 +170,7 @@ export class Admin implements OnInit {
     this.adminService.unbanUser(user.id).subscribe({
       next: () => {
         alert('User unbanned successfully');
-        this.cdr.detectChanges()
+        this.loadDashboard();
 
       },
       error: (err) => {
@@ -164,7 +187,7 @@ export class Admin implements OnInit {
     this.adminService.deleteUser(userId).subscribe({
       next: () => {
         alert('User deleted successfully');
-        this.loadUsers();
+        this.loadDashboard();
       },
       error: (err) => {
         if (err.status == 401) {
@@ -181,10 +204,7 @@ export class Admin implements OnInit {
         alert('Post hidden successfully');
         this.adminNote = '';
         this.selectedPost = null;
-        this.loadPosts();
-        post.enable = !post.enable
-        this.selectedPost = null;
-        this.cdr.detectChanges()
+        this.loadDashboard();
       },
       error: (err) => {
         if (err.status == 401) {
@@ -201,8 +221,7 @@ export class Admin implements OnInit {
     this.adminService.unhidePost(post.postId).subscribe({
       next: () => {
         alert('Post unhidden successfully');
-        this.loadPosts();
-        this.cdr.detectChanges()
+        this.loadDashboard();
 
       },
       error: (err) => {
@@ -210,9 +229,6 @@ export class Admin implements OnInit {
       },
 
     });
-    post.enable = !post.enable
-    this.cdr.detectChanges()
-
   }
 
   deletePost(postId: number) {
@@ -221,7 +237,7 @@ export class Admin implements OnInit {
     this.adminService.deletePost(postId).subscribe({
       next: () => {
         alert('Post deleted successfully');
-        this.loadPosts();
+        this.loadDashboard();
         if (this.selectedReport) {
           this.closeModal();
         }
@@ -251,8 +267,7 @@ export class Admin implements OnInit {
     }).subscribe({
       next: () => {
         alert('Report updated successfully');
-        this.loadReport(this.reportFilter);
-        this.loadPosts();
+        this.loadDashboard();
         this.closeModal();
 
       },
@@ -299,7 +314,7 @@ export class Admin implements OnInit {
           this.selectedReport.postEnabled = false;
           this.hidePostOnResolve = true;
         }
-        this.loadPosts();
+        this.loadDashboard();
       },
       error: (err) => {
         if (err.status == 401) {
@@ -312,11 +327,10 @@ export class Admin implements OnInit {
   deletePostFromReport(postId: number) {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
-    this.adminService.deletePost(postId).subscribe({
+      this.adminService.deletePost(postId).subscribe({
       next: () => {
         alert('Post deleted successfully');
-        this.loadPosts();
-        this.loadReport(this.reportFilter);
+        this.loadDashboard();
         if (this.selectedReport?.postId === postId) {
           this.closeModal();
         }
@@ -331,5 +345,22 @@ export class Admin implements OnInit {
   }
   GetViews(postId: number) {
      window.open(`post/${postId}`);
+  }
+
+  viewProfile(username: string) {
+    this.route.navigate(['/profile', username]);
+  }
+
+  canBanReportedUser(username: string): boolean {
+    return this.users.some((user) => user.username === username);
+  }
+
+  promptBanFromProfile(username: string) {
+    const user = this.users.find((u) => u.username === username);
+    if (user) {
+      this.openBanUserModal(user);
+    } else {
+      this.viewProfile(username);
+    }
   }
 }

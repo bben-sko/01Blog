@@ -1,3 +1,21 @@
+.single-post-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.post-column,
+.comments-column {
+  width: 100%;
+}
+
+.single-post-layout .post-card {
+  max-width: none;
+}
+
 .post-card {
   max-width: 800px;
   margin: 0 auto;
@@ -69,7 +87,7 @@
   margin-top: 1rem;
   display: grid;
   gap: 0.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .post-media {
@@ -112,10 +130,24 @@
 /* Comments Section */
 .comments-section {
   background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  overflow: hidden;
 }
 
 .add-comment-box {
   background-color: #fff;
+}
+
+.responsive-input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.responsive-input .form-control {
+  flex: 1;
 }
 
 .comment-input {
@@ -170,6 +202,10 @@
   padding-left: 1rem;
 }
 
+.w-lg-auto {
+  width: 100%;
+}
+
 /* Modal */
 .modal.show {
   background-color: rgba(0, 0, 0, 0.5);
@@ -195,6 +231,10 @@
 
 /* Responsive */
 @media (max-width: 992px) {
+  .single-post-layout {
+    gap: 1rem;
+  }
+
   .post-card {
     margin: 0 auto 1.5rem;
   }
@@ -224,6 +264,10 @@
   .card-body {
     padding: 0.9rem;
   }
+
+  .comments-column {
+    order: 2;
+  }
   
   .action-btn {
     font-size: 0.85rem;
@@ -236,8 +280,19 @@
 }
 
 @media (max-width: 576px) {
+  .single-post-layout {
+    gap: 0.75rem;
+  }
+
   .post-card {
-    margin: 0 -0.5rem;
+    margin: 0 auto 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .comments-section {
+    border-radius: 12px;
+    margin: 0 auto;
   }
 
   .card-header {
@@ -284,6 +339,38 @@
 
   .new-post-card {
     padding: 16px;
+  }
+
+  .comments-list {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .w-lg-auto {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .single-post-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1.1fr);
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .comments-column {
+    position: sticky;
+    top: 90px;
+    align-self: flex-start;
+  }
+
+  .w-lg-auto {
+    width: auto;
+  }
+
+  .comments-list {
+    max-height: calc(100vh - 240px);
   }
 }
 

@@ -62,7 +62,7 @@ export class Singlepost implements OnInit {
   newcontent = this.post?.content;
   postErr: string = "";
   existingMedia: string[] = [];
- 
+
 
   constructor(
     private route: ActivatedRoute,
@@ -114,7 +114,7 @@ export class Singlepost implements OnInit {
       'Authorization': `Bearer ${token}`
     });
     this.http.delete(`http://localhost:8080/api/post/${this.post.postId}`, { headers }).subscribe({
-      next:() => {
+      next: () => {
         this.router.navigate(['/'])
       },
       error: (err) => {
@@ -212,6 +212,7 @@ export class Singlepost implements OnInit {
     this.postErr = '';
     if (this.converteToEdit) {
       await this.loadPostToEdit();
+      this.cdr.detectChanges();
     } else {
       this.previews = [];
       this.files = [];
@@ -389,7 +390,7 @@ export class Singlepost implements OnInit {
 
     for (const url of imageUrls) {
       try {
-        const response = await fetch(url);
+        const response = await fetch(url); // RxJs
         const blob = await response.blob();
 
         this.existingMedia.push(url);
@@ -458,7 +459,7 @@ export class Singlepost implements OnInit {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}` // interceptor and wraping data by a bearer token
     });
 
     const fd = new FormData();

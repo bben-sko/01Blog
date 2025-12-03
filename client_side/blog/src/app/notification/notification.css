@@ -73,6 +73,10 @@ h2 {
   font-weight: 600;
 }
 
+.show-more-container .btn {
+  min-width: 150px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .notification-card {
@@ -89,5 +93,9 @@ h2 {
   
   h2 {
     font-size: 1.5rem;
+  }
+
+  .show-more-container .btn {
+    width: 100%;
   }
 }

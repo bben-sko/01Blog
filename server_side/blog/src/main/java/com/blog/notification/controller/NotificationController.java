@@ -1,14 +1,14 @@
 package com.blog.notification.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,15 +26,20 @@ public class NotificationController {
     private JwtService JwtService;
 
     @GetMapping
-    public ResponseEntity<List<Notification>> getNotifications(
-            @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<Page<Notification>> getNotifications(
+            @RequestHeader("Authorization") String authorizationHeader,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "unreadOnly", defaultValue = "true") boolean unreadOnly) {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
-            List<Notification> notifications = notificationService.getUnreadNotifications(userId);
+            Page<Notification> notifications = unreadOnly
+                    ? notificationService.getUnreadNotifications(userId, page, size)
+                    : notificationService.getUserNotifications(userId, page, size);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);

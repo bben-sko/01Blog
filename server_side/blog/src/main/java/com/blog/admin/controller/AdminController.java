@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blog.admin.dto.AdminDashboardResponse;
 import com.blog.admin.service.AdminPostService;
 import com.blog.admin.service.AdminReportService;
 import com.blog.admin.service.AdminUserService;
@@ -38,6 +39,25 @@ public class AdminController {
     @Autowired
     private JwtService jwtServicel;
 
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<?> getDashboardStats(@RequestHeader("Authorization") String authorizationHeader) {
+        if (!hasAdminAccess(authorizationHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization required");
+        }
+        return ResponseEntity.ok(adminService.getDashboardStats());
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getDashboard(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        if (!hasAdminAccess(authorizationHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authorization required");
+        }
+        AdminDashboardResponse response = adminService.getDashboardData(page, size);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(
@@ -266,5 +286,18 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    private boolean hasAdminAccess(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            try {
+                String token = authorizationHeader.substring(7);
+                String role = jwtServicel.extractRole(token);
+                return !role.equals("N_USER");
+            } catch (Exception e) {
+                return false;
+            }
+        }
+        return false;
     }
 }
