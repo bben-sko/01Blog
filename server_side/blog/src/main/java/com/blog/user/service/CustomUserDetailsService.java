@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -23,10 +24,16 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         
         // Return Spring Security's UserDetails
-        return new org.springframework.security.core.userdetails.User(
-            user.getUsername(),
-            user.getPassword(),
-            Collections.singletonList(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-        );
+        UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(user.getUsername())
+            .password(user.getPassword())
+            .authorities(Collections.singletonList(
+                new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+            ));
+
+        if (!user.isEnabled()) {
+            builder.disabled(true);
+        }
+
+        return builder.build();
     }
 }

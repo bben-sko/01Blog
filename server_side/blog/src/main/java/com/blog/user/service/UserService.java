@@ -55,19 +55,27 @@ public class UserService {
     }
 
     public AuthResponse LoginUser(LoginRequest user) throws Exception {
-        if (!userRepository.existsByEmail(user.getUserEmail())
-                && !userRepository.existsByUsername(user.getUserEmail())) {
-            throw new Exception("email or user not work");
-        }
         Optional<User> Username = userRepository.findByEmail(user.getUserEmail());
         if (!Username.isPresent()) {
             Username = userRepository.findByUsername(user.getUserEmail());
         }
-        if (!passwordEncoder.matches(user.getPassword(), Username.get().getPassword())) {
-            throw new Exception("password incurrect");
+
+        if (!Username.isPresent()) {
+            throw new Exception("Account not found (it may have been deleted).");
         }
-        String token = jwtService.generateToken(Username.get().getUsername(), Username.get().getRole().toString(),
-                Username.get().getId());
+
+        User foundUser = Username.get();
+
+        if (!foundUser.isEnabled()) {
+            throw new Exception("Your account has been banned. Please contact support.");
+        }
+
+        if (!passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
+            throw new Exception("Password incorrect");
+        }
+
+        String token = jwtService.generateToken(foundUser.getUsername(), foundUser.getRole().toString(),
+                foundUser.getId());
         AuthResponse response = new AuthResponse(token, null);
         return response;
     }

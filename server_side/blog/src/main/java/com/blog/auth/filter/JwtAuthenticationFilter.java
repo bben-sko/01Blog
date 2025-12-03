@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,6 +52,10 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             userName = jwtUtil.getData(jwt, Claims::getSubject);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+
+               if (!userDetails.isEnabled()) {
+                    throw new DisabledException("Account disabled");
+               }
             
             if (jwtUtil.validateToken(jwt, userDetails)){
                     UsernamePasswordAuthenticationToken authToken = 
@@ -69,7 +74,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
-            } catch (Exception e) {
+            } catch (DisabledException disabled) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"Account disabled\"}");
+                return;
+            }
+            catch (Exception e) {
             // Log the exception (token is invalid or expired)
             System.err.println("Cannot set user authentication: "+ e.getMessage());
         }
