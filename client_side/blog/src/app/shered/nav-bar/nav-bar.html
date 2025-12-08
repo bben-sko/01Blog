@@ -40,10 +40,13 @@
       </button>
 
       <button class="btn btn-icon" 
-        [routerLink]="[`/profile/${profileusername}`]" 
+        [routerLink]="[`/profile/${UserResponse?.username}`]" 
         title="Profile"
         aria-label="Profile">
         <i class="bi bi-person-fill"></i>
+      </button>
+      <button *ngIf="UserResponse?.role === 'ADMIN_USER'" class="btn btn-icon" [routerLink]="[`/admin`]" title="admin" aria-label="admin">
+        <i class="bi bi-gear"></i>
       </button>
 
       <button class="btn btn-icon" (click)="Logout()" title="Logout" aria-label="Logout">

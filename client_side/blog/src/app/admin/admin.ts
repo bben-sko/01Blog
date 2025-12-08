@@ -94,6 +94,7 @@ export class Admin implements OnInit {
 
     this.adminService.getReports(status).subscribe({
       next: (data: Report[]) => {
+        console.log(data);
         this.reports = data;
         this.loading = false;
         this.cdr.detectChanges();

@@ -1,4 +1,3 @@
-<app-nav-bar />
 
 <div class="profile-container">
   <!-- Profile Header -->
@@ -7,15 +6,15 @@
       <!-- Avatar -->
       <div class="avatar-section">
         <img 
-          [src]="user.avatar ? user.avatar : 'data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'"
+          [src]="user.avatar ? user.avatar : 'assests/avatar-default.jpng'"
           class="profile-avatar">
       </div>
 
       <!-- User Info -->
       <div class="info-section">
         <div class="username-row">
-          <h1 class="username">{{ user.username }}</h1>
-           @if (!user.isme) {
+          <h1 class="username">{{ user.username  }}</h1>
+           @if ( !userNotFound && !user.isme) {
              <div class="d-flex gap-2 flex-wrap">
                <button 
               class="follow-btn" 
@@ -152,8 +151,7 @@
             @for (followedUser of following; track followedUser.id) {
                 <div class="user-item">
                 <img 
-                  [src]="followedUser.avatar ? followedUser.avatar : 'data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'" 
-                  [alt]="followedUser.username"
+                  [src]="followedUser?.avatar ? followedUser?.avatar : 'assests/avatar-default.jpng'"
                   class="user-avatar"
                   (click)="GoToProfile(followedUser.username)">
                 <div class="user-details">
@@ -189,7 +187,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Report {{ user?.username }}</h5>
+        <h5 class="modal-title">Report {{ user.username }}</h5>
         <button type="button" class="btn-close" (click)="closeReportModal()"></button>
       </div>
       <div class="modal-body">

@@ -76,6 +76,7 @@ public class UserController {
             User user = UserService.GetUserInfoByid(userId);
             Map<String, String> response = new HashMap<>();
             response.put("username", user.getUsername());
+            response.put("role", user.getRole().toString());
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

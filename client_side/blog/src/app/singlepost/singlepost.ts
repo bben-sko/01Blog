@@ -5,7 +5,6 @@ import { PostService } from '../sevice/post.service';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NavBar } from '../shered/nav-bar/nav-bar';
 
 interface CreateCommentRequest {
   content: string,
@@ -33,7 +32,7 @@ type Preview = { url: string; type: string; file?: File; existing?: boolean };
 
 @Component({
   selector: 'app-singlepost',
-  imports: [CommonModule, FormsModule, NavBar],
+  imports: [CommonModule, FormsModule],
   templateUrl: './singlepost.html',
   styleUrl: './singlepost.css'
 })
@@ -223,14 +222,12 @@ export class Singlepost implements OnInit {
   loadPost(postId: number) {
     this.postService.getPostById(postId).subscribe({
       next: (post) => {
-        console.log(post);
         this.post = post;
         this.postLoadError = null;
         this.loadcomments(postId, true);
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading post:', error);
         if (error.status === 404) {
           this.postLoadError = 'Post not found or has been removed.';
         } else {
@@ -325,7 +322,6 @@ export class Singlepost implements OnInit {
     });
     this.http.post(`http://localhost:8080/api/comments`, request, { headers },).subscribe({
       next: (comment) => {
-        console.log('Comment added:', comment);
         this.newComment = '';
         this.isSubmitting = false;
         if (this.post) {

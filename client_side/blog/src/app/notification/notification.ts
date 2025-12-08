@@ -2,7 +2,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common'; // Import CommonModule for Angular directives
-import { NavBar } from '../shered/nav-bar/nav-bar';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 // Define the interface - renamed to avoid conflict with component class
@@ -27,7 +26,7 @@ interface NotificationPage {
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [NavBar, CommonModule], // Add CommonModule for *ngFor, *ngIf, DatePipe, etc.
+  imports: [ CommonModule], // Add CommonModule for *ngFor, *ngIf, DatePipe, etc.
   templateUrl: './notification.html',
   styleUrl: './notification.css'
 })

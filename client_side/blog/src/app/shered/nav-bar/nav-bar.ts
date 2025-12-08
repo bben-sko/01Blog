@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
@@ -5,18 +6,18 @@ import { RouterModule, Router } from '@angular/router';
 
 interface UserResponse {
   username: string;
+  role: string;
 }
 
 @Component({
   selector: 'app-nav-bar',
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './nav-bar.html',
   styleUrl: './nav-bar.css'
 })
 
 export class NavBar implements OnInit {
-  username: UserResponse | null = null;
-  profileusername: string = "";
+  UserResponse: UserResponse | null = null;
   menuOpen = false;
 
   constructor(
@@ -29,7 +30,6 @@ export class NavBar implements OnInit {
     this.getCurrentUser();
   }
   getCurrentUser() {
-    // Check if localStorage is available
     if (typeof localStorage === 'undefined') {
       console.log('localStorage not available');
       return;
@@ -50,9 +50,7 @@ export class NavBar implements OnInit {
     this.http.get<UserResponse>('http://localhost:8080/api/users/me', { headers })
       .subscribe({
         next: (data) => {
-          this.username = data;
-          this.profileusername = this.username.username;
-          console.log(this.username.username);
+          this.UserResponse = data;
         },
         error: (error) => {
           console.error('Error fetching current user', error);

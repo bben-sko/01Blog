@@ -22,7 +22,6 @@ export class Login implements  OnInit  {
   title = 'Login Page';
   dataLogin = { userEmail: "", password: "" };
   submitted = false;
-  // private http = inject(HttpClient);
   error = "";
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -36,12 +35,10 @@ export class Login implements  OnInit  {
     this.http.post<loginResponse>("http://localhost:8080/api/auth/login", this.dataLogin)
       .subscribe({
         next: (response) => {
-          console.log("Login successful:", response);
           localStorage.setItem("jwt", response.token )
           this.router.navigate(["/"])
         },
         error: (errorResponse) => {
-          console.error("Login failed:", errorResponse);
           const backendError = errorResponse?.error;
           if (typeof backendError === 'string') {
             this.error = backendError;

@@ -3,14 +3,13 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
-import { NavBar } from "../shered/nav-bar/nav-bar";
 
 
 type Preview = { url: string; type: string; file: File };
 @Component({
   selector: 'app-new-post',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavBar],
+  imports: [CommonModule, FormsModule],
   templateUrl: './newpost.html',
   styleUrl: './newpost.css'
 })

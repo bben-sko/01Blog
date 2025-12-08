@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, Input, NgModule, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { NavBar } from '../nav-bar/nav-bar';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -21,7 +20,7 @@ export interface Users {
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavBar],
+  imports: [CommonModule, FormsModule],
   templateUrl: './users-list.html',
   styleUrl: './users-list.css'
 })

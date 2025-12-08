@@ -2,8 +2,7 @@ import { ChangeDetectorRef, Component, Inject, NgModule, OnInit, PLATFORM_ID } f
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Post, Posts, } from '../shered/posts/posts';
-import { NavBar } from '../shered/nav-bar/nav-bar';
-import { Users, UsersList } from '../shered/add-user/users-list';
+
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
@@ -34,9 +33,10 @@ export interface FollowUser {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [NavBar, RouterModule, Posts, FormsModule, CommonModule],
+  imports: [ RouterModule, Posts, FormsModule, CommonModule],
   templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  styleUrls: [ "./styles.css"]
+
 })
 export class Profile implements OnInit {
   user!: User;
@@ -53,6 +53,7 @@ export class Profile implements OnInit {
   reportModalOpen = false;
   reportReason = '';
   reportError = '';
+  userNotFound = false;
   
   // loading = false;
 
@@ -63,7 +64,7 @@ export class Profile implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     if(typeof window !== 'undefined'){
-      console.log('Window is defined');
+      // console.log('Window is defined');
     }
    
   }
@@ -75,13 +76,9 @@ export class Profile implements OnInit {
     const username = params.get('username');
 
     if (username && !username.includes('.')) {
-      this.currentProfileUsername = username;
-      console.log('Profile username from route:', username);
-      
-        console.log('Running in browser');
+      this.currentProfileUsername = username;      
         this.loadUserProfile(username);
-      this.loadFollowers(username);
-      this.toggleFollowUser(username)
+    
       
     }
   });
@@ -94,7 +91,7 @@ export class Profile implements OnInit {
   }
   
   const token = localStorage.getItem('jwt');
-  console.log('Loading profile for:', token);
+  // console.log('Loading profile for:', token);
 
   if (!token) {
     console.error('No JWT token found');
@@ -113,14 +110,25 @@ export class Profile implements OnInit {
             isme: (data as any).isMe,
             avatarUrl: (data as any).avatar
           }
-          console.log('Loaded user profile:', this.user.avatar);
+          this.loadFollowers(username);
+          this.toggleFollowUser(username)
           this.loadUserPosts(username, true);
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error('Error loading profile:', error.error);
           if (error.error === 'User not found') {
-            this.routenav.navigate(['/']);
+            this.user = {
+              id: 0,
+              username: 'User not found',
+              avatar: '',
+              bio: '',
+              isFollowing: false,
+              isme:  false,
+              avatarUrl: ''
+            }
+            this.userNotFound = true;
+            this.cdr.detectChanges();
+
           }else {
             this.routenav.navigate(['/login']);
           }
@@ -219,7 +227,7 @@ export class Profile implements OnInit {
       { headers }).subscribe({
         next: (data) => {
           this.following = data;
-          console.log(this.following)
+          // console.log(this.following)
           this.cdr.detectChanges();
         },
         error: (error) => {
@@ -229,11 +237,6 @@ export class Profile implements OnInit {
     this.cdr.detectChanges();
   }
 
-
-  editProfile() {}
-  //   console.log('Edit profile');
-  //   // Navigate to edit profile page
-  // }
   UnFollow(FollowUser: FollowUser) {
 
     const token = localStorage.getItem('jwt');

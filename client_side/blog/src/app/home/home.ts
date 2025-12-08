@@ -1,13 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { NavBar } from '../shered/nav-bar/nav-bar';
 import { Post, Posts } from '../shered/posts/posts';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 
 @Component({
   selector: 'app-home',
-  imports: [NavBar, Posts],
+  imports: [ Posts],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })

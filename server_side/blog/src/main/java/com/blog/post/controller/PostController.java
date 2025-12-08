@@ -151,9 +151,9 @@ public class PostController {
             Long userId = JwtService.extractUserId(jwt);
 
             PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
-            // if (!post.getUserId().equals(userId)) {
-            //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-            // }
+            if (!post.getUserId().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
 
             PostService.DeletePost(Postid);
 
