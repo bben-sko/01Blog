@@ -8,10 +8,11 @@ interface TokenVerifyResponse {
     err?: string;
 }
 
-export const TokenGuard: CanActivateFn = () => {
+export const TokenGuard: CanActivateFn =  () => {
     const router = inject(Router);
     const http = inject(HttpClient);
     const token = localStorage.getItem('jwt');
+    let tokencheck: TokenVerifyResponse = { valid: false }; 
 
     if (!token) {
         router.navigate(['/login']);
@@ -23,10 +24,13 @@ export const TokenGuard: CanActivateFn = () => {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
-        http.post<TokenVerifyResponse>("http://localhost:8080/api/auth/verifytoken", {},{ headers })
+         http.post<TokenVerifyResponse>("http://localhost:8080/api/auth/verifytoken", {},{ headers })
         .subscribe({
             next: (response) => {
+                console.log('Token verification response:', response);
                 if (response.valid) {
+                    tokencheck.valid = true;
+                    console.log(tokencheck.valid);
                     return true;
                 } else {
                     router.navigate(['/login']);
@@ -42,9 +46,10 @@ export const TokenGuard: CanActivateFn = () => {
     } catch (error) {
         console.error('Failed to parse JWT token', error);
         router.navigate(['/']);
-        return false;
+        return false; 
     }
+    console.log('Token verification process initiated', tokencheck);
 
     // router.navigate(['/']);
-    return false;
+    return tokencheck.valid;
 };
