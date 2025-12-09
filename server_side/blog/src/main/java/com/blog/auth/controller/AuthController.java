@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +50,6 @@ public class AuthController {
             @RequestParam(value = "bio", required = false) String bio,
             @RequestParam(value = "avatar", required = false) MultipartFile avatar) {
         try {
-            // Validate required fields
             if (username == null || username.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Username is required");
             }
@@ -102,10 +102,29 @@ public class AuthController {
             return "success";
     }
 
-    // @GetMapping("/api/users/me")
-    // public String CurrentUserProfile() {
-    //     return "returns current user profile";
-    // }
+    @PostMapping("/verifytoken")
+    public String verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
+        try {
+            if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+                return "invalid";
+            }
+
+            String jwt = authorizationHeader.substring(7);
+            if (jwt == null || jwt.isEmpty()) {
+                return "invalid";
+            }
+
+            Long userId = UserService.verifyToken(jwt);
+            if (userId != null) {
+                return "valid";
+            } else {
+                return "invalid";
+            }
+        } catch (Exception e) {
+            return "invalid";
+        }
+        
+    }
     // @PutMapping("/api/users/me")
     // public String UpdateProfileFields() {
     //     return "returns UpdateProfileFields";

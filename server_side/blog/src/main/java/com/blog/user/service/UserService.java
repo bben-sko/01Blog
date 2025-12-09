@@ -123,4 +123,11 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
         return user;
     }
+    public Long verifyToken(String token) throws Exception {
+        if (token == null || token.isEmpty()) {
+            throw new Exception("Invalid token");
+        }
+        Long userId = jwtService.extractUserId(token);
+        return userId;
+    }
 }
