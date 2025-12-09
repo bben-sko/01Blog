@@ -22,6 +22,7 @@ import jakarta.validation.Valid;
 import com.blog.auth.dto.AuthResponse;
 import com.blog.auth.dto.LoginRequest;
 import com.blog.auth.dto.RegisterRequest;
+import com.blog.auth.dto.ValidationResponse;
 import com.blog.common.util.StorageService;
 
 @RestController
@@ -103,25 +104,33 @@ public class AuthController {
     }
 
     @PostMapping("/verifytoken")
-    public String verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {
+        ValidationResponse response = new ValidationResponse(false, "Invalid token");
         try {
+            
             if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-                return "invalid";
+                System.out.println("no auth header");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
-                return "invalid";
+                System.out.println("empty token");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
             Long userId = UserService.verifyToken(jwt);
-            if (userId != null) {
-                return "valid";
+            if (userId == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             } else {
-                return "invalid";
+                response.setValid(true);
+                response.setErr(null);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
             }
         } catch (Exception e) {
-            return "invalid";
+            response.setValid(false);
+            response.setErr(null);
+            return ResponseEntity.status(500).body(response);
         }
         
     }

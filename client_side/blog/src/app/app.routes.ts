@@ -13,7 +13,7 @@ import { TokenGuard } from './guards/validtoken.guard';
 
 export const routes: Routes = [
   { path: 'login', component: Login },
-  { path: '', component: Home, canActivate: [TokenGuard] },
+  { path: '', component: Home },
   { path: 'register', component: Register },
   { path: 'newpost', component: NewPost, canActivate: [TokenGuard] },
   { path: 'adduser', component: UsersList, canActivate: [TokenGuard] },

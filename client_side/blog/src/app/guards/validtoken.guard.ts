@@ -1,6 +1,12 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+
+interface TokenVerifyResponse {
+    valid: boolean;
+    err?: string;
+}
 
 export const TokenGuard: CanActivateFn = () => {
     const router = inject(Router);
@@ -11,9 +17,13 @@ export const TokenGuard: CanActivateFn = () => {
         router.navigate(['/login']);
         return false;
     }
+ 
 
     try {
-        http.post<any>("http://localhost:8080/api/auth/verifytoken", { token: token })
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        http.post<TokenVerifyResponse>("http://localhost:8080/api/auth/verifytoken", {},{ headers })
         .subscribe({
             next: (response) => {
                 if (response.valid) {
@@ -24,14 +34,17 @@ export const TokenGuard: CanActivateFn = () => {
                 }
             },
             error: (error) => {
+                console.error('Token verification failed:', error);
                 router.navigate(['/login']);
                 return false;
             }
         });
     } catch (error) {
         console.error('Failed to parse JWT token', error);
+        router.navigate(['/']);
+        return false;
     }
 
-    router.navigate(['/']);
+    // router.navigate(['/']);
     return false;
 };
