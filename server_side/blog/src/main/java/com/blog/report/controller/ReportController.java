@@ -1,5 +1,6 @@
 package com.blog.report.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -44,23 +45,28 @@ public class ReportController {
     @PostMapping("/add")
     public ResponseEntity<?> addReport(@RequestHeader("Authorization") String authorizationHeader,
             @Valid @RequestBody CreateReportRequest reportRequest) {
-        try {
+                try {
+                    HashMap<String, String> responce = new HashMap<>();
             Long userId = extractUserId(authorizationHeader);
             User user = userService.GetUserInfoByid(userId);
             Post post = postService.getPostById(reportRequest.getPostId());
             if (post == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
+                responce.put("message", "Post not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responce);
             }
 
             if (reportRequest.getReason() == null || reportRequest.getReason().isBlank()) {
-                return ResponseEntity.badRequest().body("Please provide a reason for reporting.");
+                responce.put("message", "Please provide a reason for reporting.");
+                return ResponseEntity.badRequest().body(responce);
             }
 
             reportService.AddReport(user, post, reportRequest.getReason().trim());
-            return ResponseEntity.ok().body("Report submitted successfully");
+            responce.put("message", "Report submitted successfully");
+            return ResponseEntity.ok().body(responce);
         } catch (ResponseStatusException ex) {
             throw ex;
         } catch (Exception e) {
+            System.out.println("Error while reporting post: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

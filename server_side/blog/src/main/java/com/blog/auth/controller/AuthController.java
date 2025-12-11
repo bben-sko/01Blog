@@ -87,7 +87,7 @@ public class AuthController {
         AuthResponse response = UserService.LoginUser(user);
         return  ResponseEntity.status(HttpStatus.OK).body(response);
       }  catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("error message: "+e.getMessage());  
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());  
       }
     }
 
@@ -97,11 +97,11 @@ public class AuthController {
 
 
 
-    @PostMapping("/logout")
-    public String Logout() {
-        //header Bearer token
-            return "success";
-    }
+    // @PostMapping("/logout")
+    // public String Logout() {
+    //     //header Bearer token
+    //         return "success";
+    // }
 
     @PostMapping("/verifytoken")
     public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authorizationHeader) {

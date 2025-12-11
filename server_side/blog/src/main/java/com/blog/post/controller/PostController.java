@@ -143,15 +143,15 @@ public class PostController {
     public ResponseEntity<?> DeletePost(@PathVariable Long Postid, 
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
+
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
-
             Long userId = JwtService.extractUserId(jwt);
 
             PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
-            if (!post.getUserId().equals(userId)) {
+            if (post == null || !post.isIsmy()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 

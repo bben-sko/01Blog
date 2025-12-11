@@ -36,7 +36,6 @@ public class JwtService {
     }
     
     public Long extractUserId(String token) {
-        System.out.println("Extracting user ID from token: ");
         return getData(token, claims -> claims.get("id", Long.class));
     }
 

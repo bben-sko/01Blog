@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { elementAt } from 'rxjs';
@@ -23,7 +23,7 @@ export class Login implements  OnInit  {
   dataLogin = { userEmail: "", password: "" };
   submitted = false;
   error = "";
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient,private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     new authcheck(this.http, this.router).checkAuth('/login');
@@ -39,16 +39,8 @@ export class Login implements  OnInit  {
           this.router.navigate(["/"])
         },
         error: (errorResponse) => {
-          const backendError = errorResponse?.error;
-          if (typeof backendError === 'string') {
-            this.error = backendError;
-          } else if (backendError?.err) {
-            this.error = backendError.err;
-          } else if (backendError?.message) {
-            this.error = backendError.message;
-          } else {
-            this.error = "Login failed. Please check your credentials.";
-          }
+          this.error = errorResponse?.error;
+          this.cdr.detectChanges();
         }
       });
   }

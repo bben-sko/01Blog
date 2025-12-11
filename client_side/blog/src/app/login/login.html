@@ -10,7 +10,7 @@
                             <label for="email" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="email" name="email"
                                 [(ngModel)]="dataLogin.userEmail"  required email
-                                [ngClass]="{ 'is-invalid': submitted  }"
+                                [ngClass]="{ 'is-invalid': error != '' }"
                                 placeholder="Enter email">
                             <!-- <div class="invalid-feedback" *ngIf="submitted ">
                                 <div *ngIf="email.errors?.['required']">Email is required</div>
@@ -23,7 +23,7 @@
                             <label for="password" class="form-label">Password</label>
                             <input type="password" class="form-control" id="password" name="password"
                                 [(ngModel)]="dataLogin.password" required minlength="6"
-                                [ngClass]="{ 'is-invalid': submitted  }"
+                                [ngClass]="{ 'is-invalid': error != ''  }"
                                 placeholder="Password">
                             <!-- <div class="invalid-feedback" *ngIf="submitted ">
                                 <div *ngIf="password.errors?.['required']">Password is required</div>

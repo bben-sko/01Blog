@@ -61,13 +61,13 @@ public class UserService {
         }
 
         if (!Username.isPresent()) {
-            throw new Exception("Account not found (it may have been deleted).");
+            throw new Exception("Account not found");
         }
 
         User foundUser = Username.get();
 
         if (!foundUser.isEnabled()) {
-            throw new Exception("Your account has been banned. Please contact support.");
+            throw new Exception("Your account has been banned");
         }
 
         if (!passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {

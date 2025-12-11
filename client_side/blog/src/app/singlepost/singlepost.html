@@ -80,7 +80,7 @@
                    (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'">
               <div>
                 <div class="username">{{ post.username }}</div>
-                <div class="timestamp">{{ post.createdAt }}</div>
+                <div class="timestamp">{{ post.createdAt | date:'short' }}</div>
               </div>
             </div>
             

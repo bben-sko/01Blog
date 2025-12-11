@@ -368,6 +368,7 @@ export class Singlepost implements OnInit {
 
       },
       error: (error) => {
+        console.error('Error submitting report:', error);
         this.reportSubmitted = false;
         this.showReportModal = false;
         this.reportText = '';
