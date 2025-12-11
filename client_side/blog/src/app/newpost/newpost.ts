@@ -18,6 +18,7 @@ type Preview = { url: string; type: string; file: File };
 export class NewPost {
   postContent = '';
   postErr = '';
+  postTitle = '';
   submitting = false;
 
   files: File[] = [];
@@ -61,6 +62,7 @@ export class NewPost {
 
     const fd = new FormData();
     fd.append('content', this.postContent);
+    fd.append('title', this.postTitle);
     this.files.forEach(f => fd.append('files', f));
 
     this.submitting = true;

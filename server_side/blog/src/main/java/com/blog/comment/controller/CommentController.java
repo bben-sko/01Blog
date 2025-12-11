@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -87,7 +88,9 @@ public class CommentController {
             }
             Long userId = JwtService.extractUserId(jwt);
             commentService.deleteComment(commentId, userId);
-            return ResponseEntity.ok().body("Comment deleted successfully");
+            HashMap<String, String> response = new HashMap<>();
+            response.put("message", "Comment deleted successfully");
+            return ResponseEntity.ok().body(response);
         } catch (RuntimeException e) {
             if ("Unauthorized".equals(e.getMessage())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

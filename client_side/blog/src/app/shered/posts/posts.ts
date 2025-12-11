@@ -8,6 +8,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 export interface Post {
   postId: number;
   avatar?: string;
+  title: string;
   content: string;
   media: string[];
   comments: Comment[];

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.blog.post.model.Post;
-import com.blog.user.model.User;
 
 import java.util.List;
 import java.util.Optional;

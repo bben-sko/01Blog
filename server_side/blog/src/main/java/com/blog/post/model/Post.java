@@ -35,6 +35,8 @@ public class Post {
     
      
     private List<String> media;
+
+    private String title;
     
     @Column(nullable = false)
     private String content;

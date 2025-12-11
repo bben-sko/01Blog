@@ -17,20 +17,29 @@
 
   <!-- Post Content -->
   <div class="post-content">
-    <p *ngIf="post.content">{{ post.content.substring(0,50) }} ...</p>
+    <p *ngIf="post.content">{{ post.title || 'no title' }} </p>
     
-    <!-- Image -->
-    <!-- <img *ngIf="post.imageUrl" 
-           src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80"
-         alt="Post image" 
-         class="post-media">
+    @if (post.media && post.media.length > 0) {
+      @if (post.media[0].endsWith('.mp4')) {
+        <video 
+          [src]="post.media[0]" 
+          controls 
+          class="post-media">
+          Your browser does not support the video tag.
+        </video> 
+      } @else {
+        <img 
+          [src]="post.media[0]" 
+          alt="Post image" 
+          class="post-media">
+      }
+    }@else {
+      <img 
+        src="https://img.freepik.com/free-photo/starry-clear-sky-view-with-nature-landscape_23-2151683112.jpg?ga=GA1.1.1543395655.1759957868&semt=ais_hybrid&w=740&q=80" 
+        alt="Default image" 
+        class="post-media">
+    }
     
-     <video *ngIf="post.videoUrl" 
-           [src]="post.videoUrl" 
-           controls 
-           class="post-media">
-      Your browser does not support the video tag.
-    </video>  -->
   </div>
 
   <!-- Post Actions -->

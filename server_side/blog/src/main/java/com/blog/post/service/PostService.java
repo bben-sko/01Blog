@@ -46,9 +46,10 @@ public class PostService {
     }
 
     @Transactional
-    public Post createPost(String content, List<MultipartFile> files, User user) throws IOException {
+    public Post createPost(String title,String content, List<MultipartFile> files, User user) throws IOException {
         Post post = new Post();
         post.setContent(content);
+        post.setTitle(title);
         post.setUser(user);
         List<String> urls = new ArrayList<>();
         if (files != null && !files.isEmpty()) {

@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostResponseDto {
     private Long postId;
+    private String title;
     private String content;
     private List<String> media;
     private String username;
@@ -31,6 +32,7 @@ public class PostResponseDto {
       public static PostResponseDto fromEntity(Post post, boolean likedByUser, boolean ismy) {
         PostResponseDto dto = new PostResponseDto();
         dto.setPostId(post.getId());
+        dto.setTitle(post.getTitle());
         dto.setContent(post.getContent());
         dto.setMedia(post.getMedia() != null ? post.getMedia() : List.of());
         dto.setUsername(post.getUser().getUsername());

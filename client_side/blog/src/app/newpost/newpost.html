@@ -13,6 +13,12 @@
 
     <!-- Composer -->
     <div class="post-content-section">
+      <input
+        [(ngModel)]="postTitle"
+        name="title"
+        placeholder="Post Title"
+        class="post-title-input"
+        type="text" />
       <textarea
         [(ngModel)]="postContent"
         name="content"

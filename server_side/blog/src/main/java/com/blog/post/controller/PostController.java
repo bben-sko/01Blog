@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,7 +55,8 @@ public class PostController {
     @PostMapping(value = "/createpost", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createPost(
             @RequestPart("content") String content,
-            @RequestPart(name = "files", required = false) List<MultipartFile> files,
+            @RequestPart("title") String title,
+                    @RequestPart(name = "files", required = false) List<MultipartFile> files,
             Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
@@ -65,7 +65,7 @@ public class PostController {
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
-            Post save = PostService.createPost(content, files, user);
+            Post save = PostService.createPost(title,content, files, user);
             notificationService.notifySubscribers(save, user);
 
             return ResponseEntity.ok(new CreatePostResponse("success", null));
@@ -140,7 +140,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{Postid}")
-    public ResponseEntity<?> DeletePost(@PathVariable Long Postid, Authentication authentication,
+    public ResponseEntity<?> DeletePost(@PathVariable Long Postid, 
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
