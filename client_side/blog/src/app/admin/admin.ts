@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService, DashboardStats, Post, ProfileReport, Report, ReportStatus, User } from '../sevice/adminservice';
 import { Router } from '@angular/router';
+import { ConfirmationDialog } from '../shered/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmationDialog],
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
@@ -35,12 +36,34 @@ export class Admin implements OnInit {
   checking = false;
   loading = false;
   error = '';
+  dialogOpen = false;
+  dialogTitle = '';
+  dialogMessage = '';
+  dialogDescription = '';
+  currentAction: () => void = () => {};
   constructor(private cdr: ChangeDetectorRef) {
 
   }
 
   ngOnInit() {
     this.loadDashboard();
+  }
+
+  showConfirmDialog(title: string, message: string, description: string, action: () => void) {
+    this.dialogTitle = title;
+    this.dialogMessage = message;
+    this.dialogDescription = description;
+    this.currentAction = action;
+    this.dialogOpen = true;
+  }
+
+  onConfirm() {
+    this.currentAction();
+    this.dialogOpen = false;
+  }
+
+  onCancel() {
+    this.dialogOpen = false;
   }
 
   loadDashboard(page: number = 0, size: number = 50) {
@@ -155,7 +178,6 @@ export class Admin implements OnInit {
         this.actionReason = '';
         this.selectedUser = null;
         this.loadDashboard();
-
       },
       error: (err) => {
         if (err.status == 401) {
@@ -166,37 +188,43 @@ export class Admin implements OnInit {
   }
 
   unbanUser(user: User) {
-    if (!confirm('Are you sure you want to unban this user?')) return;
-
-    this.adminService.unbanUser(user.id).subscribe({
-      next: () => {
-        alert('User unbanned successfully');
-        this.loadDashboard();
-
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+    console.log('Unbanning user:', user);
+    this.showConfirmDialog('Unban User', 'Are you sure you want to unban this user?', '', () => {
+  
+      this.adminService.unbanUser(user.id).subscribe({
+        next: () => {
+          alert('User unbanned successfully');
+          this.loadDashboard();
+  
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
         }
-      }
+      });
     });
   }
 
   deleteUser(userId: number) {
-    if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) return;
+    this.showConfirmDialog('Delete User', 'Are you sure you want to permanently delete this user? This action cannot be undone.', '', () => {
 
-    this.adminService.deleteUser(userId).subscribe({
-      next: () => {
-        alert('User deleted successfully');
-        this.loadDashboard();
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+      this.adminService.deleteUser(userId).subscribe({
+        next: () => {
+          alert('User deleted successfully');
+          this.loadDashboard();
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
+          console.log(err)
+
         }
-        console.log(err)
-      }
     });
+    });
+      
+
   }
 
   hidePost(post: Post) {
@@ -217,38 +245,42 @@ export class Admin implements OnInit {
   }
 
   unhidePost(post: Post) {
-    if (!confirm('Are you sure you want to unhide this post?')) return;
-
-    this.adminService.unhidePost(post.postId).subscribe({
-      next: () => {
-        alert('Post unhidden successfully');
-        this.loadDashboard();
-
-      },
-      error: (err) => {
+    this.showConfirmDialog('Unhide Post', 'Are you sure you want to unhide this post?', '', () => {
+  
+      this.adminService.unhidePost(post.postId).subscribe({
+        next: () => {
+          alert('Post unhidden successfully');
+          this.loadDashboard();
+  
+        },
+        error: (err) => {
         console.error(err)
       },
+    });
+      
 
     });
-  }
-
-  deletePost(postId: number) {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-    this.adminService.deletePost(postId).subscribe({
-      next: () => {
-        alert('Post deleted successfully');
-        this.loadDashboard();
-        if (this.selectedReport) {
-          this.closeModal();
-        }
-      },
-      error: (err) => {
+    }
+  
+    deletePost(postId: number) {
+      this.showConfirmDialog('Delete Post', 'Are you sure you want to delete this post?', '', () => {
+  
+      this.adminService.deletePost(postId).subscribe({
+        next: () => {
+          alert('Post deleted successfully');
+          this.loadDashboard();
+          if (this.selectedReport) {
+            this.closeModal();
+          }
+        },
+         error: (err) => {
         if (err.status == 401) {
           this.route.navigate(['/'])
         }
         console.error(err);
       }
+    });
+     
     });
   }
 
@@ -326,23 +358,25 @@ export class Admin implements OnInit {
   }
 
   deletePostFromReport(postId: number) {
-    if (!confirm('Are you sure you want to delete this post?')) return;
-
-      this.adminService.deletePost(postId).subscribe({
-      next: () => {
-        alert('Post deleted successfully');
-        this.loadDashboard();
-        if (this.selectedReport?.postId === postId) {
-          this.closeModal();
-        }
-      },
-      error: (err) => {
-        if (err.status == 401) {
+    this.showConfirmDialog('Delete Post', 'Are you sure you want to delete this post?', '', () => {
+  
+        this.adminService.deletePost(postId).subscribe({
+        next: () => {
+          alert('Post deleted successfully');
+          this.loadDashboard();
+          if (this.selectedReport?.postId === postId) {
+            this.closeModal();
+          }
+        },
+        error: (err) => {
+          if (err.status == 401) {
+   
           this.route.navigate(['/'])
         }
         
       }
     });
+     });
   }
   GetViews(postId: number) {
      window.open(`post/${postId}`);

@@ -430,6 +430,14 @@
         </div>
     </div>
 </div>
+<app-confirmation-dialog *ngIf="dialogOpen"
+  [open]="dialogOpen"
+  [title]="dialogTitle"
+  [message]="dialogMessage"
+  [description]="dialogDescription"
+  (confirm)="onConfirm()"
+  (cancel)="onCancel()"
+></app-confirmation-dialog>
 }
 @else {
 <div class="d-flex flex-column align-items-center justify-content-center py-5">
@@ -437,4 +445,6 @@
     <p class="text-muted mb-2">Checking admin access...</p>
     <p class="text-muted">You will be redirected if you do not have permission.</p>
 </div>
+<!-- Confirmation Dialog -->
+
 }
