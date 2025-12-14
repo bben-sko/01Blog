@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 
 
@@ -19,13 +19,14 @@ interface UserResponse {
 export class NavBar implements OnInit {
   UserResponse: UserResponse | null = null;
   menuOpen = false;
+  isScrolled = false;
 
   constructor(
     private router: Router,
     private http: HttpClient
   ) { }
 
- 
+
   ngOnInit() {
     this.getCurrentUser();
   }
@@ -54,9 +55,7 @@ export class NavBar implements OnInit {
         },
         error: (error) => {
           console.error('Error fetching current user', error);
-          
-            this.router.navigate(['/login']);
-          
+          this.router.navigate(['/login']);
         }
       });
   }
@@ -67,5 +66,17 @@ export class NavBar implements OnInit {
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
+  }
+
+  getUserInitials() {
+    if (!this.UserResponse?.username) {
+      return '?';
+    }
+    return this.UserResponse.username.substring(0, 1).toUpperCase();
+  }
+
+  @HostListener('window:scroll')
+  onScroll() {
+    this.isScrolled = window.scrollY > 16;
   }
 }

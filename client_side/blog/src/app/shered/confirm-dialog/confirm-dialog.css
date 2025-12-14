@@ -1,37 +1,86 @@
-.modal {
-  display: block;
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   z-index: 1050;
 }
 
-.modal-dialog {
-  margin-top: 100px;
+.confirm-dialog {
+  width: min(420px, calc(100% - 2rem));
+  background: #2d3748;
+  border-radius: 28px;
+  padding: 2rem;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.55);
+  color: #f8fafc;
 }
 
-.modal-content {
-  border: none;
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-  z-index: 9999;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: transparent;
+  color: #f8fafc;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
 }
 
-.modal-header {
-  border-bottom: 2px solid #f0f0f0;
-  padding: 1.5rem;
+.dialog-body .message {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
 }
 
-.modal-body {
-  padding: 1.5rem;
+.dialog-body .description {
+  margin: 0 0 0.5rem;
+  color: #cbd5f5;
 }
 
-.modal-footer {
-  border-top: 2px solid #f0f0f0;
-  padding: 1.5rem;
+.dialog-body .error {
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  color: #fecaca;
 }
 
-.alert {
-  border-left: 4px solid;
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
-.alert-danger {
-  border-left-color: #dc3545;
+.dialog-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dialog-actions .ghost {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.dialog-actions .primary {
+  background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+  color: #0f172a;
 }

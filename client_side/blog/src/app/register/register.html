@@ -1,84 +1,49 @@
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h3 class="card-title text-center mb-4">Login</h3>
-
-
-                    <div class="mb-3">
-                        <label for="Username" class="form-label">Username </label>
-                        <input type="Username" class="form-control" id="Username" name="Username"
-                            [(ngModel)]="registerData.username" required Username [ngClass]="{ 'is-invalid': submitted  }"
-                            placeholder="Enter email">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                <div *ngIf="email.errors?.['required']">Email is required</div>
-                                <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-                            </div> -->
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="email" name="email" [(ngModel)]="registerData.email" required email
-                            [ngClass]="{ 'is-invalid': submitted  }" placeholder="Enter email">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                                    <div *ngIf="email.errors?.['required']">Email is required</div>
-                                                    <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-                                                </div> -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" [(ngModel)]="registerData.password" required
-                            minlength="6" [ngClass]="{ 'is-invalid': submitted  }" placeholder="Password">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                                    <div *ngIf="password.errors?.['required']">Password is required</div>
-                                                    <div *ngIf="password.errors?.['minlength']">Password must be at least 6 characters</div>
-                                                </div> -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="name" class="form-label">name</label>
-                        <input type="name" class="form-control" id="name" name="name" [(ngModel)]="registerData.name" required name
-                            [ngClass]="{ 'is-invalid': submitted  }" placeholder="Enter name">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                                    <div *ngIf="email.errors?.['required']">Email is required</div>
-                                                    <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-                                                </div> -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="bio" class="form-label">bio</label>
-                        <input type="bio" class="form-control" id="bio" name="bio" [(ngModel)]="registerData.bio"
-                            [ngClass]="{ 'is-invalid': submitted  }" placeholder="Enter bio">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                                    <div *ngIf="email.errors?.['required']">Email is required</div>
-                                                    <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-                                                </div> -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="avatar" class="form-label">avatar</label>
-                        <input type="file" accept="image/*" class="form-control" id="avatar" name="avatar" (change)="onFileSelected($event)"
-                            [ngClass]="{ 'is-invalid': submitted  }" placeholder="Enter avatar">
-                        <!-- <div class="invalid-feedback" *ngIf="submitted ">
-                                                                        <div *ngIf="email.errors?.['required']">Email is required</div>
-                                                                        <div *ngIf="email.errors?.['email']">Please enter a valid email</div>
-                                                                    </div> -->
-                    </div>
-
-
-                    
-                    <button type="submit" (click)="d()" class="btn btn-primary w-100">
-                        Sign In
-                    </button>
-                    <p>{{ error }}</p>
-                    <!-- Register Link -->
-                <div class="text-center mt-3">
-                    <p class="mb-0">
-                        Do you have an account? <a [routerLink]="'/login'" class="text-decoration-none">Login</a>
-                    </p>
-                </div>
-
-
-                </div>
-            </div>
-        </div>
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="hero-pane">
+      <p class="eyebrow">Join the community</p>
+      <h1>Create an account to publish, comment, and curate your favorite reads.</h1>
+      <p class="subcopy">Upload a profile image, share a short bio, and start crafting your presence.</p>
     </div>
-</div>
+    <div class="form-pane">
+      <h2>Create account</h2>
+      <p class="helper">Already have one? <a [routerLink]="'/login'">Sign in</a></p>
+
+      <div class="input-grid">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" type="text" [(ngModel)]="registerData.username" placeholder="username" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" [(ngModel)]="registerData.email" placeholder="email@domain.com" />
+        </div>
+        <div class="field">
+          <label for="name">Full name</label>
+          <input id="name" type="text" [(ngModel)]="registerData.name" placeholder="Your name" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" type="password" [(ngModel)]="registerData.password" placeholder="••••••••" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="bio">Bio</label>
+        <textarea id="bio" rows="3" [(ngModel)]="registerData.bio" placeholder="Share a short introduction..."></textarea>
+      </div>
+
+      <div class="upload" (click)="avatarInput.click()">
+        <div>
+          <strong>Upload avatar</strong>
+          <p>{{ file?.name || 'PNG or JPG up to 2MB' }}</p>
+        </div>
+        <button type="button">Browse</button>
+        <input type="file" accept="image/*" #avatarInput (change)="onFileSelected($event)" hidden>
+      </div>
+
+      <button class="primary" type="button" (click)="d()">Create account</button>
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </div>
+  </div>
+</section>

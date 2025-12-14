@@ -1,63 +1,45 @@
-<div class="users-list-container">
-  <div class="followers-tab">
-    <!-- Header -->
-    <div class="card-header">
+<section class="users-shell">
+  <div class="users-panel">
+    <header class="panel-header">
       <div>
-        <h2>Suggested Users</h2>
-        <span class="user-count">{{ users.length }} users</span>
+        <p class="eyebrow">Community</p>
+        <h1>Discover creators to follow</h1>
       </div>
       <div class="search-box">
-        <input type="text" class="form-control" placeholder="Search by username" [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()" />
+        <input type="search" placeholder="Search by username" [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()">
       </div>
-    </div>
+    </header>
 
-    <!-- Loading State -->
     <div class="loading" *ngIf="loading">
       <div class="spinner"></div>
-      <p>Loading users...</p>
+      <p>Finding inspiring voices…</p>
     </div>
 
-    <!-- Users List -->
-    <div class="users-grid" *ngIf="!loading">
-      <div class="user-item" *ngFor="let user of users">
-        <div class="user-content" >
-          <!-- Avatar -->
-          <div class="avatar-container">
-            <img
-              [src]=" user.user.avatar ? user.user.avatar : 'data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'"
-              [alt]="user.user.username" class="avatar">
+    <div class="users-grid" *ngIf="!loading && users.length">
+      <article class="user-card" *ngFor="let user of users">
+        <div class="identity" (click)="viewProfile(user.user.username)">
+          <img [src]="user.user.avatar || 'assests/avatar-default.jpeg'" [alt]="user.user.username" (error)="$event.target.src='assests/avatar-default.jpeg'">
+          <div>
+            <h3>{{ user.user.name || user.user.username }}</h3>
+            <p>@{{ user.user.username }}</p>
           </div>
-          <p></p>
-          <div class="user-item">
-           
-            <div class="user-details">
-              <p class="user-username">@{{ user.user.username }}</p>
-            
-            </div>
-            <button *ngIf="!user.isfollow" class="follow-btn-small" 
-              (click)="toggleFollow(user)">
-              + Follow 
-            </button>
-            <button *ngIf="user.isfollow" class="follow-btn-small" 
-              (click)="toggleFollow(user)">
-               UnFollow
-            </button>
-            <button class="follow-btn-small" 
-              (click)="viewProfile(user.user.username)">
-              go to profile 
-            </button>
-          </div>
-  
         </div>
-
-        <!-- Empty State -->
-        <div class="empty-state" *ngIf="!loading && users.length === 0">
-          <span class="icon">👥</span>
-          <p>No users to display</p>
+        <div class="actions">
+          <button class="ghost" type="button" (click)="viewProfile(user.user.username)">View profile</button>
+          <button class="primary" type="button" (click)="toggleFollow(user)">
+            {{ user.isfollow ? 'Unfollow' : 'Follow' }}
+          </button>
         </div>
-      </div>
+      </article>
     </div>
-    <div class="load-more-container" *ngIf="!loading && hasMore">
-      <button class="load-more-btn" (click)="showMore()">Show more</button>
+
+    <div class="empty-state" *ngIf="!loading && !users.length">
+      <span class="icon">👥</span>
+      <p>No users found.</p>
+    </div>
+
+    <div class="load-more" *ngIf="!loading && hasMore">
+      <button type="button" (click)="showMore()">Load more</button>
     </div>
   </div>
+</section>

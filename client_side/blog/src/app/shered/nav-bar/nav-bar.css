@@ -1,178 +1,213 @@
-.navbar {
-  padding: 0;
-  border-bottom: 1px solid #e9ecef;
+.modern-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: rgba(8, 12, 24, 0.95);
+  backdrop-filter: blur(16px);
+  transition: box-shadow 0.3s ease;
 }
 
-.navbar-container {
-  max-width: 1200px;
+.modern-nav.scrolled {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.nav-inner {
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0.75rem 1.25rem;
-}
-
-/* Brand */
-.brand-text {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0d6efd;
-  letter-spacing: -0.5px;
-}
-
-.navbar-brand {
-  text-decoration: none;
-  padding: 0;
-  margin: 0;
-  transition: opacity 0.2s;
-}
-
-.navbar-brand:hover {
-  opacity: 0.8;
-}
-
-.navbar-brand:hover .brand-text {
-  color: #0d6efd;
-}
-
-/* Actions */
-.navbar-actions {
-  gap: 0.5rem;
-}
-
-/* Icon Buttons */
-.btn-icon {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 50%;
-  background-color: #ffffff;
-  border: none;
+  padding: 0.85rem 1.5rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  color: #495057;
-  font-size: 1.25rem;
-}
-i {
-  color: #212529;
+  gap: 1rem;
 }
 
-.btn-icon:hover {
-  background-color: #e9ecef;
-  color: #212529;
-  transform: translateY(-1px);
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
 }
 
-.btn-icon:active {
-  transform: scale(0.95);
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  box-shadow: 0 8px 16px rgba(79, 172, 254, 0.4);
 }
 
-.btn-icon:focus {
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
 }
 
-.btn-icon i {
-  font-size: 1.25rem;
-  line-height: 1;
+.brand-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #f8fafc;
 }
 
-.navbar-toggler {
+.brand-tagline {
+  font-size: 0.75rem;
+  color: rgba(248, 250, 252, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
   border: none;
-  outline: none;
+  background: none;
+  margin-left: auto;
+  padding: 0.35rem;
+  cursor: pointer;
 }
 
-.navbar-toggler:focus {
-  box-shadow: none;
+.menu-toggle span {
+  width: 24px;
+  height: 2px;
+  background: #f8fafc;
 }
 
-.navbar-toggler-icon {
-  width: 1.5em;
-  height: 1.5em;
-}
-
-.navbar-actions {
+.nav-controls {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
   gap: 0.5rem;
 }
 
-.badge {
-  font-size: 0.65rem;
-  padding: 0.25em 0.4em;
+.quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar-container {
-    padding: 0.5rem 1rem;
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.65);
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(248, 250, 252, 0.08);
+  text-decoration: none;
+}
+
+.user-pill .avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f093fb, #f5576c);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
+
+.user-pill .username {
+  color: #f8fafc;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.auth-links a {
+  text-decoration: none;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e2e8f0;
+  font-weight: 500;
+}
+
+.auth-links a.primary {
+  background: linear-gradient(135deg, #ff6b6b, #f093fb);
+  color: #0f172a;
+  border: none;
+}
+
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: flex;
   }
-  
-  .brand-text {
-    font-size: 1.25rem;
-  }
-  
-  .btn-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
-  }
-  
-  .btn-icon i {
-    font-size: 1.1rem;
-  }
-  
-  .navbar-actions {
-    gap: 0.25rem;
-  }
-  
-  .navbar-actions {
-    position: fixed;
-    top: 64px;
-    right: 0;
+
+  .nav-controls {
+    position: absolute;
+    inset: 68px 1.25rem auto;
     padding: 1rem;
+    border-radius: 16px;
+    background: rgba(5, 8, 18, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.2);
     flex-direction: column;
-    align-items: flex-start;
-    background: #fff;
-    border-radius: 0 0 0 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    transform: translateY(-20px);
+    align-items: stretch;
+    gap: 1rem;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.2s ease;
+    transform: translateY(-12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
-  .navbar-actions.open {
-    transform: translateY(0);
+  .nav-controls.open {
     opacity: 1;
     pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .quick-actions,
+  .auth-links {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .icon-btn,
+  .auth-links a,
+  .user-pill {
+    width: 100%;
+    justify-content: center;
   }
 }
 
-@media (max-width: 480px) {
-  .brand-text {
-    font-size: 1.1rem;
+@media (max-width: 540px) {
+  .nav-inner {
+    padding: 0.75rem 1rem;
   }
-  
-  .btn-icon {
-    width: 32px;
-    height: 32px;
-  }
-}
 
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-  .navbar {
-    background-color: #d8d8d8 !important;
+  .brand-mark {
+    width: 34px;
+    height: 34px;
   }
-  
-  .brand-text {
-    color: #4d9fff;
-  }
-  
-  .btn-icon {
-    background-color: #ffffff;
-    color: #e9ecef;
-  }
-  
-  .btn-icon:hover {
-    background-color: #3a3a3a;
-    color: #fff;
+
+  .brand-title {
+    font-size: 1.05rem;
   }
 }

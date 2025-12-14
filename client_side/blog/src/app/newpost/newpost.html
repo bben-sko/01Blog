@@ -1,75 +1,53 @@
 
 
-<div class="new-post-container">
-  <div class="new-post-card">
-    <!-- Header -->
-    <div class="post-header">
-      <h2>Create New Post</h2>
-      <button class="close-btn" (click)="cancel()">✕</button>
+<section class="composer-shell">
+  <div class="composer-panel">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Create</p>
+        <h1>Write a new post</h1>
+      </div>
+      <button class="icon-btn" type="button" (click)="cancel()">
+        <i class="bi bi-x"></i>
+      </button>
     </div>
 
-    <!-- Error / status -->
     <div class="error" *ngIf="postErr">{{ postErr }}</div>
 
-    <!-- Composer -->
-    <div class="post-content-section">
-      <input
-        [(ngModel)]="postTitle"
-        name="title"
-        placeholder="Post Title"
-        class="post-title-input"
-        type="text" />
-      <textarea
-        [(ngModel)]="postContent"
-        name="content"
-        placeholder="What's on your mind?"
-        class="post-textarea"
-        rows="6">
-      </textarea>
-
-      <!-- Media previews grid -->
-      <div class="grid-previews" *ngIf="previews?.length">
-        <div class="media-preview" *ngFor="let m of previews; let i = index">
-          <button type="button" class="remove-media-btn" (click)="removeAt(i)">✕</button>
-
-          <img *ngIf="m.type.startsWith('image/')" [src]="m.url" alt="Image preview" class="preview-image" />
-          <video *ngIf="m.type.startsWith('video/')" [src]="m.url" class="preview-video" controls></video>
-        </div>
-      </div>
+    <div class="input-group">
+      <input [(ngModel)]="postTitle" name="title" placeholder="Post title" type="text" />
+      <textarea [(ngModel)]="postContent" name="content" placeholder="Share what’s on your mind…" rows="6"></textarea>
     </div>
-    <div class="media-options">
-      <span class="add-to-post">Add to your post:</span>
 
-      <div class="media-buttons">
-        <label class="media-btn" title="Add Photos">
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            (change)="onFilesSelected($event, 'image')"
-            hidden>
-          <span class="icon">🖼️</span>
-          Photos
+    <div class="upload-zone">
+      <span>Add to your post</span>
+      <div class="upload-actions">
+        <label>
+          <input type="file" accept="image/*" multiple (change)="onFilesSelected($event, 'image')" hidden>
+          <i class="bi bi-image"></i> Photos
         </label>
-
-        <label class="media-btn" title="Add Videos">
-          <input
-            type="file"
-            accept="video/*"
-            multiple
-            (change)="onFilesSelected($event, 'video')"
-            hidden>
-          <span class="icon">🎥</span>
-          Videos
+        <label>
+          <input type="file" accept="video/*" multiple (change)="onFilesSelected($event, 'video')" hidden>
+          <i class="bi bi-camera-video"></i> Videos
         </label>
       </div>
     </div>
 
-    <div class="action-buttons">
-      <button class="cancel-btn" type="button" (click)="cancel()">Cancel</button>
-      <button class="post-btn" type="button" (click)="submit()" [disabled]="submitting">
-        {{ submitting ? 'Posting…' : 'Post' }}
+    <div class="grid-previews" *ngIf="previews?.length">
+      <div class="media-preview" *ngFor="let m of previews; let i = index">
+        <button type="button" (click)="removeAt(i)">
+          <i class="bi bi-x"></i>
+        </button>
+        <img *ngIf="m.type.startsWith('image/')" [src]="m.url" alt="preview" />
+        <video *ngIf="m.type.startsWith('video/')" [src]="m.url" controls></video>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="ghost" type="button" (click)="cancel()">Cancel</button>
+      <button class="primary" type="button" (click)="submit()" [disabled]="submitting">
+        {{ submitting ? 'Posting…' : 'Publish' }}
       </button>
     </div>
   </div>
-</div>
+</section>

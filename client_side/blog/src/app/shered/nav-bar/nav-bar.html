@@ -1,58 +1,49 @@
-<nav class="navbar navbar-light bg-white sticky-top shadow-sm">
-
-  <div class="container-fluid navbar-container" >
-    <!-- Brand -->
-    <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
-      <h2 class="mb-0 brand-text">01BLOG</h2>
+<nav class="modern-nav" [class.scrolled]="isScrolled">
+  <div class="nav-inner">
+    <a class="brand" routerLink="/" aria-label="Navigate home">
+      <span class="brand-mark"></span>
+      <div class="brand-copy">
+        <span class="brand-title">01BLOG</span>
+        <span class="brand-tagline">Stories for curious minds</span>
+      </div>
     </a>
 
-    <button class="navbar-toggler d-inline-flex d-md-none" type="button" (click)="toggleMenu()" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <button class="menu-toggle" type="button" (click)="toggleMenu()" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
     </button>
-    
-    <!-- Actions -->
-    <div class="d-flex align-items-center gap-2 navbar-actions" [class.open]="menuOpen">
-      <!-- Add User -->
-      <button class="btn btn-icon" 
-              routerLink="/adduser" 
-              title="Add User"
-              aria-label="Add User">
-        <i class="bi bi-person-plus"></i>
-      </button>
-      
-      <!-- Notifications -->
-      <button class="btn btn-icon position-relative" 
-              title="Notifications"
-              routerLink="/notification" 
-              aria-label="Notifications">
-        <i class="bi bi-bell"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-          3
-          <span class="visually-hidden">unread notifications</span>
-        </span>
-      </button>
-      
-      <!-- Create Post -->
-      <button class="btn btn-icon" 
-              routerLink="/newpost" 
-              title="Create Post"
-              aria-label="Create Post">
-        <i class="bi bi-plus-lg"></i>
-      </button>
 
-      <button class="btn btn-icon" 
-        [routerLink]="[`/profile/${UserResponse?.username}`]" 
-        title="Profile"
-        aria-label="Profile">
-        <i class="bi bi-person-fill"></i>
-      </button>
-      <button *ngIf="UserResponse?.role === 'ADMIN_USER'" class="btn btn-icon" [routerLink]="[`/admin`]" title="admin" aria-label="admin">
-        <i class="bi bi-gear"></i>
-      </button>
-
-      <button class="btn btn-icon" (click)="Logout()" title="Logout" aria-label="Logout">
-        <i class="bi bi-box-arrow-left"></i>
-      </button>
+    <div class="nav-controls" [class.open]="menuOpen">
+      <ng-container *ngIf="UserResponse; else auth">
+        <div class="quick-actions">
+          <button class="icon-btn" routerLink="/adduser" aria-label="Add user">
+            <i class="bi bi-person-plus"></i>
+          </button>
+          <button class="icon-btn" routerLink="/notification" aria-label="View notifications">
+            <i class="bi bi-bell"></i>
+          </button>
+          <button class="icon-btn" routerLink="/newpost" aria-label="Create post">
+            <i class="bi bi-plus-lg"></i>
+          </button>
+          <button class="icon-btn" *ngIf="UserResponse?.role === 'ADMIN_USER'" routerLink="/admin" aria-label="Admin dashboard">
+            <i class="bi bi-gear"></i>
+          </button>
+          <a class="user-pill" [routerLink]="['/profile', UserResponse.username]" aria-label="Profile">
+            <span class="avatar">{{ getUserInitials() }}</span>
+            <span class="username">{{ UserResponse.username }}</span>
+          </a>
+          <button class="icon-btn" type="button" (click)="Logout()" aria-label="Logout">
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        </div>
+      </ng-container>
+      <ng-template #auth>
+        <div class="auth-links">
+          <a routerLink="/login">Login</a>
+          <a routerLink="/register" class="primary">Register</a>
+        </div>
+      </ng-template>
     </div>
   </div>
 </nav>

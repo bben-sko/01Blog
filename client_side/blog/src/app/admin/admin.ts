@@ -172,18 +172,20 @@ export class Admin implements OnInit {
   }
 
   banUser(user: User) {
-    this.adminService.banUser(user.id).subscribe({
-      next: () => {
-        alert('User banned successfully');
-        this.actionReason = '';
-        this.selectedUser = null;
-        this.loadDashboard();
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+    this.showConfirmDialog('Ban User', 'Are you sure you want to ban this user?', '', () => {
+      this.adminService.banUser(user.id).subscribe({
+        next: () => {
+          alert('User banned successfully');
+          this.actionReason = '';
+          this.selectedUser = null;
+          this.loadDashboard();
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
         }
-      }
+      });
     });
   }
 
@@ -228,19 +230,21 @@ export class Admin implements OnInit {
   }
 
   hidePost(post: Post) {
-    this.adminService.hidePost(post.postId).subscribe({
-      next: () => {
-        alert('Post hidden successfully');
-        this.adminNote = '';
-        this.selectedPost = null;
-        this.loadDashboard();
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+    this.showConfirmDialog('Hide Post', 'Are you sure you want to hide this post?', '', () => {
+      this.adminService.hidePost(post.postId).subscribe({
+        next: () => {
+          alert('Post hidden successfully');
+          this.adminNote = '';
+          this.selectedPost = null;
+          this.loadDashboard();
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
         }
-      }
 
+      });
     });
   }
 
@@ -293,22 +297,23 @@ export class Admin implements OnInit {
       return;
     }
 
-    this.adminService.resolveReport(this.selectedReport.id, {
-      status: this.reportDecision,
-      adminNote: this.adminNote.trim(),
-      hidePost: this.hidePostOnResolve
-    }).subscribe({
-      next: () => {
-        alert('Report updated successfully');
-        this.loadDashboard();
-        this.closeModal();
-
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
+    this.showConfirmDialog('Resolve Report', 'Save this decision for the selected report?', '', () => {
+      this.adminService.resolveReport(this.selectedReport!.id, {
+        status: this.reportDecision,
+        adminNote: this.adminNote.trim(),
+        hidePost: this.hidePostOnResolve
+      }).subscribe({
+        next: () => {
+          alert('Report updated successfully');
+          this.loadDashboard();
+          this.closeModal();
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
         }
-      }
+      });
     });
   }
 
@@ -340,27 +345,28 @@ export class Admin implements OnInit {
   }
 
   hidePostFromReport(postId: number) {
-    this.adminService.hidePost(postId).subscribe({
-      next: () => {
-        alert('Post hidden successfully');
-        if (this.selectedReport && this.selectedReport.postId === postId) {
-          this.selectedReport.postEnabled = false;
-          this.hidePostOnResolve = true;
+    this.showConfirmDialog('Hide Post', 'Hide this post based on the report?', '', () => {
+      this.adminService.hidePost(postId).subscribe({
+        next: () => {
+          alert('Post hidden successfully');
+          if (this.selectedReport && this.selectedReport.postId === postId) {
+            this.selectedReport.postEnabled = false;
+            this.hidePostOnResolve = true;
+          }
+          this.loadDashboard();
+        },
+        error: (err) => {
+          if (err.status == 401) {
+            this.route.navigate(['/'])
+          }
         }
-        this.loadDashboard();
-      },
-      error: (err) => {
-        if (err.status == 401) {
-          this.route.navigate(['/'])
-        }
-      }
+      });
     });
   }
 
   deletePostFromReport(postId: number) {
     this.showConfirmDialog('Delete Post', 'Are you sure you want to delete this post?', '', () => {
-  
-        this.adminService.deletePost(postId).subscribe({
+      this.adminService.deletePost(postId).subscribe({
         next: () => {
           alert('Post deleted successfully');
           this.loadDashboard();
@@ -370,13 +376,11 @@ export class Admin implements OnInit {
         },
         error: (err) => {
           if (err.status == 401) {
-   
-          this.route.navigate(['/'])
+            this.route.navigate(['/'])
+          }
         }
-        
-      }
+      });
     });
-     });
   }
   GetViews(postId: number) {
      window.open(`post/${postId}`);

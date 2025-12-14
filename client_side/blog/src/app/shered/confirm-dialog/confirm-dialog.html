@@ -1,19 +1,23 @@
-<div class="modal" [style.display]="open ? 'block' : 'none'" style="background-color: rgba(0,0,0,0.5);">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ title }}</h5>
-        <button type="button" class="btn-close" (click)="onCancel()"></button>
-      </div>
-      <div class="modal-body">
-        <p>{{ message }}</p>
-        <p *ngIf="description">{{ description }}</p>
-        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">{{ cancelLabel }}</button>
-        <button type="button" class="btn btn-primary" (click)="onConfirm()" [disabled]="loading">{{ confirmLabel }}</button>
-      </div>
+<div class="confirm-overlay" *ngIf="open" (click)="onCancel()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3>{{ title }}</h3>
+      <button class="icon-btn" type="button" (click)="onCancel()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <div class="dialog-body">
+      <p class="message">{{ message }}</p>
+      <p class="description" *ngIf="description">{{ description }}</p>
+      <div *ngIf="error" class="error">{{ error }}</div>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" class="ghost" (click)="onCancel()" [disabled]="loading">
+        {{ cancelLabel }}
+      </button>
+      <button type="button" class="primary" (click)="onConfirm()" [disabled]="loading">
+        {{ confirmLabel }}
+      </button>
     </div>
   </div>
 </div>

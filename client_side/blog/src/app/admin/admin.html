@@ -5,7 +5,7 @@
 
     <div class="row g-3 mb-4" *ngIf="stats">
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card h-100">
+            <div class="card stat-card h-100">
                 <div class="card-body">
                     <p class="card-title text-muted mb-1">Total Users</p>
                     <h2>{{ stats.totalUsers }}</h2>
@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card h-100">
+            <div class="card stat-card h-100">
                 <div class="card-body">
                     <p class="card-title text-muted mb-1">Total Posts</p>
                     <h2>{{ stats.totalPosts }}</h2>
@@ -23,7 +23,7 @@
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card h-100">
+            <div class="card stat-card h-100">
                 <div class="card-body">
                     <p class="card-title text-muted mb-1">Pending Reports</p>
                     <h2>{{ stats.pendingReports }}</h2>
@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3" *ngIf="profileReports">
-            <div class="card h-100">
+            <div class="card stat-card h-100">
                 <div class="card-body">
                     <p class="card-title text-muted mb-1">Profile Reports</p>
                     <h2>{{ profileReports.length }}</h2>

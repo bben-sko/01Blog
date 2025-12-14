@@ -1,93 +1,45 @@
 
-<div class="profile-container">
-  <!-- Profile Header -->
-  <div class="profile-header">
-    <div class="header-content">
-      <!-- Avatar -->
-      <div class="avatar-section">
-        <img 
-          [src]="user.avatar ? user.avatar : 'assests/avatar-default.jpng'"
-          class="profile-avatar">
-      </div>
-
-      <!-- User Info -->
-      <div class="info-section">
-        <div class="username-row">
-          <h1 class="username">{{ user.username  }}</h1>
-           @if ( !userNotFound && !user.isme) {
-             <div class="d-flex gap-2 flex-wrap">
-               <button 
-              class="follow-btn" 
-              [class.following]="user.isFollowing"
-              (click)="toggleFollow(user)">
-                @if (user.isFollowing) {
-                  <span>Following</span>
-                } @else {
-
-                <span>Follow</span>
-                }
-              </button>
-              <button class="btn btn-outline-danger btn-sm" (click)="openReportModal()">
-                Report
-              </button>
-            </div>
-        }
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-row">
-          <div class="stat-item">
-            <span class="stat-count">{{ userPosts.length }}</span>
-            <span class="stat-label" (click)="setActiveTab('posts')">  Posts</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-count">{{ followers.length }}</span>
-            <span class="stat-label" (click)="setActiveTab('followers')">  Followers</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-count" >{{ following.length }}</span> 
-            <span class="stat-label" (click)="setActiveTab('following')">  Following</span>
-          </div>
-        </div>
-
-        <!-- Name and Bio -->
-        <div class="bio-section">
-          @if (user.bio) {
-            <p class="bio">{{ user.bio }}</p>
-          }
-        </div>
+<section class="profile-shell">
+  <div class="profile-wrap">
+  <header class="hero-card">
+    <div class="identity">
+      <img [src]="user.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'" alt="{{ user.username }}">
+      <div>
+        <p class="eyebrow">Profile</p>
+        <h1>{{ user.username }}</h1>
+        <p class="bio" *ngIf="user.bio">{{ user.bio }}</p>
       </div>
     </div>
-  </div>
-
-  <!-- Tabs Navigation -->
-  <div class="tabs-container">
-    <div class="tabs-nav">
-      <button 
-        class="tab-btn" 
-        [class.active]="activeTab === 'posts'"
-        (click)="setActiveTab('posts')">
-        <span class="icon">📝</span>
-        POSTS
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="activeTab === 'followers'"
-        (click)="setActiveTab('followers')">
-        <span class="icon">👥</span>
-        FOLLOWERS
-      </button>
-      <button 
-        class="tab-btn" 
-        [class.active]="activeTab === 'following'"
-        (click)="setActiveTab('following')">
-        <span class="icon">➕</span>
-        FOLLOWING
+    <div class="stats">
+      <div>
+        <span>{{ userPosts.length }}</span>
+        <p>Posts</p>
+      </div>
+      <div>
+        <span>{{ followers.length }}</span>
+        <p>Followers</p>
+      </div>
+      <div>
+        <span>{{ following.length }}</span>
+        <p>Following</p>
+      </div>
+    </div>
+    <div class="actions" *ngIf="!userNotFound && !user.isme">
+      <button class="ghost" type="button" (click)="openReportModal()">Report</button>
+      <button class="primary" type="button" (click)="toggleFollow(user)">
+        {{ user.isFollowing ? 'Following' : 'Follow' }}
       </button>
     </div>
+  </header>
 
-    <!-- Tab Content -->
-    <div class="tab-content">
+  <div class="tabs-panel">
+    <div class="tabs">
+      <button [class.active]="activeTab === 'posts'" (click)="setActiveTab('posts')">Posts</button>
+      <button [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">Followers</button>
+      <button [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">Following</button>
+    </div>
+
+    <div class="tab-body">
       <!-- Posts Tab -->
       @if (activeTab === 'posts') {
         <div class="posts-tab">
@@ -115,18 +67,16 @@
         <div class="followers-tab">
           <div class="users-list">
             @for (follower of followers; track follower.id) {
-              <div class="user-item">
+              <div class="user-card">
                 <img 
-                  [src]="follower.avatar ? follower.avatar : 'data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;120&quot; height=&quot;120&quot; viewBox=&quot;0 0 120 120&quot;%3E%3Crect fill=&quot;%23ddd&quot; width=&quot;120&quot; height=&quot;120&quot;/%3E%3Ctext fill=&quot;%23999&quot; font-family=&quot;sans-serif&quot; font-size=&quot;40&quot; dy=&quot;.3em&quot; x=&quot;50%25&quot; y=&quot;50%25&quot; text-anchor=&quot;middle&quot;%3E?%3C/text%3E%3C/svg%3E'" 
+                  [src]="follower.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'"
                   [alt]="follower.username"
-                  class="user-avatar"
                   (click)="GoToProfile(follower.username)">
-                <div class="user-details">
-                  <p class="user-username">@{{ follower.username }}</p>
-                  
+                <div>
+                  <h3>@{{ follower.username }}</h3>
                 </div>
                @if (!follower.isme) {
-                  <button  class="follow-btn-small" [class.following]="follower.isFollowing"
+                  <button class="ghost" [class.active]="follower.isFollowing"
                     (click)="UnFollow(follower)">
                     {{ follower.isFollowing ? 'Following' : 'Follow' }}
                   </button>
@@ -149,21 +99,15 @@
         <div class="following-tab">
           <div class="users-list">
             @for (followedUser of following; track followedUser.id) {
-                <div class="user-item">
+                <div class="user-card">
                 <img 
-                  [src]="followedUser?.avatar ? followedUser?.avatar : 'assests/avatar-default.jpng'"
-                  class="user-avatar"
+                  [src]="followedUser?.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'"
                   (click)="GoToProfile(followedUser.username)">
-                <div class="user-details">
-                  <h3 class="user-name">{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
-                  <p class="user-username">@{{ followedUser.username }}</p>
-                  
+                <div>
+                  <h3>{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
+                  <p>@{{ followedUser.username }}</p>
                 </div>
-                <button 
-                  class="follow-btn-small"
-                  [class.following]="followedUser.isFollowing"
-                  (click)="UnFollow(followedUser)"
-                  >
+                <button class="ghost" [class.active]="followedUser.isFollowing" (click)="UnFollow(followedUser)">
                   {{ followedUser.isFollowing ? 'Following' : 'Follow' }}
                 </button>
               </div>
@@ -179,29 +123,23 @@
       }
     </div>
   </div>
-</div>
+  </div>
+</section>
 
-<!-- Report profile modal -->
-<div class="modal fade report-modal" [class.show]="reportModalOpen" [style.display]="reportModalOpen ? 'block' : 'none'">
-  <div class="modal-backdrop fade show report-modal-backdrop" *ngIf="reportModalOpen" (click)="closeReportModal()"></div>
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Report {{ user.username }}</h5>
-        <button type="button" class="btn-close" (click)="closeReportModal()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Reason</label>
-          <textarea class="form-control" rows="4" [(ngModel)]="reportReason"
-                    placeholder="Describe why you are reporting this profile"></textarea>
-        </div>
-        <div class="text-danger" *ngIf="reportError">{{ reportError }}</div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeReportModal()">Cancel</button>
-        <button class="btn btn-danger" (click)="submitReport()" [disabled]="!reportReason.trim()">Submit</button>
-      </div>
+<div class="report-overlay" *ngIf="reportModalOpen" (click)="closeReportModal()">
+  <div class="report-dialog" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h3>Report {{ user.username }}</h3>
+      <button class="icon-btn" type="button" (click)="closeReportModal()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    <p class="dialog-subtext">Let us know what feels off about this account.</p>
+    <textarea rows="4" [(ngModel)]="reportReason" placeholder="Describe why you are reporting this profile"></textarea>
+    <div class="dialog-error" *ngIf="reportError">{{ reportError }}</div>
+    <div class="dialog-actions">
+      <button type="button" class="ghost" (click)="closeReportModal()">Cancel</button>
+      <button type="button" class="primary" (click)="submitReport()" [disabled]="!reportReason.trim()">Submit report</button>
     </div>
   </div>
 </div>

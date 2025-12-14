@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { Post } from '../shered/posts/posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../sevice/post.service';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ConfirmationDialog } from '../shered/confirm-dialog/confirm-dialog';
 
 interface CreateCommentRequest {
   content: string,
@@ -30,9 +31,18 @@ interface CommentApiResponse {
 }
 type Preview = { url: string; type: string; file?: File; existing?: boolean };
 
+interface RelatedArticleCard {
+  postId: number;
+  title: string;
+  username: string;
+  coverImage: string;
+  readingTime: string;
+  createdAt: Date;
+}
+
 @Component({
   selector: 'app-singlepost',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmationDialog],
   templateUrl: './singlepost.html',
   styleUrl: './singlepost.css'
 })
@@ -61,6 +71,18 @@ export class Singlepost implements OnInit {
   newcontent = this.post?.content;
   postErr: string = "";
   existingMedia: string[] = [];
+  articleReadingTime = '';
+  articleCategory = 'Feature';
+  articleParagraphs: string[] = [];
+  featuredQuote = '';
+  articleHeroImage = '';
+  readProgress = 0;
+  dialogOpen = false;
+  dialogTitle = '';
+  dialogMessage = '';
+  dialogDescription = '';
+  private dialogAction: () => void = () => {};
+  private readonly categoryPalette = ['Culture', 'Creativity', 'Technology', 'Wellness', 'Voices'];
 
 
   constructor(
@@ -77,6 +99,11 @@ export class Singlepost implements OnInit {
       const postId = +params['id'];
       this.loadPost(postId);
     });
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    this.updateProgress();
   }
 
   private initCurrentUserId() {
@@ -195,15 +222,34 @@ export class Singlepost implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.delete(`http://localhost:8080/api/comments/${comment.id}`, { headers }).subscribe({
-      next: () => {
-        this.comments = this.comments.filter(c => c.id !== comment.id);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Failed to delete comment', error);
-      }
+    this.openConfirm('Delete Comment', 'Are you sure you want to delete this comment?', '', () => {
+      this.http.delete(`http://localhost:8080/api/comments/${comment.id}`, { headers }).subscribe({
+        next: () => {
+          this.comments = this.comments.filter(c => c.id !== comment.id);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Failed to delete comment', error);
+        }
+      });
     });
+  }
+
+  openConfirm(title: string, message: string, description: string, action: () => void) {
+    this.dialogTitle = title;
+    this.dialogMessage = message;
+    this.dialogDescription = description;
+    this.dialogAction = action;
+    this.dialogOpen = true;
+  }
+
+  confirmDialog() {
+    this.dialogAction();
+    this.dialogOpen = false;
+  }
+
+  cancelDialog() {
+    this.dialogOpen = false;
   }
 
   async edit() {
@@ -224,15 +270,21 @@ export class Singlepost implements OnInit {
       next: (post) => {
         this.post = post;
         this.postLoadError = null;
+        this.articleHeroImage = this.resolveHeroImage(post);
+        this.articleReadingTime = this.calculateReadingTime(post.content);
+        this.articleParagraphs = this.segmentContent(post.content);
+    this.featuredQuote = this.extractQuote(post.content);
+        this.articleCategory = this.deriveCategory(post);
         this.loadcomments(postId, true);
+        this.updateProgress();
         this.cdr.detectChanges();
       },
       error: (error) => {
         if (error.status === 404) {
           this.postLoadError = 'Post not found or has been removed.';
         } else {
-          this.postLoadError = 'Unable to load this post right now.';
-        }
+        this.postLoadError = 'Unable to load this post right now.';
+      }
         this.post = null;
         this.comments = [];
         this.hasMoreComments = false;
@@ -252,7 +304,7 @@ export class Singlepost implements OnInit {
   }
 
   reportPost() {
-    this.showReportModal = !this.showReportModal;
+    this.showReportModal = true;
   }
   goBack() {
     this.router.navigate(['/']);
@@ -378,8 +430,13 @@ export class Singlepost implements OnInit {
     });
 
   }
-  closeReportModal() { }
-  openReportModal() { }
+  closeReportModal() {
+    this.showReportModal = false;
+    this.reportText = '';
+  }
+  openReportModal() {
+    this.showReportModal = true;
+  }
   async loadExistingImages(imageUrls: string[] | undefined) {
     if (!imageUrls || imageUrls.length === 0) {
       return;
@@ -400,6 +457,50 @@ export class Singlepost implements OnInit {
         console.error(`Failed to load image: ${url}`, error);
       }
     }
+  }
+
+  private resolveHeroImage(post: Post) {
+    return (post.media && post.media[0]) || `https://source.unsplash.com/collection/190727/1400x900?sig=${post.postId}`;
+  }
+
+  private calculateReadingTime(content?: string) {
+    if (!content) {
+      return '1 min read';
+    }
+    const words = content.split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.round(words / 200));
+    return `${minutes} min read`;
+  }
+
+  private segmentContent(content?: string) {
+    if (!content) {
+      return [];
+    }
+    return content.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  }
+
+  private extractQuote(content?: string) {
+    if (!content) {
+      return '';
+    }
+    const sentences = content.split(/[.!?]/).map(s => s.trim()).filter(s => s.length > 40);
+    return sentences[0] || content.substring(0, 140);
+  }
+
+  private deriveCategory(post: Post) {
+    const index = post.postId % this.categoryPalette.length;
+    return this.categoryPalette[index];
+  }
+
+
+  private updateProgress() {
+    if (typeof document === 'undefined') {
+      return;
+    }
+    const doc = document.documentElement;
+    const scrollTop = doc.scrollTop || document.body.scrollTop;
+    const scrollHeight = doc.scrollHeight - doc.clientHeight;
+    this.readProgress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
   }
 
   onFilesSelected(evt: Event, kind: 'image' | 'video') {

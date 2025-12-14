@@ -1,17 +1,92 @@
-<div class="posts-container">
-  @if (posts.length === 0 && loading) {
-    <p>Loading posts...</p>
-  }
-  @for (post of posts; track post.postId) {
-    <app-post [post]="post"></app-post>
-  } @empty {
-  @if (!loading) {
-    <p>No items found</p>
-  }
-}
-  <div class="load-more-container" >
-    <button class="load-more-btn" [disabled]="loading" (click)="showMore()">
-      {{ loading ? 'Loading...' : 'Show more' }}
+
+
+<main class="page-shell" id="articles">
+  <div class="content-grid">
+    <div class="articles-column">
+      <div class="article-grid">
+        <article class="story-card" *ngFor="let post of displayedPosts">
+          <div class="card-media">
+            <ng-container *ngIf="post.media?.length && post.media[0]; else fallbackMedia">
+              <ng-container *ngIf="post.media[0].toLowerCase().endsWith('.mp4'); else imageThumb">
+                <video [src]="post.media[0]" controls muted playsinline></video>
+              </ng-container>
+              <ng-template #imageThumb>
+                <img [src]="post.media[0]" [alt]="post.title" loading="lazy">
+              </ng-template>
+            </ng-container>
+            <ng-template #fallbackMedia>
+              <img [src]="post.coverImage" [alt]="post.title" loading="lazy">
+            </ng-template>
+          </div>
+          <div class="card-body">
+            <h2 (click)="viewPost(post)">{{ post.title }}</h2>
+            <p>{{ post.excerpt }}</p>
+            <div class="card-meta">
+              <div class="author-meta">
+                <img [src]="post.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E?%3C/text%3E%3C/svg%3E'"
+                     alt="{{ post.username }}"
+                     (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E?%3C/text%3E%3C/svg%3E'">
+                <div>
+                  <strong>{{ post.username }}</strong>
+                  <small>{{ post.publishedAt | date: 'MMMM d' }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="primary" type="button" (click)="viewPost(post)">
+                Show post
+              </button>
+            </div>
+          </div>
+        </article>
+        <div class="empty-state" *ngIf="!loading && filteredPosts.length === 0">
+          <p>No stories match your filters yet.</p>
+        </div>
+      </div>
+
+      <div class="load-more" *ngIf="filteredPosts.length">
+        <button type="button" (click)="loadMoreStories()" [disabled]="loading || (!hasMore && displayedPosts.length >= filteredPosts.length)">
+          <span *ngIf="loading">Loading stories…</span>
+          <span *ngIf="!loading">{{ displayedPosts.length >= filteredPosts.length && !hasMore ? 'No more stories' : 'Load more stories' }}</span>
+        </button>
+        <small>Showing {{ displayedPosts.length }} of {{ filteredPosts.length }} curated stories</small>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer" id="about">
+  <div class="footer-grid">
+    <div>
+      <h4>01BLOG</h4>
+      <p>Independent perspectives crafted with intention. Built for readers who value depth over noise.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/newpost">Write a post</a></li>
+        <li *ngIf="featuredPost"><a [routerLink]="['/profile', featuredPost.username]">Profile</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Resources</h5>
+      <ul>
+        <li><a href="#">Editorial Standards</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Newsletter</h5>
+      <p>Stay close to the ideas we publish.</p>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© {{ (featuredPost?.publishedAt || today) | date: 'yyyy' }} 01BLOG. All rights reserved.</span>
+    <button class="back-to-top" type="button" (click)="scrollToTop()">
+      Back to top
     </button>
   </div>
-</div>
+</footer>

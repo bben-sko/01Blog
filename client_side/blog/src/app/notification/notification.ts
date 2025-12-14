@@ -39,6 +39,7 @@ export class Notification implements OnInit {
   totalPages = 0;
   totalItems = 0;
   hasMore = false;
+  loading = false;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -56,6 +57,7 @@ export class Notification implements OnInit {
       return;
     }
 
+    this.loading = true;
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', this.pageSize.toString())
@@ -71,6 +73,7 @@ export class Notification implements OnInit {
         this.totalItems = response.totalElements;
         this.pageSize = response.size;
         this.hasMore = this.currentPage + 1 < this.totalPages;
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -81,6 +84,7 @@ export class Notification implements OnInit {
           this.totalItems = 0;
         }
         this.hasMore = false;
+        this.loading = false;
       }
     });
   }
