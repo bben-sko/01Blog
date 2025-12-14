@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
+import { FeedbackService } from "../shered/feedback/feedback.service";
 
 
 type Preview = { url: string; type: string; file: File };
@@ -24,7 +25,7 @@ export class NewPost {
   files: File[] = [];
   previews: Preview[] = [];
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private feedback: FeedbackService) {}
 
   onFilesSelected(evt: Event, kind: 'image' | 'video') {
     const input = evt.target as HTMLInputElement;
@@ -68,11 +69,15 @@ export class NewPost {
     this.submitting = true;
     this.http.post('http://localhost:8080/api/post/createpost', fd, { headers })
       .subscribe({
-        next: () => this.router.navigate(['/']),
+        next: () => {
+          this.feedback.success('Post created successfully');
+          this.router.navigate(['/']);
+        },
         error: (err) => {
           this.submitting = false;
           console.error(err);
           this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
+          this.feedback.error('Failed to create post');
         }
       });
   }

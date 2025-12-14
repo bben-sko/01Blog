@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, inject } from '@angular/core';
 import { Post } from '../shered/posts/posts';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PostService } from '../sevice/post.service';
@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ConfirmationDialog } from '../shered/confirm-dialog/confirm-dialog';
+import { FeedbackService } from '../shered/feedback/feedback.service';
 
 interface CreateCommentRequest {
   content: string,
@@ -83,6 +84,7 @@ export class Singlepost implements OnInit {
   dialogDescription = '';
   private dialogAction: () => void = () => {};
   private readonly categoryPalette = ['Culture', 'Creativity', 'Technology', 'Wellness', 'Voices'];
+  private feedback = inject(FeedbackService);
 
 
   constructor(
@@ -141,10 +143,12 @@ export class Singlepost implements OnInit {
     });
     this.http.delete(`http://localhost:8080/api/post/${this.post.postId}`, { headers }).subscribe({
       next: () => {
+        this.feedback.success('Post deleted');
         this.router.navigate(['/'])
       },
       error: (err) => {
         console.log(err)
+        this.feedback.error('Failed to delete post');
       }
     })
   }
@@ -227,9 +231,11 @@ export class Singlepost implements OnInit {
         next: () => {
           this.comments = this.comments.filter(c => c.id !== comment.id);
           this.cdr.detectChanges();
+          this.feedback.success('Comment deleted');
         },
         error: (error) => {
           console.error('Failed to delete comment', error);
+          this.feedback.error('Failed to delete comment');
         }
       });
     });

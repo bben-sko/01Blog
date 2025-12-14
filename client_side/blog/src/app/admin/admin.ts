@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AdminService, DashboardStats, Post, ProfileReport, Report, ReportStatus, User } from '../sevice/adminservice';
 import { Router } from '@angular/router';
 import { ConfirmationDialog } from '../shered/confirm-dialog/confirm-dialog';
+import { FeedbackService } from '../shered/feedback/feedback.service';
 
 @Component({
   selector: 'app-admin',
@@ -15,6 +16,7 @@ export class Admin implements OnInit {
 
   private adminService = inject(AdminService);
   private route = inject(Router);
+  private feedback = inject(FeedbackService);
   stats: DashboardStats | null = null;
   users: User[] = [];
   posts: Post[] = [];
@@ -175,7 +177,7 @@ export class Admin implements OnInit {
     this.showConfirmDialog('Ban User', 'Are you sure you want to ban this user?', '', () => {
       this.adminService.banUser(user.id).subscribe({
         next: () => {
-          alert('User banned successfully');
+          this.feedback.success('User banned successfully');
           this.actionReason = '';
           this.selectedUser = null;
           this.loadDashboard();
@@ -195,7 +197,7 @@ export class Admin implements OnInit {
   
       this.adminService.unbanUser(user.id).subscribe({
         next: () => {
-          alert('User unbanned successfully');
+          this.feedback.success('User unbanned successfully');
           this.loadDashboard();
   
         },
@@ -213,7 +215,7 @@ export class Admin implements OnInit {
 
       this.adminService.deleteUser(userId).subscribe({
         next: () => {
-          alert('User deleted successfully');
+          this.feedback.success('User deleted successfully');
           this.loadDashboard();
         },
         error: (err) => {
@@ -233,7 +235,7 @@ export class Admin implements OnInit {
     this.showConfirmDialog('Hide Post', 'Are you sure you want to hide this post?', '', () => {
       this.adminService.hidePost(post.postId).subscribe({
         next: () => {
-          alert('Post hidden successfully');
+          this.feedback.success('Post hidden successfully');
           this.adminNote = '';
           this.selectedPost = null;
           this.loadDashboard();
@@ -253,7 +255,7 @@ export class Admin implements OnInit {
   
       this.adminService.unhidePost(post.postId).subscribe({
         next: () => {
-          alert('Post unhidden successfully');
+          this.feedback.success('Post unhidden successfully');
           this.loadDashboard();
   
         },
@@ -271,7 +273,7 @@ export class Admin implements OnInit {
   
       this.adminService.deletePost(postId).subscribe({
         next: () => {
-          alert('Post deleted successfully');
+          this.feedback.success('Post deleted successfully');
           this.loadDashboard();
           if (this.selectedReport) {
             this.closeModal();
@@ -304,7 +306,7 @@ export class Admin implements OnInit {
         hidePost: this.hidePostOnResolve
       }).subscribe({
         next: () => {
-          alert('Report updated successfully');
+        this.feedback.success('Report updated successfully');
           this.loadDashboard();
           this.closeModal();
         },
@@ -348,7 +350,7 @@ export class Admin implements OnInit {
     this.showConfirmDialog('Hide Post', 'Hide this post based on the report?', '', () => {
       this.adminService.hidePost(postId).subscribe({
         next: () => {
-          alert('Post hidden successfully');
+        this.feedback.success('Post hidden successfully');
           if (this.selectedReport && this.selectedReport.postId === postId) {
             this.selectedReport.postEnabled = false;
             this.hidePostOnResolve = true;
@@ -368,7 +370,7 @@ export class Admin implements OnInit {
     this.showConfirmDialog('Delete Post', 'Are you sure you want to delete this post?', '', () => {
       this.adminService.deletePost(postId).subscribe({
         next: () => {
-          alert('Post deleted successfully');
+          this.feedback.success('Post deleted successfully');
           this.loadDashboard();
           if (this.selectedReport?.postId === postId) {
             this.closeModal();

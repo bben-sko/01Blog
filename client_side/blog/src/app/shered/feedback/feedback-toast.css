@@ -1,0 +1,41 @@
+.feedback-wrapper {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 2000;
+}
+
+.feedback {
+  min-width: 240px;
+  max-width: 320px;
+  background: rgba(15, 23, 42, 0.9);
+  border-radius: 16px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #f8fafc;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(125, 211, 252, 0.2);
+}
+
+.feedback.success {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.feedback.error {
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.feedback.info {
+  border-color: rgba(125, 211, 252, 0.5);
+}
+
+.feedback button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: auto;
+}
