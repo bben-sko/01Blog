@@ -49,7 +49,6 @@
           <span *ngIf="loading">Loading stories…</span>
           <span *ngIf="!loading">{{ displayedPosts.length >= filteredPosts.length && !hasMore ? 'No more stories' : 'Load more stories' }}</span>
         </button>
-        <small>Showing {{ displayedPosts.length }} of {{ filteredPosts.length }} curated stories</small>
       </div>
     </div>
 

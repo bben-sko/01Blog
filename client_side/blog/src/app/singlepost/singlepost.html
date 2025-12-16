@@ -51,29 +51,8 @@
     </ng-template>
 
     <div class="article-page" *ngIf="post as article; else loadingPost">
-      <div class="reading-progress">
-        <span [style.width.%]="readProgress"></span>
-      </div>
-      <section class="article-hero">
-        <div class="hero-image">
-          <img [src]="articleHeroImage" alt="Article hero image" loading="eager">
-          <div class="overlay"></div>
-        </div>
-        <div class="hero-text">
-          <span class="hero-category">{{ articleCategory }}</span>
-          <h1>{{ article.title }}</h1>
-          <p>{{ articleParagraphs[0] || article.content }}</p>
-          <div class="hero-meta">
-            <div class="author">
-              <img [src]="article.avatar || 'assets/avatar-default.jpeg'" alt="{{ article.username }}" (error)="$event.target.src='assets/avatar-default.jpeg'">
-              <div>
-                <strong>{{ article.username }}</strong>
-                <small>{{ article.createdAt | date:'fullDate' }} • {{ articleReadingTime }}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+     
+   
 
       <div class="article-layout">
 

@@ -5,7 +5,7 @@ import { Post } from '../shered/posts/posts';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
-const MEDIA_PLACEHOLDER = new URL('../assests/images.png', import.meta.url).href;
+const MEDIA_PLACEHOLDER = "avatar-default.jpeg";
 
 interface EnrichedPost extends Post {
   coverImage: string;

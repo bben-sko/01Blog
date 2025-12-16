@@ -248,7 +248,7 @@ button.primary.ghost {
   border: none;
   border-radius: 999px;
   padding: 0.9rem 2.5rem;
-  background: radial-gradient(circle at top left, #ff6b6b, #f093fb);
+  /* background: radial-gradient(circle at top left, #ff6b6b, #f093fb); */
   color: #0f172a;
   font-weight: 600;
   cursor: pointer;

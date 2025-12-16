@@ -82,8 +82,7 @@ export class Singlepost implements OnInit {
   dialogTitle = '';
   dialogMessage = '';
   dialogDescription = '';
-  private dialogAction: () => void = () => {};
-  private readonly categoryPalette = ['Culture', 'Creativity', 'Technology', 'Wellness', 'Voices'];
+  private dialogAction: () => void = () => { };
   private feedback = inject(FeedbackService);
 
 
@@ -103,10 +102,7 @@ export class Singlepost implements OnInit {
     });
   }
 
-  @HostListener('window:scroll')
-  onWindowScroll() {
-    this.updateProgress();
-  }
+ 
 
   private initCurrentUserId() {
     const token = localStorage.getItem('jwt');
@@ -279,8 +275,7 @@ export class Singlepost implements OnInit {
         this.articleHeroImage = this.resolveHeroImage(post);
         this.articleReadingTime = this.calculateReadingTime(post.content);
         this.articleParagraphs = this.segmentContent(post.content);
-    this.featuredQuote = this.extractQuote(post.content);
-        this.articleCategory = this.deriveCategory(post);
+        this.featuredQuote = this.extractQuote(post.content);
         this.loadcomments(postId, true);
         this.updateProgress();
         this.cdr.detectChanges();
@@ -289,8 +284,8 @@ export class Singlepost implements OnInit {
         if (error.status === 404) {
           this.postLoadError = 'Post not found or has been removed.';
         } else {
-        this.postLoadError = 'Unable to load this post right now.';
-      }
+          this.postLoadError = 'Unable to load this post right now.';
+        }
         this.post = null;
         this.comments = [];
         this.hasMoreComments = false;
@@ -395,46 +390,47 @@ export class Singlepost implements OnInit {
     this.cdr.detectChanges();
   }
   submitReport() {
-    if (this.reportSubmitted || !this.reportText.trim()) {
-      return;
-    }
-    if (!this.reportText.trim()) {
-      return;
-    }
-    this.reportSubmitted = true;
-
-    localStorage.getItem('jwt');
-    let token = localStorage.getItem('jwt');
-
-    if (!token) {
-      console.error('No JWT token found');
-      return;
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    this.http.post(`http://localhost:8080/api/reports/add`, {
-      reason: this.reportText,
-      postId: this.post?.postId
-    }, { headers }).subscribe({
-      next: () => {
-        console.log('Report submitted');
-        this.reportText = '';
-        this.reportSubmitted = false;
-        this.showReportModal = false;
-        this.cdr.detectChanges();
-
-      },
-      error: (error) => {
-        console.error('Error submitting report:', error);
-        this.reportSubmitted = false;
-        this.showReportModal = false;
-        this.reportText = '';
-        this.cdr.detectChanges();
-
+    this.openConfirm('Report Post', 'Are you sure you want to Report this post?', '', () => {
+      if (this.reportSubmitted || !this.reportText.trim()) {
+        return;
       }
-    });
+      if (!this.reportText.trim()) {
+        return;
+      }
+      this.reportSubmitted = true;
 
+      localStorage.getItem('jwt');
+      let token = localStorage.getItem('jwt');
+
+      if (!token) {
+        console.error('No JWT token found');
+        return;
+      }
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+      this.http.post(`http://localhost:8080/api/reports/add`, {
+        reason: this.reportText,
+        postId: this.post?.postId
+      }, { headers }).subscribe({
+        next: () => {
+          console.log('Report submitted');
+          this.reportText = '';
+          this.reportSubmitted = false;
+          this.showReportModal = false;
+          this.cdr.detectChanges();
+
+        },
+        error: (error) => {
+          console.error('Error submitting report:', error);
+          this.reportSubmitted = false;
+          this.showReportModal = false;
+          this.reportText = '';
+          this.cdr.detectChanges();
+
+        }
+      });
+    })
   }
   closeReportModal() {
     this.showReportModal = false;
@@ -493,10 +489,6 @@ export class Singlepost implements OnInit {
     return sentences[0] || content.substring(0, 140);
   }
 
-  private deriveCategory(post: Post) {
-    const index = post.postId % this.categoryPalette.length;
-    return this.categoryPalette[index];
-  }
 
 
   private updateProgress() {
