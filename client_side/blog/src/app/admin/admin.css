@@ -82,7 +82,6 @@ h1 {
 .btn-group .btn {
   border-radius: 999px;
   border: 1px solid rgba(125, 211, 252, 0.2);
-  background: transparent;
   color: #e2e8f0;
   padding: 0.45rem 1.25rem;
   font-weight: 600;

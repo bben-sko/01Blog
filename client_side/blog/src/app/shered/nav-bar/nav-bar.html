@@ -27,10 +27,9 @@
             <i class="bi bi-plus-lg"></i>
           </button>
           <button class="icon-btn" *ngIf="UserResponse?.role === 'ADMIN_USER'" routerLink="/admin" aria-label="Admin dashboard">
-            <i class="bi bi-gear"></i>
+            <i class="bi bi-shield-fill"></i>
           </button>
           <a class="user-pill" [routerLink]="['/profile', UserResponse.username]" aria-label="Profile">
-            <span class="avatar">{{ getUserInitials() }}</span>
             <span class="username">{{ UserResponse.username }}</span>
           </a>
           <button class="icon-btn" type="button" (click)="Logout()" aria-label="Logout">

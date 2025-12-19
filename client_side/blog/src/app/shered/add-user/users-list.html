@@ -18,7 +18,7 @@
     <div class="users-grid" *ngIf="!loading && users.length">
       <article class="user-card" *ngFor="let user of users">
         <div class="identity" (click)="viewProfile(user.user.username)">
-          <img [src]="user.user.avatar || 'assests/avatar-default.jpeg'" [alt]="user.user.username" (error)="$event.target.src='assests/avatar-default.jpeg'">
+          <img [src]="user.user.avatar || 'assests/avatar-default.jpeg'" [alt]="user.user.username" (error)="$event.target.src='avatar-default.jpeg'">
           <div>
             <h3>{{ user.user.name || user.user.username }}</h3>
             <p>@{{ user.user.username }}</p>

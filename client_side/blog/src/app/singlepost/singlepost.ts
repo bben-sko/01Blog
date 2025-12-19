@@ -72,12 +72,9 @@ export class Singlepost implements OnInit {
   newcontent = this.post?.content;
   postErr: string = "";
   existingMedia: string[] = [];
-  articleReadingTime = '';
-  articleCategory = 'Feature';
   articleParagraphs: string[] = [];
   featuredQuote = '';
   articleHeroImage = '';
-  readProgress = 0;
   dialogOpen = false;
   dialogTitle = '';
   dialogMessage = '';
@@ -143,7 +140,9 @@ export class Singlepost implements OnInit {
         this.router.navigate(['/'])
       },
       error: (err) => {
-        console.log(err)
+        if (err.status == 403) {
+          this.router.navigate(['/'])
+        }
         this.feedback.error('Failed to delete post');
       }
     })
@@ -230,7 +229,7 @@ export class Singlepost implements OnInit {
           this.feedback.success('Comment deleted');
         },
         error: (error) => {
-          console.error('Failed to delete comment', error);
+          // console.error('Failed to delete comment', error);
           this.feedback.error('Failed to delete comment');
         }
       });
@@ -272,12 +271,9 @@ export class Singlepost implements OnInit {
       next: (post) => {
         this.post = post;
         this.postLoadError = null;
-        this.articleHeroImage = this.resolveHeroImage(post);
-        this.articleReadingTime = this.calculateReadingTime(post.content);
         this.articleParagraphs = this.segmentContent(post.content);
         this.featuredQuote = this.extractQuote(post.content);
         this.loadcomments(postId, true);
-        this.updateProgress();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -328,10 +324,10 @@ export class Singlepost implements OnInit {
       this.http.delete(`http://localhost:8080/api/likes`, { headers, params })
         .subscribe({
           next: () => {
-            console.log('Post unliked');
+            this.feedback.show('Post unliked')
           },
           error: (error) => {
-            console.error('Error unliking post:', error);
+            this.feedback.error("Error unliking post")
           }
         });
     } else {
@@ -339,10 +335,11 @@ export class Singlepost implements OnInit {
       this.http.post(`http://localhost:8080/api/likes`, null, { headers, params })
         .subscribe({
           next: () => {
-            console.log('Post liked');
+            this.feedback.show('Post liked')
           },
           error: (error) => {
-            console.error('Error liking post:', error);
+            this.feedback.error("Error liking post")
+            // console.error('Error liking post:', error);
           }
         });
     }
@@ -375,6 +372,7 @@ export class Singlepost implements OnInit {
     });
     this.http.post(`http://localhost:8080/api/comments`, request, { headers },).subscribe({
       next: (comment) => {
+        this.feedback.success("submit comment success");
         this.newComment = '';
         this.isSubmitting = false;
         if (this.post) {
@@ -383,7 +381,7 @@ export class Singlepost implements OnInit {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error adding comment:', error);
+        this.feedback.error("submit comment echect");
         this.isSubmitting = false;
       }
     });
@@ -414,7 +412,7 @@ export class Singlepost implements OnInit {
         postId: this.post?.postId
       }, { headers }).subscribe({
         next: () => {
-          console.log('Report submitted');
+          this.feedback.success("Report submitted")
           this.reportText = '';
           this.reportSubmitted = false;
           this.showReportModal = false;
@@ -422,7 +420,7 @@ export class Singlepost implements OnInit {
 
         },
         error: (error) => {
-          console.error('Error submitting report:', error);
+          this.feedback.error("send report echect")
           this.reportSubmitted = false;
           this.showReportModal = false;
           this.reportText = '';
@@ -461,18 +459,9 @@ export class Singlepost implements OnInit {
     }
   }
 
-  private resolveHeroImage(post: Post) {
-    return (post.media && post.media[0]) || `https://source.unsplash.com/collection/190727/1400x900?sig=${post.postId}`;
-  }
+ 
 
-  private calculateReadingTime(content?: string) {
-    if (!content) {
-      return '1 min read';
-    }
-    const words = content.split(/\s+/).filter(Boolean).length;
-    const minutes = Math.max(1, Math.round(words / 200));
-    return `${minutes} min read`;
-  }
+
 
   private segmentContent(content?: string) {
     if (!content) {
@@ -491,15 +480,6 @@ export class Singlepost implements OnInit {
 
 
 
-  private updateProgress() {
-    if (typeof document === 'undefined') {
-      return;
-    }
-    const doc = document.documentElement;
-    const scrollTop = doc.scrollTop || document.body.scrollTop;
-    const scrollHeight = doc.scrollHeight - doc.clientHeight;
-    this.readProgress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-  }
 
   onFilesSelected(evt: Event, kind: 'image' | 'video') {
     const input = evt.target as HTMLInputElement;
@@ -533,7 +513,7 @@ export class Singlepost implements OnInit {
     if (p.existing) {
       this.existingMedia = this.existingMedia.filter((url) => url !== p.url);
     }
-
+    this.feedback.show("Media removed");
     this.previews.splice(i, 1);
   }
 
@@ -566,6 +546,7 @@ export class Singlepost implements OnInit {
     this.submitting = true;
     this.http.post(`http://localhost:8080/api/post/${this.post.postId}`, fd, { headers }).subscribe({
       next: () => {
+        this.feedback.success("post updated")
         this.submitting = false;
         this.converteToEdit = false;
         this.previews = [];
@@ -574,6 +555,7 @@ export class Singlepost implements OnInit {
         this.loadPost(this.post!.postId);
       },
       error: (err) => {
+        this.feedback.error("post updated faild")
         this.submitting = false;
         this.postErr = err?.error?.message || 'Failed to update post';
       }

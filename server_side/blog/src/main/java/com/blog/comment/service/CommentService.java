@@ -33,11 +33,11 @@ public class CommentService {
     }
 
      public Comment createComment(CreateCommentRequest request, Long id) {
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!user.isEnabled()) throw new ResourceNotFoundException("user is banned");
         
-        Post post = PostRepository.findById(request.getPostId())
-            .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        Post post = PostRepository.findById(request.getPostId()).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        if (!post.isEnabled()) throw new ResourceNotFoundException("post is hidde");
         
         Comment comment = new Comment();
         comment.setContent(request.getContent());

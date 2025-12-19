@@ -46,7 +46,7 @@ public class PostService {
     }
 
     @Transactional
-    public Post createPost(String title,String content, List<MultipartFile> files, User user) throws IOException {
+    public Post createPost(String title, String content, List<MultipartFile> files, User user) throws IOException {
         Post post = new Post();
         post.setContent(content);
         post.setTitle(title);
@@ -63,10 +63,10 @@ public class PostService {
     }
 
     public List<Post> GetPostsProfile(Long userId, int page, int size) {
-        return postRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size)).getContent();
+        return postRepository.findByUserIdAndEnabledTrueOrderByCreatedAtDesc(userId, PageRequest.of(page, size))
+                .getContent();
     }
 
-   
     @Transactional
     public PostResponseDto GetSinglePosts(Long postId, Long userid) {
         Post post = postRepository.findById(postId)
@@ -86,8 +86,9 @@ public class PostService {
             List<String> existingMedia, User user) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-
-        if (!post.getUser().getId().equals(user.getId())) {
+        if (!post.isEnabled()) {
+            throw new ResourceNotFoundException("Post is hidde");
+        } else if (!post.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized");
         }
 
@@ -117,6 +118,8 @@ public class PostService {
     public void DeletePost(Long postId) {
         LikeService.deletePostLikes(postId);
         postRepository.deleteById(postId);
+
     }
+
 
 }

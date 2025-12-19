@@ -61,7 +61,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<?> getCommentCount(@Valid @RequestBody CreateCommentRequest post,@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<?> createComment(@Valid @RequestBody CreateCommentRequest post,@RequestHeader("Authorization") String authorizationHeader) {
         try {
               String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
@@ -87,6 +87,7 @@ public class CommentController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid JWT token.");
             }
             Long userId = JwtService.extractUserId(jwt);
+            // check use wach mbani
             commentService.deleteComment(commentId, userId);
             HashMap<String, String> response = new HashMap<>();
             response.put("message", "Comment deleted successfully");

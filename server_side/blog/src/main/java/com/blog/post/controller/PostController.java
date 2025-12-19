@@ -86,6 +86,7 @@ public class PostController {
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
+            
             List<Post> posts = PostService.GetPostsProfile(user.getId(), page, size);
 
             List<PostResponseDto> postDtos = posts.stream()
@@ -122,6 +123,7 @@ public class PostController {
 
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
+          
 
             PostResponseDto updatedPost = PostService.updatePost(Postid, content, files, existingMedia, user);
             return ResponseEntity.ok(updatedPost);

@@ -3,7 +3,7 @@
   <div class="profile-wrap">
   <header class="hero-card">
     <div class="identity">
-      <img [src]="user.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'" alt="{{ user.username }}">
+      <img [src]="user.avatar || 'avatar-default.jpeg'" (error)="$event.target.src='avatar-default.jpeg'" alt="{{ user.username }}">
       <div>
         <p class="eyebrow">Profile</p>
         <h1>{{ user.username }}</h1>

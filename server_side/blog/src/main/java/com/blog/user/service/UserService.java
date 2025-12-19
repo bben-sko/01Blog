@@ -121,6 +121,9 @@ public class UserService {
 
     public User GetUserInfoByUsername(String username) throws Exception {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
+        if (!user.isEnabled()) {
+            throw new Exception("user "+ user.getUsername() +" is banned");
+        }
         return user;
     }
     public Long verifyToken(String token) throws Exception {

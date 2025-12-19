@@ -1,4 +1,3 @@
-
 @if (checking) {
 <div class="container-fluid py-4">
     <h1 class="mb-4">Admin Dashboard</h1>
@@ -36,7 +35,8 @@
                 <div class="card-body">
                     <p class="card-title text-muted mb-1">Profile Reports</p>
                     <h2>{{ profileReports.length }}</h2>
-                    <small class="text-muted">Updated {{ profileReports.length ? (profileReports[0]?.createdAt | date:'short') : 'recently' }}</small>
+                    <small class="text-muted">Updated {{ profileReports.length ? (profileReports[0]?.createdAt |
+                        date:'short') : 'recently' }}</small>
                 </div>
             </div>
         </div>
@@ -76,19 +76,18 @@
     <div *ngIf="activeTab === 'reports'">
         <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
             <div class="btn-group">
-                <button class="btn" [class.btn-primary]="reportView === 'posts'" [class.btn-outline-primary]="reportView !== 'posts'"
-                    (click)="switchReportView('posts')">
+                <button class="btn" [class.btn-primary]="reportView === 'posts'"
+                    [class.btn-outline-primary]="reportView !== 'posts'" (click)="switchReportView('posts')">
                     Post Reports
                 </button>
-                <button class="btn" [class.btn-primary]="reportView === 'profiles'" [class.btn-outline-primary]="reportView !== 'profiles'"
-                    (click)="switchReportView('profiles')">
+                <button class="btn" [class.btn-primary]="reportView === 'profiles'"
+                    [class.btn-outline-primary]="reportView !== 'profiles'" (click)="switchReportView('profiles')">
                     Profile Reports
                 </button>
             </div>
             <div class="ms-auto d-flex align-items-center gap-2" *ngIf="reportView === 'posts'">
                 <label class="form-label m-0">Filter:</label>
-                <select class="form-select" style="min-width: 180px"
-                    [ngModel]="reportFilter"
+                <select class="form-select" style="min-width: 180px" [ngModel]="reportFilter"
                     (ngModelChange)="loadReport($event)">
                     <option value="ALL">All</option>
                     <option value="PENDING">Pending</option>
@@ -99,94 +98,91 @@
         </div>
 
         <div *ngIf="reportView === 'posts'">
-        <h3>Post Reports</h3>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Reporter</th>
-                        <th>Reason</th>
-                        <th>Post Content</th>
-                        <th>Status</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let report of reports">
-                        <td>{{ report.id }}</td>
-                        <td>{{ report.reporterUsername }}</td>
-                        <td><span class="badge bg-warning">{{ report.reason }}</span></td>
-                        <td>{{ (report.postContent || '').substring(0, 50) }}...</td>
-                        <!-- <td>
-                            <img *ngIf="report.postImageUrl" [src]="report.postImageUrl"
-                                style="width: 50px; height: 50px; object-fit: cover;">
-                        </td> -->
-                        <td>
-                            <span class="badge"
-                                [ngClass]="{
+            <h3>Post Reports</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Reporter</th>
+                            <th>Reason</th>
+                            <th>Post Content</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of reports">
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.reporterUsername }}</td>
+                            <td><span class="badge bg-warning">{{ report.reason }}</span></td>
+                            <td>{{ (report.postContent || '').substring(0, 50) }}...</td>
+
+                            <td>
+                                <span class="badge" [ngClass]="{
                                     'bg-warning': report.status === 'PENDING',
                                     'bg-success': report.status === 'RESOLVED',
                                     'bg-secondary': report.status === 'DISMISSED'
                                 }">
-                                {{ report.status }}
-                            </span>
-                        </td>
-                        <td>{{ report.createdAt | date:'short' }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
-                                Review
-                            </button>
-                        </td>
-                    </tr>
-                    <tr *ngIf="reports.length === 0">
-                        <td colspan="7" class="text-center text-muted">No reports found</td>
-                    </tr>
-                </tbody>
-            </table>
+                                    {{ report.status }}
+                                </span>
+                            </td>
+                            <td>{{ report.createdAt | date:'short' }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" (click)="openReportModal(report)">
+                                    Review
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="reports.length === 0">
+                            <td colspan="7" class="text-center text-muted">No reports found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div *ngIf="reportView === 'profiles'">
-        <h3>Profile Reports</h3>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Reporter</th>
-                        <th>Reported User</th>
-                        <th>Reason</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let report of profileReports">
-                        <td>{{ report.id }}</td>
-                        <td>{{ report.reporterUsername }}</td>
-                        <td>{{ report.reportedUsername }}</td>
-                        <td>{{ report.reason }}</td>
-                        <td>{{ report.createdAt | date:'short' }}</td>
-                        <td class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-sm btn-outline-primary" (click)="viewProfile(report.reportedUsername)">
-                                View Profile
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger"
-                                [disabled]="!canBanReportedUser(report.reportedUsername)"
-                                (click)="promptBanFromProfile(report.reportedUsername)">
-                                Ban User
-                            </button>
-                        </td>
-                    </tr>
-                    <tr *ngIf="profileReports.length === 0">
-                        <td colspan="6" class="text-center text-muted">No profile reports right now</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div *ngIf="reportView === 'profiles'">
+            <h3>Profile Reports</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Reporter</th>
+                            <th>Reported User</th>
+                            <th>Reason</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let report of profileReports">
+                            <td>{{ report.id }}</td>
+                            <td>{{ report.reporterUsername }}</td>
+                            <td>{{ report.reportedUsername }}</td>
+                            <td>{{ report.reason }}</td>
+                            <td>{{ report.createdAt | date:'short' }}</td>
+                            <td class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-primary"
+                                    (click)="viewProfile(report.reportedUsername)">
+                                    View Profile
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                    [disabled]="!canBanReportedUser(report.reportedUsername)"
+                                    (click)="promptBanFromProfile(report.reportedUsername)">
+                                    <i class="bi bi-ban"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="profileReports.length === 0">
+                            <td colspan="6" class="text-center text-muted">No profile reports right now</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
     </div>
 
     <!-- Users Tab -->
@@ -219,11 +215,11 @@
                         <td>
                             @if (user.enable) {
                             <button class="badge bg-danger" (click)="banUser(user)">
-                                {{ user.enable ? 'BAN' : 'ACTIVE' }}
+                                <i class="bi bi-ban"></i>
                             </button>
                             } @else {
                             <button class="badge bg-success" (click)="unbanUser(user)">
-                                {{ user.enable ? 'BAN' : 'ACTIVE' }}
+                                <i class="bi bi-check-circle"></i>
                             </button>
                             }
                         </td>
@@ -430,14 +426,8 @@
         </div>
     </div>
 </div>
-<app-confirmation-dialog *ngIf="dialogOpen"
-  [open]="dialogOpen"
-  [title]="dialogTitle"
-  [message]="dialogMessage"
-  [description]="dialogDescription"
-  (confirm)="onConfirm()"
-  (cancel)="onCancel()"
-></app-confirmation-dialog>
+<app-confirmation-dialog *ngIf="dialogOpen" [open]="dialogOpen" [title]="dialogTitle" [message]="dialogMessage"
+    [description]="dialogDescription" (confirm)="onConfirm()" (cancel)="onCancel()"></app-confirmation-dialog>
 }
 @else {
 <div class="d-flex flex-column align-items-center justify-content-center py-5">
