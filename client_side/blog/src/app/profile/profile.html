@@ -10,7 +10,7 @@
         <p class="bio" *ngIf="user.bio">{{ user.bio }}</p>
       </div>
     </div>
-    <div class="stats">
+    <!-- <div class="stats">
       <div>
         <span>{{ userPosts.length }}</span>
         <p>Posts</p>
@@ -23,7 +23,7 @@
         <span>{{ following.length }}</span>
         <p>Following</p>
       </div>
-    </div>
+    </div> -->
     <div class="actions" *ngIf="!userNotFound && !user.isme">
       <button class="ghost" type="button" (click)="openReportModal()">Report</button>
       <button class="primary" type="button" (click)="toggleFollow(user)">
@@ -73,7 +73,7 @@
                   [alt]="follower.username"
                   (click)="GoToProfile(follower.username)">
                 <div>
-                  <h3>@{{ follower.username }}</h3>
+                  <p>@{{ follower.username }}</p>
                 </div>
                @if (!follower.isme) {
                   <button class="ghost" [class.active]="follower.isFollowing"
@@ -104,7 +104,7 @@
                   [src]="followedUser?.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'"
                   (click)="GoToProfile(followedUser.username)">
                 <div>
-                  <h3>{{ followedUser.firstName }} {{ followedUser.lastName }}</h3>
+                  <!-- <h3>{{ followedUser.firstName }} {{ followedUser.lastName }}</h3> -->
                   <p>@{{ followedUser.username }}</p>
                 </div>
                 <button class="ghost" [class.active]="followedUser.isFollowing" (click)="UnFollow(followedUser)">

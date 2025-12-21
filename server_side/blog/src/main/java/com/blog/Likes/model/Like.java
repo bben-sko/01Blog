@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "post_likes") 
+@Table(name = "post_likes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "post_id"})
+}) 
+
 public class Like {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

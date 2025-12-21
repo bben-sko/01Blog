@@ -4,7 +4,7 @@
   <div class="content-grid">
     <div class="articles-column">
       <div class="article-grid">
-        <article class="story-card" *ngFor="let post of displayedPosts">
+        <article class="story-card" *ngFor="let post of posts">
           <div class="card-media">
             <ng-container *ngIf="post.media?.length && post.media[0]; else fallbackMedia">
               <ng-container *ngIf="post.media[0].toLowerCase().endsWith('.mp4'); else imageThumb">
@@ -15,12 +15,11 @@
               </ng-template>
             </ng-container>
             <ng-template #fallbackMedia>
-              <img [src]="post.coverImage" [alt]="post.title" loading="lazy">
+              <img [src]="post.media[0] || 'avatar-default.jpeg'"  [alt]="post.title" loading="lazy">
             </ng-template>
           </div>
           <div class="card-body">
             <h2 (click)="viewPost(post)">{{ post.title }}</h2>
-            <p>{{ post.excerpt }}</p>
             <div class="card-meta">
               <div class="author-meta">
                 <img [src]="post.avatar || 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E?%3C/text%3E%3C/svg%3E'"
@@ -28,7 +27,7 @@
                      (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22 viewBox=%220 0 120 120%22%3E%3Crect fill=%22%23e2e8f0%22 width=%22120%22 height=%22120%22/%3E%3Ctext fill=%22%2394a3b8%22 font-family=%22sans-serif%22 font-size=%2240%22 dy=%22.3em%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22%3E?%3C/text%3E%3C/svg%3E'">
                 <div>
                   <strong>{{ post.username }}</strong>
-                  <small>{{ post.publishedAt | date: 'MMMM d' }}</small>
+                  <small>{{ post.createdAt | date: 'MMMM d' }}</small>
                 </div>
               </div>
             </div>
@@ -39,15 +38,15 @@
             </div>
           </div>
         </article>
-        <div class="empty-state" *ngIf="!loading && filteredPosts.length === 0">
-          <p>No stories match your filters yet.</p>
+        <div class="empty-state" *ngIf="loading">
+          <p>loading...</p>
         </div>
       </div>
 
-      <div class="load-more" *ngIf="filteredPosts.length">
-        <button type="button" (click)="loadMoreStories()" [disabled]="loading || (!hasMore && displayedPosts.length >= filteredPosts.length)">
+      <div class="load-more" *ngIf="!loading">
+        <button type="button" (click)="loadMoreStories()" [disabled]="loading || !hasMore ">
           <span *ngIf="loading">Loading stories…</span>
-          <span *ngIf="!loading">{{ displayedPosts.length >= filteredPosts.length && !hasMore ? 'No more stories' : 'Load more stories' }}</span>
+          <span *ngIf="!loading">{{ !hasMore ? 'No more stories' : 'Load more stories' }}</span>
         </button>
       </div>
     </div>
@@ -55,35 +54,12 @@
   </div>
 </main>
 
-<footer class="site-footer" id="about">
-  <div class="footer-grid">
-    <div>
-      <h4>01BLOG</h4>
-      <p>Independent perspectives crafted with intention. Built for readers who value depth over noise.</p>
-    </div>
-    <div>
-      <h5>Explore</h5>
-      <ul>
-        <li><a routerLink="/">Home</a></li>
-        <li><a routerLink="/newpost">Write a post</a></li>
-        <li *ngIf="featuredPost"><a [routerLink]="['/profile', featuredPost.username]">Profile</a></li>
-      </ul>
-    </div>
-    <div>
-      <h5>Resources</h5>
-      <ul>
-        <li><a href="#">Editorial Standards</a></li>
-        <li><a href="#">Privacy Policy</a></li>
-        <li><a href="#">Terms of Service</a></li>
-      </ul>
-    </div>
-    <div>
-      <h5>Newsletter</h5>
-      <p>Stay close to the ideas we publish.</p>
-    </div>
-  </div>
+<footer class="site-footer" id="about"> 
   <div class="footer-base">
-    <span>© {{ (featuredPost?.publishedAt || today) | date: 'yyyy' }} 01BLOG. All rights reserved.</span>
+     <div>
+      <h4>01BLOG</h4>
+    </div>
+    <span>©01BLOG. All rights reserved.</span>
     <button class="back-to-top" type="button" (click)="scrollToTop()">
       Back to top
     </button>

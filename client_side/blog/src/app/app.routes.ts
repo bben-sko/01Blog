@@ -31,7 +31,7 @@ export const routes: Routes = [
   {
     path: 'notification',
     component: Notification
-    , canActivate: [TokenGuard]
+    , canActivate: [TokenGuard],
   },
   { path: '**', redirectTo: '' },
 ];
