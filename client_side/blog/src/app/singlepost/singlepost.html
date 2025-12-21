@@ -8,15 +8,22 @@
         </div>
         <div class="error" *ngIf="postErr">{{ postErr }}</div>
         <div class="post-content-section">
-          <textarea [(ngModel)]="newcontent" name="content" placeholder="What's on your mind?" class="post-textarea" rows="6"></textarea>
+          <textarea [(ngModel)]="newcontent" name="content" placeholder="What’s on your mind?" class="post-textarea"
+            rows="4"></textarea>
+
           <div class="grid-previews" *ngIf="previews?.length">
             <div class="media-preview" *ngFor="let m of previews; let i = index">
-              <button type="button" class="remove-media-btn" (click)="removeAt(i)">✕</button>
-              <img *ngIf="m.type.startsWith('image/')" [src]="m.url" alt="Image preview" class="preview-image" />
-              <video *ngIf="m.type.startsWith('video/')" [src]="m.url" class="preview-video" controls></video>
+              <button type="button" class="remove-media-btn" (click)="removeAt(i)" aria-label="Remove media">
+                ✕
+              </button>
+
+              <img *ngIf="m.type.startsWith('image/')" [src]="m.url" class="preview-image" alt="preview" />
+
+              <video *ngIf="m.type.startsWith('video/')" [src]="m.url" class="preview-video" muted></video>
             </div>
           </div>
         </div>
+
         <div class="media-options">
           <span class="add-to-post">Add to your post:</span>
           <div class="media-buttons">
@@ -51,8 +58,8 @@
     </ng-template>
 
     <div class="article-page" *ngIf="post as article; else loadingPost">
-     
-   
+
+
 
       <div class="article-layout">
 
@@ -83,6 +90,7 @@
           </div>
 
           <div class="article-content">
+            <h1 class="article-title">{{ article.title }}</h1>
             <ng-container *ngFor="let paragraph of articleParagraphs; let idx = index">
               <p>{{ paragraph }}</p>
               <blockquote class="pull-quote" *ngIf="featuredQuote && idx === 1">
@@ -98,16 +106,24 @@
                 <ng-template #imageMedia>
                   <img [src]="mediaUrl" alt="Article media" loading="lazy">
                 </ng-template>
-                <figcaption>{{ article.title }}</figcaption>
               </figure>
             </ng-container>
           </div>
 
           <div class="article-footer-bar">
             <div class="stats">
-              <span><i class="bi bi-chat"></i> {{ comments.length }} comments</span>
+              <i class="bi bi-chat"></i>
+              <span>{{ comments.length }} comments</span>
             </div>
+
+            <button class="like-btn" [class.liked]="article.likedByUser" type="button"
+              (click)="toggleLike(article.postId)">
+              <i class="bi" [ngClass]="article.likedByUser ? 'bi-heart-fill' : 'bi-heart'">
+              </i>
+              <span>{{ article.likedByUser ? 'Liked' : 'Like' }}</span>
+            </button>
           </div>
+
         </article>
       </div>
 
@@ -120,7 +136,8 @@
         </div>
         <div *ngIf="showComments" class="comments-content">
           <div class="comment-form">
-            <input type="text" [(ngModel)]="newComment" (keyup.enter)="addComment(article.postId)" [disabled]="isSubmitting" placeholder="Share your thoughts" />
+            <input type="text" [(ngModel)]="newComment" (keyup.enter)="addComment(article.postId)"
+              [disabled]="isSubmitting" placeholder="Share your thoughts" />
             <button type="button" (click)="addComment(article.postId)" [disabled]="!newComment.trim() || isSubmitting">
               {{ isSubmitting ? 'Posting…' : 'Post comment' }}
             </button>
@@ -128,7 +145,8 @@
           <div class="comment-list">
             <article class="comment" *ngFor="let comment of comments">
               <div class="comment-author">
-                <img [src]="comment.avatar || 'assets/avatar-default.jpeg'" alt="{{ comment.username }}" (error)="$event.target.src='assets/avatar-default.jpeg'">
+                <img [src]="comment.avatar || 'assets/avatar-default.jpeg'" alt="{{ comment.username }}"
+                  (error)="$event.target.src='assets/avatar-default.jpeg'">
                 <div>
                   <strong>{{ comment.username }}</strong>
                   <small>{{ comment.time | date:'short' }}</small>
@@ -165,18 +183,13 @@
       <textarea [(ngModel)]="reportText" rows="5" placeholder="Describe the issue..."></textarea>
       <div class="dialog-actions">
         <button type="button" class="ghost" (click)="closeReportModal()">Cancel</button>
-        <button type="button" class="primary" (click)="submitReport()" [disabled]="!reportText.trim()">Submit report</button>
+        <button type="button" class="primary" (click)="submitReport()" [disabled]="!reportText.trim()">Submit
+          report</button>
       </div>
     </div>
   </div>
-  <app-confirmation-dialog *ngIf="dialogOpen"
-    [open]="dialogOpen"
-    [title]="dialogTitle"
-    [message]="dialogMessage"
-    [description]="dialogDescription"
-    (confirm)="confirmDialog()"
-    (cancel)="cancelDialog()"
-  ></app-confirmation-dialog>
+  <app-confirmation-dialog *ngIf="dialogOpen" [open]="dialogOpen" [title]="dialogTitle" [message]="dialogMessage"
+    [description]="dialogDescription" (confirm)="confirmDialog()" (cancel)="cancelDialog()"></app-confirmation-dialog>
 </div>
 
 <div class="container py-5 text-center" *ngIf="postLoadError">

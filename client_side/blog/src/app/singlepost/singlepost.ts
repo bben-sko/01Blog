@@ -420,7 +420,8 @@ export class Singlepost implements OnInit {
 
         },
         error: (error) => {
-          this.feedback.error("send report echect")
+          console.error('Failed to submit report', error);
+          this.feedback.error(error?.error?.message || "Failed to submit report")
           this.reportSubmitted = false;
           this.showReportModal = false;
           this.reportText = '';

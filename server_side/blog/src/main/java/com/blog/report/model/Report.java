@@ -15,10 +15,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
-@Table(name = "reports")
+@Table(name = "reports", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"reporter_id", "post_id"})
+})
 @Data
 public class Report {
     @Id
@@ -36,6 +40,8 @@ public class Report {
 
     
     @Column(columnDefinition = "TEXT")
+    @Size(max = 1000, message = "Reason cannot exceed 1000 characters")
+    @Size(min = 10, message = "Reason must be at least 10 characters long")
     private String Reason;
     
     @Enumerated(EnumType.STRING)

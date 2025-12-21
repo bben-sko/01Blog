@@ -15,13 +15,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 @Entity
-@Table(name = "profile_reports")
-@Getter
-@Setter
+@Table(name = "profile_reports", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = {"reporter_id", "reported_user_id"})
+}) 
+@Data
+
 public class ProfileReport {
 
     @Id
@@ -37,6 +40,8 @@ public class ProfileReport {
     private User reportedUser;
 
     @Column(nullable = false, length = 1000)
+    @Size(max = 1000, message = "Reason cannot exceed 1000 characters")
+    @Size(min = 10, message = "Reason must be at least 10 characters long")
     private String reason;
 
     @CreationTimestamp

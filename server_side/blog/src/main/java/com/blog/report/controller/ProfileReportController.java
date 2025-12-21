@@ -42,7 +42,7 @@ public class ProfileReportController {
             profileReportService.submitReport(reporterId, request.getUsername(), request.getReason());
             return ResponseEntity.ok("Profile reported successfully");
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("You have already reported this profile");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Unable to submit report");
         }

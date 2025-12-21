@@ -31,7 +31,6 @@ export const TokenGuard: CanActivateFn = async (): Promise<boolean> => {
             )
         );
 
-        console.log('Token verification response:', response);
 
         if (response.valid) {
             return true;
