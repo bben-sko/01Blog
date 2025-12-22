@@ -6,36 +6,36 @@
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card stat-card h-100">
                 <div class="card-body">
-                    <p class="card-title text-muted mb-1">Total Users</p>
+                    <p class="card-title text mb-1">Total Users</p>
                     <h2>{{ stats.totalUsers }}</h2>
-                    <small class="text-muted">Active: {{ stats.activeUsers }} • Banned: {{ stats.bannedUsers }}</small>
+                    <small class="text">Active: {{ stats.activeUsers }} • Banned: {{ stats.bannedUsers }}</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card stat-card h-100">
                 <div class="card-body">
-                    <p class="card-title text-muted mb-1">Total Posts</p>
+                    <p class="card-title text mb-1">Total Posts</p>
                     <h2>{{ stats.totalPosts }}</h2>
-                    <small class="text-muted">Active: {{ stats.activePosts }} • Hidden: {{ stats.hiddenPosts }}</small>
+                    <small class="text">Active: {{ stats.activePosts }} • Hidden: {{ stats.hiddenPosts }}</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3">
             <div class="card stat-card h-100">
                 <div class="card-body">
-                    <p class="card-title text-muted mb-1">Pending Reports</p>
+                    <p class="card-title text mb-1">Pending Reports</p>
                     <h2>{{ stats.pendingReports }}</h2>
-                    <small class="text-muted">Resolved: {{ stats.resolvedReports }}</small>
+                    <small class="text">Resolved: {{ stats.resolvedReports }}</small>
                 </div>
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-3" *ngIf="profileReports">
             <div class="card stat-card h-100">
                 <div class="card-body">
-                    <p class="card-title text-muted mb-1">Profile Reports</p>
+                    <p class="card-title text mb-1">Profile Reports</p>
                     <h2>{{ profileReports.length }}</h2>
-                    <small class="text-muted">Updated {{ profileReports.length ? (profileReports[0]?.createdAt |
+                    <small class="text">Updated {{ profileReports.length ? (profileReports[0]?.createdAt |
                         date:'short') : 'recently' }}</small>
                 </div>
             </div>
@@ -136,7 +136,7 @@
                             </td>
                         </tr>
                         <tr *ngIf="reports.length === 0">
-                            <td colspan="7" class="text-center text-muted">No reports found</td>
+                            <td colspan="7" class="text-center text">No reports found</td>
                         </tr>
                     </tbody>
                 </table>
@@ -177,7 +177,7 @@
                             </td>
                         </tr>
                         <tr *ngIf="profileReports.length === 0">
-                            <td colspan="6" class="text-center text-muted">No profile reports right now</td>
+                            <td colspan="6" class="text-center text">No profile reports right now</td>
                         </tr>
                     </tbody>
                 </table>
@@ -432,8 +432,8 @@
 @else {
 <div class="d-flex flex-column align-items-center justify-content-center py-5">
     <div class="spinner-border text-primary mb-3" role="status"></div>
-    <p class="text-muted mb-2">Checking admin access...</p>
-    <p class="text-muted">You will be redirected if you do not have permission.</p>
+    <p class="text mb-2">Checking admin access...</p>
+    <p class="text">You will be redirected if you do not have permission.</p>
 </div>
 <!-- Confirmation Dialog -->
 
