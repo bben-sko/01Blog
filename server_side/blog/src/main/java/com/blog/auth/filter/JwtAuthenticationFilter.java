@@ -76,7 +76,6 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             }
             catch (Exception e) {
             // Log the exception (token is invalid or expired)
-            System.err.println("Cannot set user authentication: "+ e.getMessage());
         }
         
         // Continue with the filter chain
