@@ -1,7 +1,6 @@
 package com.blog.post.dto;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import com.blog.comment.model.Comment;
