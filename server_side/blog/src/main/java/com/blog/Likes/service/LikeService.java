@@ -14,38 +14,57 @@ import jakarta.transaction.Transactional;
 @Repository
 public class LikeService {
 
-      private final LikeRepository LikeRepository;
-      private final PostRepository PostRepository;
-      private final UserRepository UserRepository;
+  private final LikeRepository LikeRepository;
+  private final PostRepository PostRepository;
+  private final UserRepository UserRepository;
 
-      LikeService(LikeRepository LikeRepository, PostRepository PostRepository , UserRepository UserRepository) {
-        this.UserRepository = UserRepository;
-          this.PostRepository = PostRepository;
-        this.LikeRepository = LikeRepository;
-      }
+  LikeService(LikeRepository LikeRepository, PostRepository PostRepository, UserRepository UserRepository) {
+    this.UserRepository = UserRepository;
+    this.PostRepository = PostRepository;
+    this.LikeRepository = LikeRepository;
+  }
 
-      @Transactional
-        public void like(Long userId, Long postId) {
-    if (LikeRepository.existsByUserIdAndPostId(userId, postId)) return;
+  @Transactional
+  public void like(Long userId, Long postId) {
+    if (LikeRepository.existsByUserIdAndPostId(userId, postId))
+      return;
+    if (!PostRepository.existsById(postId))
+      throw new RuntimeException("Post not found");
+    if (!UserRepository.existsById(userId))
+      throw new RuntimeException("User not found");
 
-    System.out.println("Saving like for user " + userId + " on post " + postId);
     Post post = PostRepository.findById(postId).get();
+    if (!post.isEnabled()) {
+      throw new RuntimeException("post not found");
+    }
+    
+    
     User user = UserRepository.findById(userId).get();
-    Like pl = new Like(); pl.setPost(post); pl.setUser(user);
+    Like pl = new Like();
+    pl.setPost(post);
+    pl.setUser(user);
     LikeRepository.save(pl);
   }
 
   @Transactional
   public void unlike(Long userId, Long postId) {
+    if (!PostRepository.existsById(postId))
+      throw new RuntimeException("Post not found");
+    if (!UserRepository.existsById(userId))
+      throw new RuntimeException("User not found");
+    Post post = PostRepository.findById(postId).get();
+    if (!post.isEnabled()) {
+      throw new RuntimeException("post not found");
+    }
     LikeRepository.deleteByUserIdAndPostId(userId, postId);
   }
-  
-  public void deletePostLikes(Long postid) {
-        LikeRepository.deleteAllByPostId(postid);
-    }
 
-public boolean isLikedByUser(Long userId, Long postId) {
+  public void deletePostLikes(Long postid) {
+    LikeRepository.deleteAllByPostId(postid);
+  }
+
+  public boolean isLikedByUser(Long userId, Long postId) {
     return LikeRepository.existsByUserIdAndPostId(userId, postId);
   }
-    
+
 }

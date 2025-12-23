@@ -14,16 +14,16 @@
     </div>
 
     <div class="notifications-list" *ngIf="!loading && notifications.length">
-      <article class="notification-card" *ngFor="let notification of notifications" [class.unread]="!notification.isRead">
+      <article class="notification-card" *ngFor="let notification of notifications" [class.unread]="!notification.read">
         <div class="meta">
           <span class="icon">
-            <i class="bi" [ngClass]="notification.isRead ? 'bi-file-text' : 'bi-bell-fill'"></i>
+            <i class="bi" [ngClass]="notification.read ? 'bi-file-text' : 'bi-bell-fill'"></i>
           </span>
           <div>
             <p class="timestamp">{{ notification.createdAt | date: 'MMM d, y • h:mm a' }}</p>
             <p class="message">{{ notification.message }}</p>
           </div>
-          <span *ngIf="!notification.isRead" class="badge">New</span>
+          <span *ngIf="!notification.read" class="badge">New</span>
         </div>
         <div class="actions">
           <button type="button" class="ghost" (click)="onNotificationClick(notification)">View post</button>

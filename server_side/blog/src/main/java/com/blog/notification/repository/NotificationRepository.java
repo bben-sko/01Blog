@@ -9,7 +9,10 @@ import com.blog.notification.model.Notification;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
+    void deleteAllByPostId(Long postId);
+
     Page<Notification> findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    boolean existsByUserIdAndIsReadFalse(Long userId);
 
     long countByUserIdAndIsReadFalse(Long userId);
 }

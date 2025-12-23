@@ -66,7 +66,6 @@ public class ReportController {
         } catch (ResponseStatusException ex) {
             throw ex;
         } catch (Exception e) {
-            System.out.println("Error while reporting post: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

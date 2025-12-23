@@ -19,16 +19,17 @@ import lombok.Data;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotBlank
     @Size(min = 3, max = 20)
     @Pattern(
-        regexp = "^[a-zA-Z]+$",
+        regexp = "^[a-zA-Z0-9_]+$",
         message = "Username must contain only letters"
     )
     @Column(nullable = false, unique = true)
+    @Size(min = 3, max = 20)
     private String username;
 
     @NotBlank
@@ -49,6 +50,8 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.N_USER;
 
-    @Column(nullable = false)
-    private boolean enabled = true;
+    private boolean enabled;
+
+    @Size(max = 500)
+    private String adminNotes = "";
 }

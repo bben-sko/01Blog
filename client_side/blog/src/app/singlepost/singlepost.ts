@@ -229,7 +229,6 @@ export class Singlepost implements OnInit {
           this.feedback.success('Comment deleted');
         },
         error: (error) => {
-          // console.error('Failed to delete comment', error);
           this.feedback.error('Failed to delete comment');
         }
       });
@@ -512,6 +511,7 @@ export class Singlepost implements OnInit {
     }
 
     if (p.existing) {
+      console.log('Removing existing media URL:', p.url);
       this.existingMedia = this.existingMedia.filter((url) => url !== p.url);
     }
     this.feedback.show("Media removed");
@@ -543,6 +543,7 @@ export class Singlepost implements OnInit {
     fd.append('content', trimmedContent);
     this.existingMedia.forEach((url) => fd.append('existingMedia', url));
     this.files.forEach((file) => fd.append('files', file));
+
 
     this.submitting = true;
     this.http.post(`http://localhost:8080/api/post/${this.post.postId}`, fd, { headers }).subscribe({

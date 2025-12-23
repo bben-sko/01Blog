@@ -55,4 +55,13 @@ public class ProfileReportService {
         dto.setCreatedAt(report.getCreatedAt());
         return dto;
     }
+    public Long getUserIdByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getId();
+    }
+
+    public boolean hasUserReported(Long reporterId, Long reportedUserId) {
+        return profileReportRepository.existsByReporterIdAndReportedUserId(reporterId, reportedUserId);
+    }
 }

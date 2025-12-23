@@ -1,5 +1,7 @@
 package com.blog.Likes.controller;
 
+import java.util.Optional;
+
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.blog.Likes.service.LikeService;
 import com.blog.config.JwtService;
+import com.blog.user.model.User;
+import com.blog.user.service.CustomUserDetailsService;
 
 @RestController
 @RequestMapping("/api/likes")
@@ -17,22 +21,22 @@ import com.blog.config.JwtService;
 public class LikeController {
     private final LikeService LikeService;
     private final JwtService JwtService;
+    private final CustomUserDetailsService userDetailsService ;
 
-    LikeController(LikeService LikeService, JwtService JwtService) {
+    LikeController(LikeService LikeService, JwtService JwtService, CustomUserDetailsService userDetailsService) {
         this.LikeService = LikeService;
         this.JwtService = JwtService;
+        this.userDetailsService = userDetailsService;
     }
 
     @PostMapping
-    public ResponseEntity<Void> like(@RequestHeader("Authorization") String authorizationHeader,@RequestParam Long postId) {
-    //    Long userId = currentUserId();
+    public ResponseEntity<Void> like(@RequestParam Long postId) {
     try {
-       String jwt = authorizationHeader.substring(7);
-            if (jwt == null || jwt.isEmpty()) {
-                ResponseEntity.badRequest().body("Invalid JWT token.");
+       Optional<User> userOpt = userDetailsService.getAuthoentificated();
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(401).build(); // Unauthorized
             }
-            Long userId = JwtService.extractUserId(jwt);
-            System.out.println("userId in like controller: " + userId);
+            Long userId = userOpt.get().getId();
         LikeService.like(userId, postId);
         return ResponseEntity.ok().build();
     } catch (Exception e) {
@@ -42,13 +46,13 @@ public class LikeController {
 
     @DeleteMapping
     public ResponseEntity<Void> unlike(@RequestHeader("Authorization") String authorizationHeader,@RequestParam Long postId) {
-        //  Long userId = currentUserId();
         try {
-             String jwt = authorizationHeader.substring(7);
-            if (jwt == null || jwt.isEmpty()) {
-                ResponseEntity.badRequest().body("Invalid JWT token.");
+            Optional<User> userOpt = userDetailsService.getAuthoentificated();
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.status(401).build(); 
             }
-            Long userId = JwtService.extractUserId(jwt);
+        Long userId = userOpt.get().getId();
+        
         LikeService.unlike(userId, postId);
         return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -56,18 +60,4 @@ public class LikeController {
         }
           
     }
-
-    // private Long currentUserId() {
-    //     // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //     // System.out.println("Current username: " + (auth != null ? auth : "null"));
-    //     // if (auth == null || !auth.isAuthenticated()) {
-    //     //     throw new RuntimeException("Unauthenticated");
-    //     // }
-    //     // String username = auth.getName();
-    //     try {
-    //         return userService.GetUserInfoByUsername(username).getId();
-    //     }catch (Exception e) {
-    //          throw new IllegalStateException("Failed to like post", e);
-    //     }
-    // }
 }

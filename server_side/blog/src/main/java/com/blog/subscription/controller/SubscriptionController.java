@@ -45,12 +45,10 @@ public class SubscriptionController {
             User userToFollow = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User to follow not found"));
             
-            // Check if already following
             if (SubscriptionRepository.existsByFollowerIdAndFollowingId(currentUser.getId(), userToFollow.getId())) {
                 return ResponseEntity.badRequest().body("Already following this user");
             }
             
-            // Check if trying to follow self
             if (currentUser.getId().equals(userToFollow.getId())) {
                 return ResponseEntity.badRequest().body("Cannot follow yourself");
             }

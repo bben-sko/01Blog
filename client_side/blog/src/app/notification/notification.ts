@@ -10,7 +10,7 @@ export interface NotificationItem {
   message: string;
   postId: number;
   postTitle: string;
-  isRead: boolean;
+  read: boolean;
   createdAt: string;
 }
 
@@ -26,12 +26,11 @@ interface NotificationPage {
 @Component({
   selector: 'app-notification',
   standalone: true,
-  imports: [ CommonModule], // Add CommonModule for *ngFor, *ngIf, DatePipe, etc.
+  imports: [ CommonModule], 
   templateUrl: './notification.html',
   styleUrl: './notification.css'
 })
 export class Notification implements OnInit {
-  // Use the renamed interface
   notifications: NotificationItem[] = [];
   unreadCount: number = 0;
   currentPage = 0;
@@ -65,9 +64,12 @@ export class Notification implements OnInit {
 
     this.http.get<NotificationPage>('http://localhost:8080/api/notifications', { headers, params }).subscribe({
       next: (response) => {
+        console.log('Fetched notifications:', response);
+        
         this.notifications = append
           ? [...this.notifications, ...response.content]
           : response.content;
+        console.log('Current notifications list:', this.notifications);
         this.currentPage = response.number;
         this.totalPages = response.totalPages;
         this.totalItems = response.totalElements;
@@ -100,8 +102,8 @@ export class Notification implements OnInit {
       return;
     }
 
-    if (!notification.isRead) {
-      notification.isRead = true;
+    if (!notification.read) {
+      notification.read = true;
       const headers = this.getAuthHeaders();
       if (!headers) {
         return;

@@ -50,7 +50,8 @@ public class UserService {
         user.setName(r.getName());
         user.setBio(r.getBio());
         user.setPassword(passwordEncoder.encode(r.getPassword()));
-        user.setAvatar(r.getAvatar()); 
+        user.setAvatar(r.getAvatar());
+        user.setEnabled(true);
         return userRepository.save(user);
     }
 
@@ -120,7 +121,7 @@ public class UserService {
     }
 
     public User GetUserInfoByUsername(String username) throws Exception {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
+        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(() -> new Exception("User not found"));
         if (!user.isEnabled()) {
             throw new Exception("user "+ user.getUsername() +" is banned");
         }

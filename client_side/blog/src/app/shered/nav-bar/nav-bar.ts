@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 
 
@@ -9,6 +9,9 @@ interface UserResponse {
   role: string;
 }
 
+interface notificationResponse {
+  notificated: boolean;
+}
 @Component({
   selector: 'app-nav-bar',
   imports: [RouterModule, CommonModule],
@@ -19,11 +22,11 @@ interface UserResponse {
 export class NavBar implements OnInit {
   UserResponse: UserResponse | null = null;
   menuOpen = false;
-  isScrolled = false;
-
+  isnotificated: boolean = false;
   constructor(
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private cdr : ChangeDetectorRef,
   ) { }
 
 
@@ -52,6 +55,8 @@ export class NavBar implements OnInit {
       .subscribe({
         next: (data) => {
           this.UserResponse = data;
+          this.getisnotificated();
+          this.cdr.detectChanges();
         },
         error: (error) => {
           console.error('Error fetching current user', error);
@@ -75,8 +80,34 @@ export class NavBar implements OnInit {
     return this.UserResponse.username.substring(0, 1).toUpperCase();
   }
 
-  @HostListener('window:scroll')
-  onScroll() {
-    this.isScrolled = window.scrollY > 16;
+  getisnotificated() {
+    if (typeof localStorage === 'undefined') {
+      console.log('localStorage not available');
+      return;
+    }
+
+    const token = localStorage.getItem('jwt');
+
+    if (!token) {
+      console.error('No JWT token found');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+      this.http.get<notificationResponse>('http://localhost:8080/api/notifications/unread', { headers })
+      .subscribe({
+        next: (data) => {
+          this.isnotificated = data.notificated;
+          console.log("notificated:", this.isnotificated);
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error fetching current user', error);
+          this.router.navigate(['/login']);
+        }
+      });
   }
 }

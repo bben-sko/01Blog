@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +22,6 @@ import com.blog.admin.service.AdminPostService;
 import com.blog.admin.service.AdminReportService;
 import com.blog.admin.service.AdminUserService;
 import com.blog.config.JwtService;
-
 
 @RestController
 @RequestMapping("/api/admin")
@@ -62,12 +62,11 @@ public class AdminController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestHeader("Authorization") String authorizationHeader) {
+            @RequestParam(defaultValue = "10") int size, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String token = authorizationHeader.substring(7);
                 String role = jwtServicel.extractRole(token);
-                System.out.println(role.equals("N_USER"));
                 if (role.equals("N_USER")) {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body("Authorization required");
@@ -76,8 +75,8 @@ public class AdminController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Authorization required");
             }
-        }catch (Exception e) {
-            
+        } catch (Exception e) {
+
         }
         return ResponseEntity.ok(adminService.getAllUsers(page, size));
     }
@@ -85,7 +84,7 @@ public class AdminController {
     @GetMapping("/posts")
     public ResponseEntity<?> getAllPosts(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,@RequestHeader("Authorization") String authorizationHeader) {
+            @RequestParam(defaultValue = "10") int size, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String token = authorizationHeader.substring(7);
@@ -99,7 +98,7 @@ public class AdminController {
                         .body("Authorization required");
             }
             return ResponseEntity.ok(adminService.getAllPosts(page, size));
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("BAD REQUEST");
         }
@@ -118,17 +117,17 @@ public class AdminController {
                             .body("Authorization required");
                 }
             } else {
-                // Handle missing or invalid authorization
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Authorization required");
             }
+            System.out.println(id);
             adminUserService.banUser(id);
             HashMap<String, String> response = new HashMap<String, String>();
             response.put("message", "User banned successfully");
             response.put("err", null);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e);
         }
     }
 
@@ -144,7 +143,6 @@ public class AdminController {
                             .body("Authorization required");
                 }
             } else {
-                // Handle missing or invalid authorization
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body("Authorization required");
             }
@@ -154,6 +152,7 @@ public class AdminController {
             response.put("err", null);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -232,7 +231,7 @@ public class AdminController {
             response.put("err", null);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-             HashMap<String, String> response = new HashMap<String, String>();
+            HashMap<String, String> response = new HashMap<String, String>();
             response.put("message", null);
             response.put("err", e.getMessage());
             return ResponseEntity.badRequest().body(response);

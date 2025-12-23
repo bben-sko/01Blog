@@ -38,6 +38,7 @@ public class PostResponseDto {
         dto.setUsername(post.getUser().getUsername());
         dto.setCreatedAt(post.getCreatedAt());
         dto.setLikedByUser(likedByUser);
+        dto.setEnable(post.isEnabled());
         dto.setIsmy(ismy);
         return dto;
     }

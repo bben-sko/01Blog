@@ -131,7 +131,6 @@ export class AdminService {
         const headers = new HttpHeaders({
             'Authorization': `Bearer ${getTokern}`
         });
-        console.log(getTokern)
         return this.http.post(`${this.API_URL}/users/${userId}/ban`, {}, {  headers });
     }
 

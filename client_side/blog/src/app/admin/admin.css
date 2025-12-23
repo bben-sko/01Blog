@@ -136,9 +136,12 @@ select.form-select {
 }
 
 .badge {
-  border-radius: 999px;
   padding: 0.35rem 0.9rem;
   font-weight: 600;
+   max-width: 220px;          /* adjust as needed */
+  white-space: normal;       /* allow wrapping */
+  word-break: break-word;    /* break long words */
+  text-align: center;
 }
 
 .btn {
@@ -175,6 +178,7 @@ select.form-select {
   border: 1px solid rgba(125, 211, 252, 0.2);
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
   color: white;
+  z-index: 10;
 }
 
 .modal-header,

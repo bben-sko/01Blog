@@ -5,6 +5,7 @@ import { Post, Posts, } from '../shered/posts/posts';
 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FeedbackService } from '../shered/feedback/feedback.service';
 
 
 
@@ -27,6 +28,11 @@ export interface FollowUser {
   bio?: string;
   isFollowing: boolean;
   isme?: boolean;
+}
+
+export interface ReportResponse {
+  message: string;
+  error: boolean;
 }
 
 
@@ -61,12 +67,9 @@ export class Profile implements OnInit {
     private route: ActivatedRoute,
     private routenav: Router,
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private feedback: FeedbackService
   ) {
-    if(typeof window !== 'undefined'){
-      // console.log('Window is defined');
-    }
-   
   }
   
   
@@ -266,7 +269,6 @@ export class Profile implements OnInit {
     } else {
       console.log(`Unfollowed ${FollowUser.username}`);
 
-      // Send to backend
       this.http.delete(`http://localhost:8080/api/follow/${FollowUser.username}`, { headers })
         .subscribe({
           next: (a) => {
@@ -328,18 +330,27 @@ export class Profile implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    this.http.post('http://localhost:8080/api/profile-reports', {
+    if (reason.length < 10 || reason.length > 1000) {
+      this.reportError = 'Reason must be between 10 and 1000 characters.';
+      return;
+    }
+    this.http.post<ReportResponse>('http://localhost:8080/api/profile-reports', {
       username: this.user.username,
       reason
     }, { headers }).subscribe({
-      next: () => {
+      next: (response) => {
         this.reportModalOpen = false;
         this.reportReason = '';
-        alert('Thank you. The profile has been reported.');
+        this.feedback.success(response.message || 'Profile reported successfully.');
       },
       error: (error) => {
-        console.error('Failed to report profile', error);
-        this.reportError = error?.error || 'Unable to submit report right now.';
+        if (error.status === 409) {
+          this.reportError = 'You have already reported this profile.';
+          this.cdr.detectChanges();
+          return;
+        }
+        this.feedback.error('Failed to submit report.');
+        this.reportError = 'Unable to submit report right now.';
       }
     });
   }

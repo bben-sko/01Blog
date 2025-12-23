@@ -302,10 +302,6 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <strong>Description:</strong>
-                    <p>{{ selectedReport.description }}</p>
-                </div>
 
                 <div class="card mb-3">
                     <div class="card-header">
@@ -322,10 +318,7 @@
                 <div class="modal-footer flex-column align-items-stretch gap-3">
                     <div class="w-100 d-flex flex-wrap align-items-center gap-2">
                         <strong>Quick Actions:</strong>
-                        <button class="btn btn-sm btn-warning" *ngIf="selectedReport.postEnabled"
-                            (click)="hidePostFromReport(selectedReport.postId)">
-                            Hide Post
-                        </button>
+                        
                         <span class="badge bg-secondary" *ngIf="!selectedReport.postEnabled">
                             Post Hidden
                         </span>

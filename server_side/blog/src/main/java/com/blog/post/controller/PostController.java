@@ -56,7 +56,7 @@ public class PostController {
     public ResponseEntity<?> createPost(
             @RequestPart("content") String content,
             @RequestPart("title") String title,
-                    @RequestPart(name = "files", required = false) List<MultipartFile> files,
+            @RequestPart(name = "files", required = false) List<MultipartFile> files,
             Authentication authentication, @RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
@@ -65,7 +65,7 @@ public class PostController {
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
-            Post save = PostService.createPost(title,content, files, user);
+            Post save = PostService.createPost(title, content, files, user);
             notificationService.notifySubscribers(save, user);
 
             return ResponseEntity.ok(new CreatePostResponse("success", null));
@@ -86,7 +86,7 @@ public class PostController {
             }
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByUsername(username);
-            
+
             List<Post> posts = PostService.GetPostsProfile(user.getId(), page, size);
 
             List<PostResponseDto> postDtos = posts.stream()
@@ -103,7 +103,8 @@ public class PostController {
         }
     }
 
-    @RequestMapping(value = "/{Postid}", method = { RequestMethod.PUT, RequestMethod.POST }, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "/{Postid}", method = { RequestMethod.PUT,
+            RequestMethod.POST }, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updatePost(
             @PathVariable Long Postid,
             @RequestParam("content") String content,
@@ -123,7 +124,6 @@ public class PostController {
 
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
-          
 
             PostResponseDto updatedPost = PostService.updatePost(Postid, content, files, existingMedia, user);
             return ResponseEntity.ok(updatedPost);
@@ -142,7 +142,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{Postid}")
-    public ResponseEntity<?> DeletePost(@PathVariable Long Postid, 
+    public ResponseEntity<?> DeletePost(@PathVariable Long Postid,
             @RequestHeader("Authorization") String authorizationHeader) {
         try {
 
@@ -157,7 +157,7 @@ public class PostController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
 
-            PostService.DeletePost(Postid);
+            PostService.deletePost(Postid);
 
             HashMap<String, String> response = new HashMap<>();
             response.put("message", "delete post");
@@ -210,6 +210,10 @@ public class PostController {
 
         Long userId = JwtService.extractUserId(jwt);
         PostResponseDto post = PostService.GetSinglePosts(Postid, userId);
+        System.out.println(post);
+        if (!post.isEnable()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("POST NOT FOUND");
+        }
         return ResponseEntity.ok(post);
     }
 }

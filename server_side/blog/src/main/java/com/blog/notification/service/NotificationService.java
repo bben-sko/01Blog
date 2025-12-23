@@ -68,20 +68,12 @@ public class NotificationService {
         if (!notification.getUser().getId().equals(userId)) {
             throw new RuntimeException("Unauthorized");
         }
+        System.out.println("Marking notification " + notificationId + " as read for user " + userId);
         notification.setRead(true);
         notificationRepository.save(notification);
-    }
+    }    
 
-    // public void markAllAsRead(Long userId) {
-    // Page<Notification> unreadNotifications = getUnreadNotifications(userId, 0,
-    // MAX_PAGE_SIZE);
-    // for (Notification notification : unreadNotifications) {
-    // notification.setRead(true);
-    // notificationRepository.save(notification);
-    // }
-    // }
-
-    public long getUnreadCount(Long userId) {
-        return notificationRepository.countByUserIdAndIsReadFalse(userId);
+    public boolean getUnreadCount(Long userId) {
+        return notificationRepository.existsByUserIdAndIsReadFalse(userId);
     }
 }

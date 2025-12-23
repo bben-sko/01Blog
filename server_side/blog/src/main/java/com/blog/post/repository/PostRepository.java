@@ -26,6 +26,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     
     
     Optional<Post> findPostById(Long postId);
+    Optional<Post> findPostByIdAndEnabledTrue(Long postId);
 
     boolean existsByIdAndUserId(Long id, Long Id);
 

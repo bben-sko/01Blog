@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blog.config.JwtService;
+import com.blog.notification.dto.NotificationDto;
 import com.blog.notification.model.Notification;
 import com.blog.notification.service.NotificationService;
 
@@ -47,34 +48,19 @@ public class NotificationController {
 
     }
 
-    // // Get unread notifications only
-    // @GetMapping("/unread")
-    // public ResponseEntity<List<Notification>> getUnreadNotifications(
-    // @RequestHeader("Authorization") String authorizationHeader) {
-    // try {
-    // String jwt = authorizationHeader.substring(7);
-    // if (jwt == null || jwt.isEmpty()) {
-    // return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-    // }
-    // Long userId = JwtService.extractUserId(jwt);
-    // List<Notification> notifications =
-    // notificationService.getUnreadNotifications(userId);
-    // return ResponseEntity.ok(notifications);
-    // } catch (Exception e) {
-    // return ResponseEntity.badRequest().body(null);
-    // }
-    // }
+   
 
-    @GetMapping("/unread-count")
-    public ResponseEntity<Long> getUnreadCount(@RequestHeader("Authorization") String authorizationHeader) {
+    @GetMapping("/unread")
+    public ResponseEntity<NotificationDto> getUnreadCount(@RequestHeader("Authorization") String authorizationHeader) {
         try {
             String jwt = authorizationHeader.substring(7);
             if (jwt == null || jwt.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             Long userId = JwtService.extractUserId(jwt);
-            long count = notificationService.getUnreadCount(userId);
-            return ResponseEntity.ok(count);
+            boolean notificated = notificationService.getUnreadCount(userId);
+            
+            return ResponseEntity.ok().body(new NotificationDto(notificated));
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

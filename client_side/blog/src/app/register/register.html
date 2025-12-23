@@ -42,7 +42,7 @@
         <input type="file" accept="image/*" #avatarInput (change)="onFileSelected($event)" hidden>
       </div>
 
-      <button class="primary" type="button" (click)="d()">Create account</button>
+      <button class="primary" type="button" (click)="register()">Create account</button>
       <p class="error" *ngIf="error">{{ error }}</p>
     </div>
   </div>

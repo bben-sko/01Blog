@@ -38,53 +38,84 @@ export class Register implements OnInit{
     const input = event.target as HTMLInputElement;
     const selected = input.files?.[0];
     if (!selected) return;
-    this.file = selected; // capture the File from <input type="file"> [web:124][web:132]
+    this.file = selected; 
   }
   ngOnInit(): void {
     new authcheck(this.http, this.router).checkAuth("/register");
   }
-  d() {
-    this.submitted = true;
-    this.error = '';
+  register() {
+  this.submitted = true;
+  this.error = '';
 
-    // Validate required fields
-    if (!this.registerData.username?.trim()) {
-      this.error = 'Username is required';
-      return;
-    }
-    if (!this.registerData.email?.trim()) {
-      this.error = 'Email is required';
-      return;
-    }
-    if (!this.registerData.password) {
-      this.error = 'Password is required';
-      return;
-    }
+  const username = this.registerData.username?.trim();
+  const email = this.registerData.email?.trim();
+  const password = this.registerData.password;
 
-    const form = new FormData();
-    form.append('username', this.registerData.username.trim().toLowerCase());
-    form.append('email', this.registerData.email.trim());
-    form.append('password', this.registerData.password);
-    form.append('name', this.registerData.name?.trim() || '');
-    form.append('bio', this.registerData.bio?.trim() || '');
+  // Regex rules
+  const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (this.file) {
-      form.append('avatar', this.file);
-    }
-
-    this.http.post<RegisterResponse>('http://localhost:8080/api/auth/register', form)
-      .subscribe({
-        next: () => {
-          console.log('register successful');
-          this.router.navigate(['/login']);
-        },
-        error: (err) => {
-          const server = err?.error;
-          this.error = server?.err || server?.message || server?.detail || 'Registration failed';
-          console.error('Registration failed:', err);
-          this.submitted = false;
-        }
-      });
+  // Required fields
+  if (!username) {
+    this.error = 'Username is required';
+    return;
   }
+
+  if (!usernameRegex.test(username)) {
+    this.error = 'Username must be 3–20 characters (letters, numbers, underscore)';
+    return;
+  }
+
+  if (!email) {
+    this.error = 'Email is required';
+    return;
+  }
+
+  if (!emailRegex.test(email)) {
+    this.error = 'Invalid email format';
+    return;
+  }
+
+  if (!password) {
+    this.error = 'Password is required';
+    return;
+  }
+
+  if (password.length < 8) {
+    this.error = 'Password must be at least 8 characters';
+    return;
+  }
+
+  // Build form
+  const form = new FormData();
+  form.append('username', username.toLowerCase());
+  form.append('email', email);
+  form.append('password', password);
+  form.append('name', this.registerData.name?.trim() || '');
+  form.append('bio', this.registerData.bio?.trim() || '');
+
+  if (this.file) {
+    form.append('avatar', this.file);
+  }
+
+  // Submit
+  this.http.post<RegisterResponse>('http://localhost:8080/api/auth/register', form)
+    .subscribe({
+      next: () => {
+        console.log('Register successful');
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        const server = err?.error;
+        this.error =
+          server?.err ||
+          server?.message ||
+          server?.detail ||
+          'Registration failed';
+        this.submitted = false;
+      }
+    });
+}
+
 
 }

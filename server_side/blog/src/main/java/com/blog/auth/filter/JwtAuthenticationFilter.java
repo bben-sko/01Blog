@@ -1,8 +1,7 @@
 package com.blog.auth.filter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.DisabledException;
@@ -47,8 +46,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         jwt = authorizationHeader.substring(7);
 
         try {
-             Long userId = jwtUtil.extractUserId(jwt);
-             String role = jwtUtil.extractRole(jwt);
+            
             userName = jwtUtil.getData(jwt, Claims::getSubject);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
@@ -65,11 +63,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                             userDetails.getAuthorities()
                         );
                     
-                    Map<String, Object> details = new HashMap<>();
-                    details.put("userId", userId);
-                    details.put("role", role);
-                    authToken.setDetails(details);
-
+                 
 
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }

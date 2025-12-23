@@ -1,4 +1,4 @@
-<nav class="modern-nav" [class.scrolled]="isScrolled">
+<nav class="modern-nav" >
   <div class="nav-inner">
     <a class="brand" routerLink="/" aria-label="Navigate home">
       <span class="brand-mark"></span>
@@ -15,13 +15,17 @@
     </button>
 
     <div class="nav-controls" [class.open]="menuOpen">
-      <ng-container *ngIf="UserResponse; else auth">
+      <ng-container *ngIf="UserResponse">
         <div class="quick-actions">
           <button class="icon-btn" routerLink="/adduser" aria-label="Add user">
             <i class="bi bi-person-plus"></i>
           </button>
-          <button class="icon-btn" routerLink="/notification" aria-label="View notifications">
-            <i class="bi bi-bell"></i>
+          <button class="icon-btn" routerLink="/notification" aria-label="View notifications" >
+            @if(isnotificated) {
+              <i class="bi bi-bell-fill"></i>
+            } @else {
+              <i class="bi bi-bell"></i>
+            }
           </button>
           <button class="icon-btn" routerLink="/newpost" aria-label="Create post">
             <i class="bi bi-plus-lg"></i>
@@ -37,12 +41,7 @@
           </button>
         </div>
       </ng-container>
-      <ng-template #auth>
-        <div class="auth-links">
-          <a routerLink="/login">Login</a>
-          <a routerLink="/register" class="primary">Register</a>
-        </div>
-      </ng-template>
+     
     </div>
   </div>
 </nav>

@@ -18,17 +18,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.blog.Likes.service.LikeService;
-
+import com.blog.comment.repository.CommentRepository;
 import com.blog.common.util.StorageService;
+import com.blog.notification.repository.NotificationRepository;
 import com.blog.common.exception.ResourceNotFoundException;
 import com.blog.post.dto.PostResponseDto;
 import com.blog.post.model.Post;
 import com.blog.post.repository.PostRepository;
+import com.blog.report.repository.ReportRepository;
 import com.blog.user.model.User;
 
 import jakarta.transaction.Transactional;
 
 @Service
+@Transactional
 public class PostService {
 
     @Autowired
@@ -39,6 +42,15 @@ public class PostService {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private ReportRepository reportRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     public Post getPostById(Long postId) {
 
@@ -69,9 +81,10 @@ public class PostService {
 
     @Transactional
     public PostResponseDto GetSinglePosts(Long postId, Long userid) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findPostByIdAndEnabledTrue(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         boolean likedByUser = LikeService.isLikedByUser(userid, postId);
+        System.out.println(post);
         PostResponseDto dto = PostResponseDto.fromEntity(post, likedByUser, post.getUser().getId().equals(userid));
 
         return dto;
@@ -98,8 +111,6 @@ public class PostService {
 
         if (existingMedia != null && !existingMedia.isEmpty()) {
             updatedMedia.addAll(existingMedia);
-        } else if ((newFiles == null || newFiles.isEmpty()) && post.getMedia() != null) {
-            updatedMedia.addAll(post.getMedia());
         }
 
         if (newFiles != null && !newFiles.isEmpty()) {
@@ -115,11 +126,12 @@ public class PostService {
         return PostResponseDto.fromEntity(saved, liked, true);
     }
 
-    public void DeletePost(Long postId) {
+    public void deletePost(Long postId) {
         LikeService.deletePostLikes(postId);
+        reportRepository.deleteAllByPostId(postId);
+        notificationRepository.deleteAllByPostId(postId);
+        commentRepository.deleteAllByPostId(postId);
         postRepository.deleteById(postId);
-
     }
-
 
 }
