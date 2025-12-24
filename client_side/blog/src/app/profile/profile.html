@@ -1,16 +1,16 @@
-
 <section class="profile-shell">
   <div class="profile-wrap">
-  <header class="hero-card">
-    <div class="identity">
-      <img [src]="user.avatar || 'avatar-default.jpeg'" (error)="$event.target.src='avatar-default.jpeg'" alt="{{ user.username }}">
-      <div>
-        <p class="eyebrow">Profile</p>
-        <h1>{{ user.username }}</h1>
-        <p class="bio" *ngIf="user.bio">{{ user.bio }}</p>
+    <header class="hero-card">
+      <div class="identity">
+        <img [src]="user.avatar ? user.avatar : 'avatar-default.jpeg'" (error)="$event.target.src='avatar-default.jpeg'"
+          alt="{{ user.username }}">
+        <div>
+          <p class="eyebrow">Profile</p>
+          <h1>{{ user.username }}</h1>
+          <p class="bio" *ngIf="user.bio">{{ user.bio }}</p>
+        </div>
       </div>
-    </div>
-    <!-- <div class="stats">
+      <!-- <div class="stats">
       <div>
         <span>{{ userPosts.length }}</span>
         <p>Posts</p>
@@ -24,105 +24,102 @@
         <p>Following</p>
       </div>
     </div> -->
-    <div class="actions" *ngIf="!userNotFound && !user.isme">
-      <button class="ghost" type="button" (click)="openReportModal()">Report</button>
-      <button class="primary" type="button" (click)="toggleFollow(user)">
-        {{ user.isFollowing ? 'Following' : 'Follow' }}
-      </button>
-    </div>
-  </header>
+      <div class="actions" *ngIf="!userNotFound && !user.isme">
+        <button class="ghost" type="button" (click)="openReportModal()">Report</button>
+        <button class="primary" type="button" (click)="toggleFollow(user)">
+          {{ user.isFollowing ? 'Following' : 'Follow' }}
+        </button>
+      </div>
+    </header>
 
-  <div class="tabs-panel">
-    <div class="tabs">
-      <button [class.active]="activeTab === 'posts'" (click)="setActiveTab('posts')">Posts</button>
-      <button [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">Followers</button>
-      <button [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">Following</button>
-    </div>
+    <div class="tabs-panel">
+      <div class="tabs">
+        <button [class.active]="activeTab === 'posts'" (click)="setActiveTab('posts')">Posts</button>
+        <button [class.active]="activeTab === 'followers'" (click)="setActiveTab('followers')">Followers</button>
+        <button [class.active]="activeTab === 'following'" (click)="setActiveTab('following')">Following</button>
+      </div>
 
-    <div class="tab-body">
-      <!-- Posts Tab -->
-      @if (activeTab === 'posts') {
+      <div class="tab-body">
+        <!-- Posts Tab -->
+        @if (activeTab === 'posts') {
         <div class="posts-tab">
           <div class="posts-grid">
             @for (post of userPosts; track post.postId) {
-              <app-post [post]="post"></app-post>
+            <app-post [post]="post"></app-post>
             }
           </div>
           <div class="loading-text" *ngIf="postLoading && userPosts.length === 0">Loading posts...</div>
           @if (userPosts.length === 0 && !postLoading) {
-            <div class="empty-state">
-              <span class="icon">📝</span>
-              <p>No posts yet</p>
-            </div>
+          <div class="empty-state">
+            <span class="icon">📝</span>
+            <p>No posts yet</p>
+          </div>
           }
           <div class="load-more-container" *ngIf="!postLoading && postHasMore && userPosts.length > 0">
             <button class="load-more-btn" (click)="loadMorePosts()">Show more</button>
           </div>
           <div class="loading-text" *ngIf="postLoading && userPosts.length > 0">Loading...</div>
         </div>
-      }
+        }
 
-      <!-- Followers Tab -->
-      @if (activeTab === 'followers') {
+        <!-- Followers Tab -->
+        @if (activeTab === 'followers') {
         <div class="followers-tab">
           <div class="users-list">
             @for (follower of followers; track follower.id) {
-              <div class="user-card">
-                <img 
-                  [src]="follower.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'"
-                  [alt]="follower.username"
-                  (click)="GoToProfile(follower.username)">
-                <div>
-                  <p>@{{ follower.username }}</p>
-                </div>
-               @if (!follower.isme) {
-                  <button class="ghost" [class.active]="follower.isFollowing"
-                    (click)="UnFollow(follower)">
-                    {{ follower.isFollowing ? 'Following' : 'Follow' }}
-                  </button>
-                
-                }
+            <div class="user-card">
+              <img [src]="follower.avatar || 'avatar-default.jpeg'"
+                (error)="$event.target.src='avatar-default.jpeg'" [alt]="follower.username"
+                (click)="GoToProfile(follower.username)">
+              <div>
+                <p>@{{ follower.username }}</p>
               </div>
+              @if (!follower.isme) {
+              <button class="ghost" [class.active]="follower.isFollowing" (click)="UnFollow(follower)">
+                {{ follower.isFollowing ? 'Following' : 'Follow' }}
+              </button>
+
+              }
+            </div>
             }
           </div>
           @if (followers.length === 0) {
-            <div class="empty-state">
-              <span class="icon">👥</span>
-              <p>No followers yet</p>
-            </div>
+          <div class="empty-state">
+            <span class="icon">👥</span>
+            <p>No followers yet</p>
+          </div>
           }
         </div>
-      }
+        }
 
-      <!-- Following Tab -->
-      @if (activeTab === 'following') {
+        <!-- Following Tab -->
+        @if (activeTab === 'following') {
         <div class="following-tab">
           <div class="users-list">
             @for (followedUser of following; track followedUser.id) {
-                <div class="user-card">
-                <img 
-                  [src]="followedUser?.avatar || 'assests/avatar-default.jpeg'" (error)="$event.target.src='assests/avatar-default.jpeg'"
-                  (click)="GoToProfile(followedUser.username)">
-                <div>
-                  <!-- <h3>{{ followedUser.firstName }} {{ followedUser.lastName }}</h3> -->
-                  <p>@{{ followedUser.username }}</p>
-                </div>
-                <button class="ghost" [class.active]="followedUser.isFollowing" (click)="UnFollow(followedUser)">
-                  {{ followedUser.isFollowing ? 'Following' : 'Follow' }}
-                </button>
+            <div class="user-card">
+              <img [src]="followedUser?.avatar || 'avatar-default.jpeg'"
+                (error)="$event.target.src='avatar-default.jpeg'" (click)="GoToProfile(followedUser.username)">
+              <div>
+                <!-- <h3>{{ followedUser.firstName }} {{ followedUser.lastName }}</h3> -->
+                <p>@{{ followedUser.username }}</p>
               </div>
+              <button class="ghost" [class.active]="followedUser.isFollowing" (click)="UnFollow(followedUser)">
+                {{ followedUser.isFollowing ? 'Following' : 'Follow' }}
+              </button>
+            </div>
             }
           </div>
           @if (following.length === 0) {
-            <div class="empty-state">
-              <span class="icon">➕</span>
-              <p>Not following anyone yet</p>
-            </div>
+          <div class="empty-state">
+            <span class="icon">➕</span>
+            <p>Not following anyone yet</p>
+          </div>
           }
         </div>
-      }
+        }
+      </div>
     </div>
-  </div>
   </div>
 </section>
 
@@ -139,7 +136,8 @@
     <div class="dialog-error" *ngIf="reportError">{{ reportError }}</div>
     <div class="dialog-actions">
       <button type="button" class="ghost" (click)="closeReportModal()">Cancel</button>
-      <button type="button" class="primary" (click)="submitReport()" [disabled]="!reportReason.trim()">Submit report</button>
+      <button type="button" class="primary" (click)="submitReport()" [disabled]="!reportReason.trim()">Submit
+        report</button>
     </div>
   </div>
 </div>

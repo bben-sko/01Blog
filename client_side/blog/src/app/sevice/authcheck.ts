@@ -21,7 +21,6 @@ export class authcheck {
                     this.router.navigate(['/']);
                 },
                 error: (error) => {
-                    console.error('Error fetching current user', error);
 
                     this.router.navigate([route]);
 

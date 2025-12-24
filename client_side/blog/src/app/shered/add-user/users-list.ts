@@ -71,7 +71,6 @@ export class UsersList implements OnInit {
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error('Error loading users:', error);
           this.loading = false;
         }
       });
@@ -98,7 +97,6 @@ export class UsersList implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       this.router.navigate(['/login']);
       return;
     }
@@ -114,21 +112,18 @@ export class UsersList implements OnInit {
       this.http.post(`http://localhost:8080/api/follow/${user.user.username}`, {}, { headers })
         .subscribe({
           next: (a) => { user.isfollow = true;
-            console.log(a)
           },
-          error: (error) => console.error('Error following user:', error)
+          error: (error) => {}
         });
     } else {
-      console.log(`Unfollowed ${user.user.username}`);
       
       // Send to backend
       this.http.delete(`http://localhost:8080/api/follow/${user.user.username}`, { headers })
         .subscribe({
           next: (a) => {
             user.isfollow = false;
-            console.log(a)
           },
-          error: (error) => console.error('Error unfollowing user:', error)
+          error: (error) => {}
         });
     }
     this.cdr.detectChanges();

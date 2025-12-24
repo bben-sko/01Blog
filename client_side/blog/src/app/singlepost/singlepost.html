@@ -8,6 +8,7 @@
         </div>
         <div class="error" *ngIf="postErr">{{ postErr }}</div>
         <div class="post-content-section">
+          <input [(ngModel)]="newtitle" name="title" placeholder="Post title" type="text" />
           <textarea [(ngModel)]="newcontent" name="content" placeholder="What’s on your mind?" class="post-textarea"
             rows="4"></textarea>
 
@@ -67,10 +68,10 @@
           <div class="metadata-bar">
             <div>
               <span>Author</span>
-              <strong>{{ article.username }}</strong>
+              <strong> {{ article.username }}</strong>
             </div>
             <div>
-              <span>Published</span>
+              <span>Published </span>
               <strong>{{ article.createdAt | date:'mediumDate' }}</strong>
             </div>
             <div class="metadata-actions">
@@ -145,8 +146,8 @@
           <div class="comment-list">
             <article class="comment" *ngFor="let comment of comments">
               <div class="comment-author">
-                <img [src]="comment.avatar || 'assets/avatar-default.jpeg'" alt="{{ comment.username }}"
-                  (error)="$event.target.src='assets/avatar-default.jpeg'">
+                <img [src]="comment.avatar || 'avatar-default.jpeg'" alt="{{ comment.username }}"
+                  (error)="$event.target.src='avatar-default.jpeg'">
                 <div>
                   <strong>{{ comment.username }}</strong>
                   <small>{{ comment.time | date:'short' }}</small>

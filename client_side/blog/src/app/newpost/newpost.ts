@@ -49,17 +49,30 @@ export class NewPost {
     this.files.splice(i, 1);
   }
 
-  // Single submit path using FormData
   submit() {
     if (!this.postContent.trim() && this.files.length === 0) {
       this.postErr = 'Please add some content to your post';
       return;
+    } else if (this.postContent.length > 1000 || this.postContent.length < 10) {
+      this.postErr =  'invalid content length (min 10 , max 1000)';
+      this.feedback.error('invalid content length');
+      return
+    } else if (this.files.length > 7) {
+      this.postErr = 'invalid image number  max 7';
+      this.feedback.error('invalid image number');
+      return
+    } else if (this.postTitle.length > 100 || this.postTitle.length < 5 ) {
+      this.postErr = 'invalid post Title length  (min 5 , max 100)';
+      this.feedback.error('invalid post Title length');
+      return
     }
 
     const token = localStorage.getItem('jwt');
     if (!token) { this.router.navigate(['/login']); return; }
 
     const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    
 
     const fd = new FormData();
     fd.append('content', this.postContent);
@@ -75,7 +88,6 @@ export class NewPost {
         },
         error: (err) => {
           this.submitting = false;
-          console.error(err);
           this.postErr = err?.error?.message || err?.error?.detail || 'Failed to create post';
           this.feedback.error('Failed to create post');
         }

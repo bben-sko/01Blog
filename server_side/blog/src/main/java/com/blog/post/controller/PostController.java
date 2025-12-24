@@ -108,7 +108,8 @@ public class PostController {
     public ResponseEntity<?> updatePost(
             @PathVariable Long Postid,
             @RequestParam("content") String content,
-            @RequestPart(name = "files", required = false) List<MultipartFile> files,
+            @RequestParam("title") String title,
+                    @RequestPart(name = "files", required = false) List<MultipartFile> files,
             @RequestParam(name = "existingMedia", required = false) List<String> existingMedia,
             Authentication authentication,
             @RequestHeader("Authorization") String authorizationHeader) {
@@ -124,8 +125,9 @@ public class PostController {
 
             Long userId = JwtService.extractUserId(jwt);
             User user = UserService.GetUserInfoByid(userId);
+            System.out.println("=================================="+title);
 
-            PostResponseDto updatedPost = PostService.updatePost(Postid, content, files, existingMedia, user);
+            PostResponseDto updatedPost = PostService.updatePost(Postid,title , content, files, existingMedia, user);
             return ResponseEntity.ok(updatedPost);
 
         } catch (RuntimeException e) {

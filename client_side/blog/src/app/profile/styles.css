@@ -345,3 +345,98 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+@media (max-width: 480px) {
+  .profile-shell {
+    padding: 1.5rem 1rem;
+  }
+
+  .hero-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 24px;
+  }
+
+  .identity {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .identity img {
+    width: 100px;
+    height: 100px;
+  }
+
+  .identity h1 {
+    font-size: 1.6rem;
+  }
+
+  .bio {
+    font-size: 0.95rem;
+  }
+
+  .actions {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tabs button {
+    font-size: 0.8rem;
+    padding: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .posts-grid {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-wrap {
+    gap: 1rem;
+  }
+
+  .hero-card {
+    padding: 2rem;
+  }
+
+  .tabs-panel {
+    padding: 1.5rem;
+  }
+
+  .users-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .profile-wrap {
+    max-width: 1200px;
+  }
+
+  .hero-card {
+    padding: 3rem;
+  }
+}
+
+
+button {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+img {
+  max-width: 100%;
+}

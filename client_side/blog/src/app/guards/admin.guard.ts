@@ -16,7 +16,7 @@ export const adminGuard: CanActivateFn = () => {
       return true;
     }
   } catch (error) {
-    console.error('Failed to parse JWT token', error);
+    router.navigate(['/login']);
   }
 
   router.navigate(['/']);

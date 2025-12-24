@@ -10,7 +10,7 @@ import { FeedbackService } from '../shered/feedback/feedback.service';
 
 
 export interface User {
-  id: number ;
+  id: number;
   username: string;
   avatar?: string;
   bio?: string;
@@ -39,15 +39,22 @@ export interface ReportResponse {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [ RouterModule, Posts, FormsModule, CommonModule],
+  imports: [RouterModule, Posts, FormsModule, CommonModule],
   templateUrl: './profile.html',
-  styleUrls: [ "./styles.css"]
+  styleUrls: ["./styles.css"]
 
 })
 export class Profile implements OnInit {
-  user!: User;
+  user: User = {
+    id: 0,
+    username: "",
+    avatar: "",
+    bio: "",
+    isme: false,
+    isFollowing: false,
+    avatarUrl: "",
+  };
   activeTab: 'posts' | 'followers' | 'following' = 'posts';
-  username: string | null = null;
   userPosts: Post[] = [];
   followers: FollowUser[] = [];
   following: FollowUser[] = [];
@@ -60,7 +67,7 @@ export class Profile implements OnInit {
   reportReason = '';
   reportError = '';
   userNotFound = false;
-  
+
   // loading = false;
 
   constructor(
@@ -71,73 +78,71 @@ export class Profile implements OnInit {
     private feedback: FeedbackService
   ) {
   }
-  
-  
+
+
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
-    const username = params.get('username');
+      const username = params.get('username');
 
-    if (username && !username.includes('.')) {
-      this.currentProfileUsername = username;      
+      if (username && !username.includes('.')) {
+        this.currentProfileUsername = username;
         this.loadUserProfile(username);
-    
-      
-    }
-  });
+
+
+      }
+    });
   }
 
   loadUserProfile(username: string) {
     if (typeof localStorage === 'undefined') {
-    console.log('localStorage not available');
-    return;
-  }
-  
-  const token = localStorage.getItem('jwt');
-  // console.log('Loading profile for:', token);
+      return;
+    }
 
-  if (!token) {
-    console.error('No JWT token found');
-    return;
-  }
-      this.http.get(`http://localhost:8080/api/users/${username}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }).subscribe({
-        next: (data) => {
-          this.user = {
-            id: (data as any).userInfo.id,
-            username: (data as any).userInfo.username,
-            avatar: (data as any).userInfo.image,
-            bio: (data as any).userInfo.bio,
-            isFollowing: (data as any).isFollowing,
-            isme: (data as any).isMe,
-            avatarUrl: (data as any).avatar
-          }
-          this.loadFollowers(username);
-          this.toggleFollowUser(username)
-          this.loadUserPosts(username, true);
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          if (error.error === 'User not found') {
-            this.user = {
-              id: 0,
-              username: 'User not found',
-              avatar: '',
-              bio: '',
-              isFollowing: false,
-              isme:  false,
-              avatarUrl: ''
-            }
-            this.userNotFound = true;
-            this.cdr.detectChanges();
+    const token = localStorage.getItem('jwt');
 
-          }else {
-            this.routenav.navigate(['/login']);
-          }
+    if (!token) {
+      this.routenav.navigate(['/login']);
+      return;
+    }
+    this.http.get(`http://localhost:8080/api/users/${username}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).subscribe({
+      next: (data) => {
+        this.user = {
+          id: (data as any).userInfo.id,
+          username: (data as any).userInfo.username,
+          avatar: (data as any).userInfo.image,
+          bio: (data as any).userInfo.bio,
+          isFollowing: (data as any).isFollowing,
+          isme: (data as any).isMe,
+          avatarUrl: (data as any).avatar
         }
-      });
-    
+        this.loadFollowers(username);
+        this.toggleFollowUser(username)
+        this.loadUserPosts(username, true);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        if (error.error === 'User not found') {
+          this.user = {
+            id: 0,
+            username: 'User not found',
+            avatar: '',
+            bio: '',
+            isFollowing: false,
+            isme: false,
+            avatarUrl: ''
+          }
+          this.userNotFound = true;
+          this.cdr.detectChanges();
+
+        } else {
+          this.routenav.navigate(['/login']);
+        }
+      }
+    });
+
   }
 
   loadUserPosts(username: string, reset = false) {
@@ -146,7 +151,7 @@ export class Profile implements OnInit {
       this.postPage = 0;
       this.postHasMore = true;
     }
-    const token = localStorage.getItem('jwt'); 
+    const token = localStorage.getItem('jwt');
     if (!token) {
       this.routenav.navigate(['/login']);
       return;
@@ -165,45 +170,43 @@ export class Profile implements OnInit {
           this.postHasMore = data.length === this.postPageSize;
           this.postLoading = false;
           this.cdr.detectChanges();
-          
+
         },
         (error) => {
-          console.error('Error fetching user posts', error);
           this.postLoading = false;
         }
       );
-    
+
   }
 
-  loadFollowers(username: string) {  
+  loadFollowers(username: string) {
     if (this.followers.length > 0) return;
     const token = localStorage.getItem('jwt');
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    
-    this.http.get<FollowUser[]>(`http://localhost:8080/api/follow/${username}/followers`, 
-      { headers } ).subscribe({
-      next: (data) => {
-        this.followers = data;
+    this.followers = [];
+    this.http.get<FollowUser[]>(`http://localhost:8080/api/follow/${username}/followers`,
+      { headers }).subscribe({
+        next: (data) => {
+          this.followers = data;
           this.toggleFollowUser(username)
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error loading followers:', error);
-      }
-    });
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+        }
+      });
   }
 
-  
+
 
   setActiveTab(tab: 'posts' | 'followers' | 'following') {
     this.activeTab = tab;
   }
 
   toggleFollow(user: User) {
-    const profil:  FollowUser = {
+    const profil: FollowUser = {
       id: user.id,
       username: user.username,
       firstName: '',
@@ -215,9 +218,9 @@ export class Profile implements OnInit {
     this.UnFollow(profil);
     user.isFollowing = !user.isFollowing;
     this.cdr.detectChanges();
-    
+
   }
-  
+
   toggleFollowUser(username: string) {
     if (this.followers.length > 0) return;
     const token = localStorage.getItem('jwt');
@@ -225,16 +228,14 @@ export class Profile implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-
+    this.following = []
     this.http.get<FollowUser[]>(`http://localhost:8080/api/follow/${username}/following`,
       { headers }).subscribe({
         next: (data) => {
           this.following = data;
-          // console.log(this.following)
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error('Error loading followers:', error);
         }
       });
     this.cdr.detectChanges();
@@ -245,7 +246,6 @@ export class Profile implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       this.routenav.navigate(['/login']);
       return;
     }
@@ -264,10 +264,9 @@ export class Profile implements OnInit {
             FollowUser.isFollowing = true;
             this.cdr.detectChanges();
           },
-          error: (error) => console.error('Error following user:', error)
+          error: (error) => { }
         });
     } else {
-      console.log(`Unfollowed ${FollowUser.username}`);
 
       this.http.delete(`http://localhost:8080/api/follow/${FollowUser.username}`, { headers })
         .subscribe({
@@ -275,7 +274,7 @@ export class Profile implements OnInit {
             FollowUser.isFollowing = false;
             this.cdr.detectChanges();
           },
-          error: (error) => console.error('Error unfollowing user:', error)
+          error: (error) => { }
         });
     }
     this.cdr.detectChanges();
@@ -322,6 +321,8 @@ export class Profile implements OnInit {
       return;
     }
 
+
+
     const token = localStorage.getItem('jwt');
     if (!token) {
       this.routenav.navigate(['/login']);
@@ -330,7 +331,7 @@ export class Profile implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    if (reason.length < 10 || reason.length > 1000) {
+    if (reason.length < 10 || reason.length > 500) {
       this.reportError = 'Reason must be between 10 and 1000 characters.';
       return;
     }

@@ -20,9 +20,10 @@ interface notificationResponse {
 })
 
 export class NavBar implements OnInit {
-  UserResponse: UserResponse | null = null;
+  UserResponse: UserResponse = {username : "", role : ""};
   menuOpen = false;
   isnotificated: boolean = false;
+  loding: boolean = false;
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -35,14 +36,12 @@ export class NavBar implements OnInit {
   }
   getCurrentUser() {
     if (typeof localStorage === 'undefined') {
-      console.log('localStorage not available');
       return;
     }
 
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       this.router.navigate(['/login']);
       return;
     }
@@ -56,10 +55,10 @@ export class NavBar implements OnInit {
         next: (data) => {
           this.UserResponse = data;
           this.getisnotificated();
+          this.loding = true
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error('Error fetching current user', error);
           this.router.navigate(['/login']);
         }
       });
@@ -82,14 +81,12 @@ export class NavBar implements OnInit {
 
   getisnotificated() {
     if (typeof localStorage === 'undefined') {
-      console.log('localStorage not available');
       return;
     }
 
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       this.router.navigate(['/login']);
       return;
     }
@@ -101,11 +98,9 @@ export class NavBar implements OnInit {
       .subscribe({
         next: (data) => {
           this.isnotificated = data.notificated;
-          console.log("notificated:", this.isnotificated);
           this.cdr.detectChanges();
         },
         error: (error) => {
-          console.error('Error fetching current user', error);
           this.router.navigate(['/login']);
         }
       });

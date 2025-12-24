@@ -60,6 +60,10 @@ public class AuthController {
             if (password == null || password.isEmpty()) {
                 return ResponseEntity.badRequest().body("Password is required");
             }
+                String checkmessage = UserService.CheckExistUser(username,email);
+            if(checkmessage != "") {
+                return ResponseEntity.badRequest().body(checkmessage);
+            }
 
             RegisterRequest user = new RegisterRequest();
             user.setUsername(username.trim());

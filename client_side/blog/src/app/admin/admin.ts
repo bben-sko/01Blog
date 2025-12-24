@@ -119,7 +119,6 @@ export class Admin implements OnInit {
 
     this.adminService.getReports(status).subscribe({
       next: (data: Report[]) => {
-        console.log(data);
         this.reports = data;
         this.loading = false;
         this.cdr.detectChanges();
@@ -192,7 +191,6 @@ export class Admin implements OnInit {
   }
 
   unbanUser(user: User) {
-    console.log('Unbanning user:', user);
     this.showConfirmDialog('Unban User', 'Are you sure you want to unban this user?', '', () => {
   
       this.adminService.unbanUser(user.id).subscribe({
@@ -222,7 +220,6 @@ export class Admin implements OnInit {
           if (err.status == 401) {
             this.route.navigate(['/'])
           }
-          console.log(err)
 
         }
     });
@@ -260,7 +257,6 @@ export class Admin implements OnInit {
   
         },
         error: (err) => {
-        console.error(err)
       },
     });
       
@@ -283,7 +279,6 @@ export class Admin implements OnInit {
         if (err.status == 401) {
           this.route.navigate(['/'])
         }
-        console.error(err);
       }
     });
      

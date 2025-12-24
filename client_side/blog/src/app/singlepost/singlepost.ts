@@ -70,6 +70,7 @@ export class Singlepost implements OnInit {
   files: File[] = [];
   previews: Preview[] = [];
   newcontent = this.post?.content;
+  newtitle = ""; 
   postErr: string = "";
   existingMedia: string[] = [];
   articleParagraphs: string[] = [];
@@ -110,13 +111,13 @@ export class Singlepost implements OnInit {
       const payload = JSON.parse(atob(token.split('.')[1]));
       this.currentUserId = Number(payload.id);
     } catch (err) {
-      console.error('Failed to decode JWT payload', err);
     }
   }
   async loadPostToEdit() {
     if (!this.post) {
       return;
     }
+    this.newtitle = this.post.title;
     this.newcontent = this.post.content;
     this.previews = [];
     this.files = [];
@@ -124,11 +125,11 @@ export class Singlepost implements OnInit {
     await this.loadExistingImages(this.post.media);
   }
   deletePost() {
+    this.openConfirm('Delete Post', 'Are you sure you want to delete this Post?', '', () => {
     if (!this.post) return;
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       return;
     }
     const headers = new HttpHeaders({
@@ -146,6 +147,7 @@ export class Singlepost implements OnInit {
         this.feedback.error('Failed to delete post');
       }
     })
+  })
   }
   loadcomments(postId: number, reset: boolean = false) {
     if (this.postLoadError) {
@@ -165,7 +167,6 @@ export class Singlepost implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       this.loadingComments = false;
       return;
     }
@@ -192,7 +193,6 @@ export class Singlepost implements OnInit {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Error loading post:', error);
         this.loadingComments = false;
       }
     });
@@ -312,7 +312,6 @@ export class Singlepost implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       return;
     }
     const headers = new HttpHeaders({
@@ -338,7 +337,6 @@ export class Singlepost implements OnInit {
           },
           error: (error) => {
             this.feedback.error("Error liking post")
-            // console.error('Error liking post:', error);
           }
         });
     }
@@ -356,6 +354,10 @@ export class Singlepost implements OnInit {
 
     this.isSubmitting = true;
 
+    if (this.newComment.length > 80) {
+      this.feedback.error("invalid comment text (max 80)");
+    }
+
     const request: CreateCommentRequest = {
       content: this.newComment,
       postId: this.post.postId
@@ -363,7 +365,6 @@ export class Singlepost implements OnInit {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       return;
     }
     const headers = new HttpHeaders({
@@ -391,7 +392,8 @@ export class Singlepost implements OnInit {
       if (this.reportSubmitted || !this.reportText.trim()) {
         return;
       }
-      if (!this.reportText.trim()) {
+      if (!this.reportText.trim() || this.reportText.length > 500) {
+        this.feedback.error("invalid reportText (max 500)");
         return;
       }
       this.reportSubmitted = true;
@@ -400,7 +402,7 @@ export class Singlepost implements OnInit {
       let token = localStorage.getItem('jwt');
 
       if (!token) {
-        console.error('No JWT token found');
+        
         return;
       }
       const headers = new HttpHeaders({
@@ -419,8 +421,7 @@ export class Singlepost implements OnInit {
 
         },
         error: (error) => {
-          console.error('Failed to submit report', error);
-          this.feedback.error(error?.error?.message || "Failed to submit report")
+          this.feedback.error("Failed to submit report")
           this.reportSubmitted = false;
           this.showReportModal = false;
           this.reportText = '';
@@ -444,7 +445,7 @@ export class Singlepost implements OnInit {
 
     for (const url of imageUrls) {
       try {
-        const response = await fetch(url); // RxJs
+        const response = await fetch(url); 
         const blob = await response.blob();
 
         this.existingMedia.push(url);
@@ -454,7 +455,6 @@ export class Singlepost implements OnInit {
           existing: true
         });
       } catch (error) {
-        console.error(`Failed to load image: ${url}`, error);
       }
     }
   }
@@ -505,13 +505,12 @@ export class Singlepost implements OnInit {
     if (!p.existing && p.file) {
       const fileIndex = this.files.indexOf(p.file);
       if (fileIndex !== -1) {
-        this.files.splice(fileIndex, 1);
+        this.files.splice(fileIndex, 1); 
       }
       URL.revokeObjectURL(p.url);
     }
 
     if (p.existing) {
-      console.log('Removing existing media URL:', p.url);
       this.existingMedia = this.existingMedia.filter((url) => url !== p.url);
     }
     this.feedback.show("Media removed");
@@ -524,9 +523,25 @@ export class Singlepost implements OnInit {
     }
 
     const trimmedContent = (this.newcontent || '').trim();
+    const trimmedTitle = (this.newtitle || '').trim();
     if (!trimmedContent && this.existingMedia.length === 0 && this.files.length === 0) {
       this.postErr = 'Please add some content or media to update the post.';
       return;
+    }
+    
+
+    if (trimmedContent.length > 1000 || trimmedContent.length < 10) {
+      this.postErr = 'invalid content length (min 10 , max 1000)';
+      this.feedback.error('invalid content length');
+      return
+    } else if (this.files.length > 7) {
+      this.postErr = 'invalid image number  max 7';
+      this.feedback.error('invalid image number');
+      return
+    } else if (trimmedTitle.length > 100 || trimmedTitle.length < 5) {
+      this.postErr = 'invalid post Title length  (min 5 , max 100)';
+      this.feedback.error('invalid post Title length');
+      return
     }
 
     const token = localStorage.getItem('jwt');
@@ -541,6 +556,7 @@ export class Singlepost implements OnInit {
 
     const fd = new FormData();
     fd.append('content', trimmedContent);
+    fd.append('title', this.newtitle);
     this.existingMedia.forEach((url) => fd.append('existingMedia', url));
     this.files.forEach((file) => fd.append('files', file));
 

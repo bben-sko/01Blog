@@ -67,12 +67,13 @@ public class UserService {
 
         User foundUser = Username.get();
 
-        if (!foundUser.isEnabled()) {
-            throw new Exception("Your account has been banned");
-        }
+       
 
         if (!passwordEncoder.matches(user.getPassword(), foundUser.getPassword())) {
             throw new Exception("Password incorrect");
+        }
+        if (!foundUser.isEnabled()) {
+            throw new Exception("Your account has been banned");
         }
 
         String token = jwtService.generateToken(foundUser.getUsername(), foundUser.getRole().toString(),
@@ -121,10 +122,10 @@ public class UserService {
     }
 
     public User GetUserInfoByUsername(String username) throws Exception {
-        User user = userRepository.findByUsernameAndEnabledTrue(username).orElseThrow(() -> new Exception("User not found"));
-        if (!user.isEnabled()) {
-            throw new Exception("user "+ user.getUsername() +" is banned");
-        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new Exception("User not found"));
+        // if (!user.isEnabled()) {
+        //     throw new Exception("user "+ user.getUsername() +" is banned");
+        // }
         return user;
     }
     public Long verifyToken(String token) throws Exception {
@@ -133,5 +134,14 @@ public class UserService {
         }
         Long userId = jwtService.extractUserId(token);
         return userId;
+    }
+
+    public String CheckExistUser(String user, String email){
+        if(userRepository.existsByUsername(user)) {
+            return "User already exists.";   
+        } else if (userRepository.existsByEmail(email)) {
+            return "Email already exists.";
+        }
+        return "";
     }
 }

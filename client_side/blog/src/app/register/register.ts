@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { authcheck } from '../sevice/authcheck';
+import { FeedbackService } from '../shered/feedback/feedback.service';
 
 interface RegisterResponse {
   err?: string;
@@ -33,6 +34,7 @@ export class Register implements OnInit{
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef)
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -102,16 +104,13 @@ export class Register implements OnInit{
   this.http.post<RegisterResponse>('http://localhost:8080/api/auth/register', form)
     .subscribe({
       next: () => {
-        console.log('Register successful');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        const server = err?.error;
-        this.error =
-          server?.err ||
-          server?.message ||
-          server?.detail ||
-          'Registration failed';
+   
+        this.error = err?.error
+        this.cdr.detectChanges()
+          
         this.submitted = false;
       }
     });

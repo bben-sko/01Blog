@@ -64,12 +64,10 @@ export class Notification implements OnInit {
 
     this.http.get<NotificationPage>('http://localhost:8080/api/notifications', { headers, params }).subscribe({
       next: (response) => {
-        console.log('Fetched notifications:', response);
         
         this.notifications = append
           ? [...this.notifications, ...response.content]
           : response.content;
-        console.log('Current notifications list:', this.notifications);
         this.currentPage = response.number;
         this.totalPages = response.totalPages;
         this.totalItems = response.totalElements;
@@ -79,7 +77,6 @@ export class Notification implements OnInit {
         this.cdr.detectChanges();
       },
       error: (error) => {
-        console.error('Failed to load notifications', error);
         if (!append) {
           this.notifications = [];
           this.totalPages = 0;
@@ -114,8 +111,7 @@ export class Notification implements OnInit {
           this.router.navigate([`/post/${notification.postId}`]);
         },
         error: (error) => {
-          console.error(error);
-          this.router.navigate([`/post/${notification.postId}`]);
+         
         }
       });
       return;
@@ -127,7 +123,6 @@ export class Notification implements OnInit {
   private getAuthHeaders(): HttpHeaders | null {
     const token = localStorage.getItem('jwt');
     if (!token) {
-      console.error('No JWT token found');
       return null;
     }
     return new HttpHeaders({

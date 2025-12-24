@@ -100,7 +100,6 @@ export class AdminService {
         const token = localStorage.getItem('jwt');
 
         if (!token) {
-            console.error('No JWT token found');
             // Router.navigate(['/login']);
            return "";
         }

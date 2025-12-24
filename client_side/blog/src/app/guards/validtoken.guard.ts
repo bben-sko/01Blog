@@ -39,7 +39,6 @@ export const TokenGuard: CanActivateFn = async (): Promise<boolean> => {
             return false;
         }
     } catch (error) {
-        console.error('Token verification failed:', error);
         router.navigate(['/login']);
         return false;
     }

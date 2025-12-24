@@ -90,7 +90,7 @@ public class PostService {
         return postRepository.Homepage(userId, PageRequest.of(page, size)).getContent();
     }
 
-    public PostResponseDto updatePost(Long postId, String newContent, List<MultipartFile> newFiles,
+    public PostResponseDto updatePost(Long postId,String title ,String newContent, List<MultipartFile> newFiles,
             List<String> existingMedia, User user) throws IOException {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
@@ -101,6 +101,7 @@ public class PostService {
         }
 
         post.setContent(newContent);
+        post.setTitle(title);
 
         List<String> updatedMedia = new ArrayList<>();
 

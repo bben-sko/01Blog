@@ -15,7 +15,7 @@
     </button>
 
     <div class="nav-controls" [class.open]="menuOpen">
-      <ng-container *ngIf="UserResponse">
+      <ng-container *ngIf="loding">
         <div class="quick-actions">
           <button class="icon-btn" routerLink="/adduser" aria-label="Add user">
             <i class="bi bi-person-plus"></i>

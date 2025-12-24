@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Entity
@@ -35,10 +36,11 @@ public class Post {
     
      
     private List<String> media;
-
+    @Size(min = 5, max = 100)
     private String title;
     
     @Column(nullable = false)
+    @Size(min = 10, max = 1000)
     private String content;
 
     private boolean enabled = true;

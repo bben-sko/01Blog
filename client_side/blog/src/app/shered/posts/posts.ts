@@ -56,14 +56,13 @@ export class Posts {
 
     } else {
       this.like(this.post.postId)
-    }
+    } 
     this.post.likedByUser = !this.post.likedByUser;
   }
   like(postId: number) {
     const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       return;
     }
     const headers = new HttpHeaders({
@@ -76,7 +75,6 @@ export class Posts {
        const token = localStorage.getItem('jwt');
 
     if (!token) {
-      console.error('No JWT token found');
       return;
     }
     const headers = new HttpHeaders({
@@ -96,7 +94,6 @@ export class Posts {
  
 
   reportPost(reason: string) {
-    console.log(`Post reported for: ${reason}`);
     this.showMenu = false;
     // Add your report logic here
   }
